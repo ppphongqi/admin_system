@@ -10,50 +10,6 @@
 [![star](https://gitee.com/chu1204505056/vue-admin-beautiful/badge/star.svg?theme=gray)](https://gitee.com/chu1204505056/vue-admin-beautiful)
 [![license](https://img.shields.io/github/license/chuzhixin/vue-admin-beautiful?style=flat-square)](https://en.wikipedia.org/wiki/MIT_License)
 
-## 地址
-
-- [🎉 vue2.x + element-ui（免费商用，支持 PC、平板、手机）](http://vue-admin-beautiful.com/vue-admin-beautiful-element/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
-
-- [⚡️ vue3.x + element-plus（alpha 版本，免费商用，支持 PC、平板、手机）](http://vue-admin-beautiful.com/vue-admin-beautiful-element-plus/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
-
-- [⚡️ vue3.x + ant-design-vue（beta 版本，免费商用，支持 PC、平板、手机）](http://vue-admin-beautiful.com/vue-admin-beautiful-antdv/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
-
-- [🚀 admin pro 演示地址（付费版本，支持 PC、平板、手机）](http://vue-admin-beautiful.com/admin-pro/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
-
-- [🚀 admin plus 演示地址（vue3.x 付费版本，支持 PC、平板、手机）](http://vue-admin-beautiful.com/admin-plus/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
-
-- [📌 pro 及 plus 购买地址 authorization](http://vue-admin-beautiful.com/authorization/)
-
-- [🌐 github 仓库地址](https://github.com/chuzhixin/vue-admin-beautiful?utm_source=gold_browser_extension)
-
-- [🌐 码云仓库地址](https://gitee.com/chu1204505056/vue-admin-beautiful?_from=gitee_search)
-
-## 备份地址
-
-- [🚀 admin pro 演示地址（付费版本，支持 PC、平板、手机）](https://chu1204505056.gitee.io/admin-pro/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
-
-- [🚀 admin plus 演示地址（vue3.x 付费版本，支持 PC、平板、手机）](https://chu1204505056.gitee.io/admin-plus/?hmsr=github&hmpl=&hmcu=&hmkw=&hmci=)
-
-## vue-admin-beautiful 前端讨论 QQ 群
-
-- 请我们喝杯咖啡，支付后联系 QQ 783963206 邀请您进入讨论群（由于用户数较多，如果您打赏后未通过好友请求，请在支付宝支付页面选择联系商家），不管您请还是不请，您都可以享受到开源的代码，感谢您的支持和信任，群内提供 vue-admin-beautifu 基础版本、开发工具自动配置教程及项目开发文档。
-
-<table>
-<tr>
-<td>
-<img width="200px" src="https://gitee.com/chu1204505056/image/raw/master/zfb_kf.jpg">
-</td>
-<td>
-<img width="200px" src="https://gitee.com/chu1204505056/image/raw/master/qq_group/vab-2.jpg">
-</td>
-<td>
-<img width="200px" src="https://gitee.com/chu1204505056/image/raw/master/qq_group/vab-3.jpg">
-</td>
-</tr>
-</table>
-
-## 🌱 vue3.x vue3.0-antdv 分支（ant-design-vue）[点击切换分支](https://github.com/chuzhixin/vue-admin-beautiful-pro/tree/vue3.0-antdv)
-
 ```bash
 # 克隆项目
 git clone -b vue3.0-antdv https://github.com/chuzhixin/vue-admin-beautiful.git
@@ -87,31 +43,6 @@ npm run serve
 - [Element UI 表单设计及代码生成器（可视化表单设计器，一键生成 element 表单）](https://github.com/JakHuang/form-generator/)
 
 - [luch-request（基于 Promise 开发的 uni-app 跨平台、项目级别的请求库）](https://www.quanzhan.co/luch-request/)
-
-## 我们承诺将定期赞助的开源项目（感谢巨人）
-
-<a title="vue" href="https://cn.vuejs.org/" target="_blank">
-<img width="64px" src="https://gitee.com/chu1204505056/image/raw/master/vue.png"/>
-</a>
-
-<a title="ant-design-vue" href="https://github.com/vueComponent/ant-design-vue#backers" target="_blank">
-<img width="64px" src="https://gitee.com/chu1204505056/image/raw/master/antdv.svg"/>
-</a>
-
-<a title="element-plus" href="https://opencollective.com/element-plus" target="_blank">
-<img width="64px" src="https://gitee.com/chu1204505056/image/raw/master/element-plus.png"/>
-</a>
-
-## 鸣谢
-
-| Project                                                          |
-| ---------------------------------------------------------------- |
-| [vue](https://github.com/vuejs/vue)                              |
-| [element-ui](https://github.com/ElemeFE/element)                 |
-| [element-plus](https://github.com/element-plus/element-plus)     |
-| [ant-design-vue](https://github.com/vueComponent/ant-design-vue) |
-| [mock](https://github.com/nuysoft/Mock)                          |
-| [axios](https://github.com/axios/axios)                          |
 
 ## 框架杰出贡献者（排名不分先后）
 
@@ -206,10 +137,6 @@ vue-admin-beautiful-pro 使用注意事项:
 </td>
 </tr>
 </table>
-
-## 商用注意事项
-
-此项目可免费用于商业用途，请遵守 MIT 协议并保留作者技术支持声明，如需自定义版权信息请联系客服 QQ 783963206。
 
 <!-- ## 严正声明
 
