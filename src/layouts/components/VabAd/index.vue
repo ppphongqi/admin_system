@@ -1,5 +1,5 @@
 <template>
-  <div class="vab-ad">
+  <div class="vab-ad" style="display: none">
     <el-carousel
       v-if="adList"
       height="30px"

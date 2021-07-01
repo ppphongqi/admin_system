@@ -53,6 +53,177 @@ export const asyncRoutes = [
       },
     ],
   },
+  {
+    path: '/VirtualProduct',
+    component: Layout,
+    redirect: 'VirtualProduct',
+    name: 'VirtualProduct',
+    meta: { title: '虚拟产品', icon: 'box-open' },
+    children: [
+      {
+        path: 'VirtualProduct',
+        name: 'VirtualProduct',
+        component: () => import('@/views/VirtualProduct/index'),
+        meta: {
+          title: '虚拟产品',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/PhysicalProducts',
+    component: Layout,
+    redirect: 'PhysicalProducts',
+    name: 'PhysicalProducts',
+    meta: { title: '实物产品', icon: 'box-open' },
+    children: [
+      {
+        path: 'PhysicalProducts',
+        name: 'PhysicalProducts',
+        component: () => import('@/views/PhysicalProducts/index'),
+        meta: {
+          title: '实物产品',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/OrderManagement',
+    component: Layout,
+    redirect: 'OrderManagement',
+    name: 'OrderManagement',
+    meta: { title: '订单管理', icon: 'box-open' },
+    children: [
+      {
+        path: 'OrderManagement',
+        name: 'OrderManagement',
+        component: () => import('@/views/OrderManagement/index'),
+        meta: {
+          title: '订单管理',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/FinancialDetails',
+    component: Layout,
+    redirect: 'FinancialDetails',
+    name: 'FinancialDetails',
+    meta: { title: '财务明细', icon: 'box-open' },
+    children: [
+      {
+        path: 'FinancialDetails',
+        name: 'FinancialDetails',
+        component: () => import('@/views/FinancialDetails/index'),
+        meta: {
+          title: '财务明细',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/UserManage',
+    component: Layout,
+    redirect: 'UserManage',
+    name: 'UserManage',
+    meta: { title: '用户管理', icon: 'box-open' },
+    children: [
+      {
+        path: 'UserManage',
+        name: 'UserManage',
+        component: () => import('@/views/UserManage/index'),
+        meta: {
+          title: '用户管理',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/ChannelManage',
+    component: Layout,
+    redirect: 'ChannelManage',
+    name: 'ChannelManage',
+    meta: { title: '通道管理', icon: 'box-open' },
+    children: [
+      {
+        path: 'ChannelManage',
+        name: 'ChannelManage',
+        component: () => import('@/views/ChannelManage/index'),
+        meta: {
+          title: '通道管理',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/RoleManage',
+    component: Layout,
+    redirect: 'RoleManage',
+    name: 'RoleManage',
+    meta: { title: '角色管理', icon: 'box-open' },
+    children: [
+      {
+        path: 'RoleManage',
+        name: 'RoleManage',
+        component: () => import('@/views/RoleManage/index'),
+        meta: {
+          title: '角色管理',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/TaskManage',
+    component: Layout,
+    redirect: 'TaskManage',
+    name: 'TaskManage',
+    meta: { title: '任务管理', icon: 'box-open' },
+    children: [
+      {
+        path: 'TaskManage',
+        name: 'TaskManage',
+        component: () => import('@/views/TaskManage/index'),
+        meta: {
+          title: '任务管理',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/SystemManage',
+    component: Layout,
+    redirect: 'SystemManage',
+    name: 'SystemManage',
+    meta: { title: '系统设置', icon: 'box-open' },
+    children: [
+      {
+        path: 'SystemManage',
+        name: 'SystemManage',
+        component: () => import('@/views/SystemManage/index'),
+        meta: {
+          title: '系统设置',
+          icon: 'home',
+          affix: true,
+        },
+      },
+    ],
+  },
   /* {
     path: "/test",
     component: Layout,
