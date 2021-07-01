@@ -57,7 +57,6 @@ export const asyncRoutes = [
     path: '/VirtualProduct',
     component: Layout,
     redirect: 'VirtualProduct',
-    name: 'VirtualProduct',
     meta: { title: '虚拟产品', icon: 'box-open' },
     children: [
       {
@@ -77,7 +76,6 @@ export const asyncRoutes = [
     path: '/PhysicalProducts',
     component: Layout,
     redirect: 'PhysicalProducts',
-    name: 'PhysicalProducts',
     meta: { title: '实物产品', icon: 'box-open' },
     children: [
       {
@@ -96,7 +94,6 @@ export const asyncRoutes = [
     path: '/OrderManagement',
     component: Layout,
     redirect: 'OrderManagement',
-    name: 'OrderManagement',
     meta: { title: '订单管理', icon: 'box-open' },
     children: [
       {
@@ -115,7 +112,6 @@ export const asyncRoutes = [
     path: '/FinancialDetails',
     component: Layout,
     redirect: 'FinancialDetails',
-    name: 'FinancialDetails',
     meta: { title: '财务明细', icon: 'box-open' },
     children: [
       {
@@ -134,7 +130,6 @@ export const asyncRoutes = [
     path: '/UserManage',
     component: Layout,
     redirect: 'UserManage',
-    name: 'UserManage',
     meta: { title: '用户管理', icon: 'box-open' },
     children: [
       {
@@ -153,7 +148,6 @@ export const asyncRoutes = [
     path: '/ChannelManage',
     component: Layout,
     redirect: 'ChannelManage',
-    name: 'ChannelManage',
     meta: { title: '通道管理', icon: 'box-open' },
     children: [
       {
@@ -172,7 +166,6 @@ export const asyncRoutes = [
     path: '/RoleManage',
     component: Layout,
     redirect: 'RoleManage',
-    name: 'RoleManage',
     meta: { title: '角色管理', icon: 'box-open' },
     children: [
       {
@@ -191,7 +184,6 @@ export const asyncRoutes = [
     path: '/TaskManage',
     component: Layout,
     redirect: 'TaskManage',
-    name: 'TaskManage',
     meta: { title: '任务管理', icon: 'box-open' },
     children: [
       {
@@ -210,7 +202,6 @@ export const asyncRoutes = [
     path: '/SystemManage',
     component: Layout,
     redirect: 'SystemManage',
-    name: 'SystemManage',
     meta: { title: '系统设置', icon: 'box-open' },
     children: [
       {
