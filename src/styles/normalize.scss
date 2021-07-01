@@ -351,3 +351,38 @@ template {
 [hidden] {
   display: none;
 }
+
+html body .el-dialog__footer, html body .el-message-box__footer,html body .el-message-box__body{
+  border: none;
+}
+html body .el-dialog__body, html body .el-message-box__body{
+  border: none;
+}
+
+
+
+.page_wrapper{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: rgb(250,250,250);
+  position: relative;
+}
+.page_title{
+  width: 100%;
+  min-height: 70px;
+  margin-bottom: 10px;
+  background: #FFF;
+  display: flex;
+  flex-direction: row;
+}
+.el-table .cell{
+  line-height: 57px;
+}
+.pagination{
+  height: 50px;
+  position: absolute;
+  bottom: 10px;
+  width: 100%;
+}
