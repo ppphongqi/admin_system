@@ -5,7 +5,7 @@
       :icon="['fas', 'palette']"
       @click="handleOpenThemeBar"
     />
-    <div class="theme-bar-setting">
+    <div class="theme-bar-setting" style="display: none">
       <div @click="handleOpenThemeBar">
         <vab-icon :icon="['fas', 'palette']" />
         <p>主题配置</p>
