@@ -75,15 +75,38 @@ export const asyncRoutes = [
   {
     path: '/PhysicalProducts',
     component: Layout,
-    redirect: 'PhysicalProducts',
+    redirect: 'noRedirect',
     meta: { title: '实物产品', icon: 'box-open' },
     children: [
       {
-        path: 'PhysicalProducts',
-        name: 'PhysicalProducts',
-        component: () => import('@/views/PhysicalProducts/index'),
+        path: 'ProductList',
+        name: 'ProductList',
+        component: () =>
+          import('@/views/PhysicalProducts/children/list/index.vue'),
         meta: {
-          title: '实物产品',
+          title: '产品列表',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'ProductTable',
+        name: 'ProductTable',
+        component: () =>
+          import('@/views/PhysicalProducts/children/table/index.vue'),
+        meta: {
+          title: '数据报表',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'ProductSetting',
+        name: 'ProductSetting',
+        component: () =>
+          import('@/views/PhysicalProducts/children/setting/index.vue'),
+        meta: {
+          title: '规格设置',
           icon: 'cart-plus',
           // affix: true,
         },
@@ -93,16 +116,28 @@ export const asyncRoutes = [
   {
     path: '/OrderManagement',
     component: Layout,
-    redirect: 'OrderManagement',
+    redirect: 'noRedirect',
     meta: { title: '订单管理', icon: 'box-open' },
     children: [
       {
-        path: 'OrderManagement',
-        name: 'OrderManagement',
-        component: () => import('@/views/OrderManagement/index'),
+        path: 'OrderList',
+        name: 'OrderList',
+        component: () =>
+          import('@/views/OrderManagement/children/list/index.vue'),
         meta: {
-          title: '订单管理',
-          icon: 'list',
+          title: '订单列表',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'OrderRefund',
+        name: 'OrderRefund',
+        component: () =>
+          import('@/views/OrderManagement/children/refund/index.vue'),
+        meta: {
+          title: '退款单',
+          icon: 'cart-plus',
           // affix: true,
         },
       },
@@ -111,16 +146,50 @@ export const asyncRoutes = [
   {
     path: '/FinancialDetails',
     component: Layout,
-    redirect: 'FinancialDetails',
+    redirect: 'noRedirect',
     meta: { title: '财务明细', icon: 'box-open' },
     children: [
       {
-        path: 'FinancialDetails',
-        name: 'FinancialDetails',
-        component: () => import('@/views/FinancialDetails/index'),
+        path: 'Screening',
+        name: 'Screening',
+        component: () =>
+          import('@/views/FinancialDetails/children/screening/index.vue'),
         meta: {
-          title: '财务明细',
-          icon: 'money-check',
+          title: '财务数据筛选',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'Detail',
+        name: 'Detail',
+        component: () =>
+          import('@/views/FinancialDetails/children/detail/index.vue'),
+        meta: {
+          title: '充值明细',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'PhyDetail',
+        name: 'PhyDetail',
+        component: () =>
+          import('@/views/FinancialDetails/children/phyDetail/index.vue'),
+        meta: {
+          title: '实物产品明细',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'VirDetail',
+        name: 'VirDetail',
+        component: () =>
+          import('@/views/FinancialDetails/children/virDetail/index.vue'),
+        meta: {
+          title: '虚拟产品明细',
+          icon: 'cart-plus',
           // affix: true,
         },
       },
@@ -129,15 +198,25 @@ export const asyncRoutes = [
   {
     path: '/UserManage',
     component: Layout,
-    redirect: 'UserManage',
-    meta: { title: '用户管理', icon: 'box-open' },
+    redirect: 'noRedirect',
+    meta: { title: '用户管理', icon: 'user-cog' },
     children: [
       {
-        path: 'UserManage',
-        name: 'UserManage',
-        component: () => import('@/views/UserManage/index'),
+        path: 'UserList',
+        name: 'UserList',
+        component: () => import('@/views/UserManage/children/list/index'),
         meta: {
-          title: '用户管理',
+          title: '用户列表',
+          icon: 'user-cog',
+          // affix: true,
+        },
+      },
+      {
+        path: 'Merchants',
+        name: 'Merchants',
+        component: () => import('@/views/UserManage/children/merchants/index'),
+        meta: {
+          title: '商家认证',
           icon: 'user-cog',
           // affix: true,
         },
@@ -147,19 +226,29 @@ export const asyncRoutes = [
   {
     path: '/ChannelManage',
     component: Layout,
-    redirect: 'ChannelManage',
+    redirect: 'noRedirect',
     meta: { title: '通道管理', icon: 'box-open' },
     children: [
       {
-        path: 'ChannelManage',
-        name: 'ChannelManage',
-        component: () => import('@/views/ChannelManage/index'),
+        path: 'ChannelList',
+        name: 'ChannelList',
+        component: () => import('@/views/ChannelManage/children/list/index'),
         meta: {
           title: '通道管理',
           icon: 'cube',
           // affix: true,
         },
       },
+      // {
+      // path: 'ChannelList',
+      // name: 'ChannelList',
+      // component: () => import('@/views/ChannelManage/children/list/index'),
+      // meta: {
+      //   title: '通道管理',
+      //   icon: 'cube',
+      //   // affix: true,
+      // },
+      // },
     ],
   },
   {
@@ -184,14 +273,34 @@ export const asyncRoutes = [
     path: '/TaskManage',
     component: Layout,
     redirect: 'TaskManage',
-    meta: { title: '任务管理', icon: 'box-open' },
+    meta: { title: '任务管理', icon: 'tasks' },
     children: [
+      {
+        path: 'TaskKinds',
+        name: 'TaskKinds',
+        component: () => import('@/views/TaskManage/children/kinds/index'),
+        meta: {
+          title: '任务分类',
+          icon: 'tasks',
+          // affix: true,
+        },
+      },
       {
         path: 'TaskManage',
         name: 'TaskManage',
-        component: () => import('@/views/TaskManage/index'),
+        component: () => import('@/views/TaskManage/children/manage/index'),
         meta: {
           title: '任务管理',
+          icon: 'tasks',
+          // affix: true,
+        },
+      },
+      {
+        path: 'TaskInfo',
+        name: 'TaskInfo',
+        component: () => import('@/views/TaskManage/children/info/index'),
+        meta: {
+          title: '任务情况',
           icon: 'tasks',
           // affix: true,
         },
