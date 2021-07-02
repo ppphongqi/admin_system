@@ -58,10 +58,10 @@ module.exports = {
     proxy: {
       '/api': {
         // target: 'http://gonghuo.wanmou.cn/api',
-        target: 'https://yapi.wanmou.cn/mock/14',
+        target: 'http://139.159.248.113:8090',
         changeOrigin: true,
         pathRewrite: {
-          '^/api': '/',
+          '^/api': '',
         },
       },
       // '/api': {

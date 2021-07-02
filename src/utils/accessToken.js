@@ -7,7 +7,6 @@ import { storage, tokenTableName } from '@/config'
  */
 export function getAccessToken() {
   if (storage) {
-    console.log('storage')
     if ('localStorage' === storage) {
       return localStorage.getItem(tokenTableName)
     } else if ('sessionStorage' === storage) {
@@ -29,7 +28,6 @@ export function getAccessToken() {
 export function setAccessToken(accessToken) {
   if (storage) {
     if ('localStorage' === storage) {
-      console.log('setToken')
       return localStorage.setItem(tokenTableName, accessToken)
     } else if ('sessionStorage' === storage) {
       return sessionStorage.setItem(tokenTableName, accessToken)

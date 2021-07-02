@@ -56,6 +56,26 @@
               <vab-icon :icon="['fas', 'eye']"></vab-icon>
             </span>
           </el-form-item>
+          <el-form-item prop="code">
+            <el-col :span="10">
+              <span class="svg-container">
+                <vab-icon :icon="['fas', 'lock']" />
+              </span>
+              <el-input
+                ref="password"
+                v-model.trim="form.code"
+                tabindex="2"
+                placeholder="验证码"
+                @keyup.enter.native="handleLogin"
+              />
+            </el-col>
+            <el-col :span="5">
+              <img class="login_code" :src="image" />
+            </el-col>
+            <el-col :span="5">
+              <div class="code_tips" @click.prevent="getCode">换一换</div>
+            </el-col>
+          </el-form-item>
           <el-button
             :loading="loading"
             class="login-btn"
@@ -75,7 +95,7 @@
 
 <script>
   import { isPassword } from '@/utils/validate'
-
+  import { loginApi } from '../../api/index'
   export default {
     name: 'Login',
     directives: {
@@ -106,7 +126,9 @@
         form: {
           username: '',
           password: '',
+          code: '',
         },
+        image: '',
         rules: {
           username: [
             {
@@ -138,6 +160,7 @@
     },
     created() {
       document.body.style.overflow = 'hidden'
+      this.getCode()
     },
     beforeDestroy() {
       document.body.style.overflow = 'auto'
@@ -182,6 +205,18 @@
             return false
           }
         })
+      },
+
+      async getCode() {
+        const res = await loginApi.getVerificationCode()
+        const img = btoa(
+          new Uint8Array(res).reduce(
+            (data, byte) => data + String.fromCharCode(byte),
+            ''
+          )
+        )
+        this.image = 'data:image/png;base64,' + img
+        console.log(res, '验证码')
       },
     },
   }
@@ -326,5 +361,19 @@
         }
       }
     }
+  }
+  .login_code {
+    width: 100%;
+    border: 1px solid #d7dee3;
+    margin-left: 10px;
+  }
+  .code_tips {
+    text-decoration: underline;
+    font-size: 20px;
+    color: blue;
+    margin-top: 10px;
+    width: 80%;
+    text-align: right;
+    cursor: pointer;
   }
 </style>

@@ -10,7 +10,6 @@ export async function login(data) {
   //   method: 'post',
   //   data,
   // })
-  console.log(111)
   // if (loginRSA) {
   //   data = await encryptedData(data)
   // }
