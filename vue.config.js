@@ -51,10 +51,25 @@ module.exports = {
     open: true,
     noInfo: false,
     overlay: {
-      warnings: true,
+      warnings: false,
       errors: true,
     },
-    after: mockServer(),
+    // after: mockServer(),
+    proxy: {
+      '/api': {
+        // target: 'http://gonghuo.wanmou.cn/api',
+        target: 'https://yapi.wanmou.cn/mock/14',
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '/',
+        },
+      },
+      // '/api': {
+      //   target: 'https://gonghuo.wanmou.cn/api',
+      //   ws: true,
+      //   changeOrigin: true,
+      // },
+    },
   },
   configureWebpack() {
     return {

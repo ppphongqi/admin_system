@@ -27,6 +27,7 @@ const getters = {
 }
 const mutations = {
   setAccessToken(state, accessToken) {
+    console.log('token', accessToken, '11')
     state.accessToken = accessToken
     setAccessToken(accessToken)
   },
@@ -46,7 +47,9 @@ const actions = {
   },
   async login({ commit }, userInfo) {
     const { data } = await login(userInfo)
+    console.log(data, 'login_data')
     const accessToken = data[tokenName]
+    console.log(accessToken)
     if (accessToken) {
       commit('setAccessToken', accessToken)
       const hour = new Date().getHours()
@@ -69,11 +72,17 @@ const actions = {
     }
   },
   async getUserInfo({ commit, state }) {
-    const { data } = await getUserInfo(state.accessToken)
-    if (!data) {
-      Vue.prototype.$baseMessage('验证失败，请重新登录...', 'error')
-      return false
-    }
+    // let { data } = await getUserInfo(state.accessToken)
+    // if (!data) {
+    //   Vue.prototype.$baseMessage('验证失败，请重新登录...', 'error')
+    //   return false
+    // }
+    console.log(11231)
+    let data = {}
+    data.permissions = ['admin']
+    data.username = 'admin'
+    data.avatar = 'https://i.gtimg.cn/club/item/face/img/2/15922_100.gif'
+    console.log(data, 'data')
     let { permissions, username, avatar } = data
     if (permissions && username && Array.isArray(permissions)) {
       commit('setPermissions', permissions)
