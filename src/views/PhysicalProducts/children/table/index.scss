@@ -1,20 +1,104 @@
-.box {
-  width: 300px;
-  height: 300px;
-  background-color: rgb(149, 200, 207);
+.ck_title{
+  width: 100%;
+  height: 70px;
+  padding: 0 14px;
+  font-size: 18px;
+  font-weight: bolder;
   display: flex;
-  flex-wrap: wrap;
-  align-content: space-between;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.column {
-  flex-basis: 100%;
+// .box {
+//   width: 100%;
+//   display: flex;
+//   flex-wrap: wrap;
+//   align-content: space-between;
+// }
+
+// .column {
+//   flex-basis: 100%;
+//   display: flex;
+//   justify-content: space-between;
+// }
+// .item{
+//   width: 49%;
+//   height: 250px;
+//   background-color: white;
+//   padding: 14px;
+// }
+// .item_title{
+//   font-size: 18px;
+// }
+
+// .page_wrapper{
+//   height: 100%;
+//   width: 100%;
+//   display: flex;
+//   flex-direction: column;
+//   background: rgb(250,250,250);
+//   position: relative;
+//   justify-content: space-between;
+// }
+.box_clock{
+  margin-bottom: 10px;
+  height: 400px;
+  width: 100%;
+  // background: #FFF;
   display: flex;
-  justify-content: space-between;
   flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  &_items{
+    width:48.5%;
+    height: 100%;
+    padding: 14px;
+    background: #FFF;
+    display: flex;
+    flex-direction: row;
+    &_title{
+      width: 15%;
+      font-size: 18px;
+    }
+    &_continer{
+      width: 85%;
+      font-size: 70px;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
-.item{
-  width: 100px;
-  height: 100px;
-  background-color: yellow
+
+.box_clock2{
+  margin-bottom: 10px;
+  height: 700px;
+  width: 100%;
+  // background: #FFF;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  &_items{
+    width:48.5%;
+    height: 100%;
+    padding: 14px;
+    background: #FFF;
+    display: flex;
+    flex-direction: row;
+    &_title{
+      width: 15%;
+      font-size: 18px;
+    }
+    &_continer{
+      width: 85%;
+      font-size: 70px;
+      color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
 }
