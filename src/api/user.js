@@ -2,12 +2,19 @@ import request from '@/utils/request'
 import { encryptedData } from '@/utils/encrypt'
 import { loginRSA, tokenName } from '@/config'
 
+import service from './request.js'
+
 export async function login(data) {
-  if (loginRSA) {
-    data = await encryptedData(data)
-  }
+  // return service({
+  //   url: '/pc/login/userLogin',
+  //   method: 'post',
+  //   data,
+  // })
+  // if (loginRSA) {
+  //   data = await encryptedData(data)
+  // }
   return request({
-    url: '/login',
+    url: '/pc/login/userLogin',
     method: 'post',
     data,
   })
