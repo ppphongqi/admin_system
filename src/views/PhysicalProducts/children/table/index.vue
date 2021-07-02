@@ -1,8 +1,18 @@
 <template>
-  <div>数据报表</div>
+  <div class="box">
+    <div class="column">
+      <span class="item"></span>
+      <span class="item"></span>
+    </div>
+    <div class="column">
+      <span class="item"></span>
+      <span class="item"></span>
+    </div>
+  </div>
 </template>
 
 <script>
+  import './index'
   export default {
     name: 'DataTable',
   }
