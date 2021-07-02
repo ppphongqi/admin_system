@@ -2,10 +2,10 @@
   <div class="page_wrapper">
     <div class="page_title">
       <div class="ck_title">
-        <div class="ck_title">任务管理</div>
+        <div class="ck_title">二维码库</div>
         <div class="ck_buttons">
           <el-button type="success" icon="el-icon-plus" @click="showDialog">
-            添加任务
+            添加二维码
           </el-button>
         </div>
       </div>
@@ -18,44 +18,19 @@
       ></el-table-column>
       <el-table-column
         prop="name"
-        label="任务名称"
+        label="二维码名称"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="date"
-        label="任务图标"
+        prop="picture"
+        label="二维码图片"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="type"
-        label="任务分类"
+        prop="count"
+        label="可使用次数"
         align="center"
       ></el-table-column>
-      <el-table-column
-        prop="type"
-        label="任务类型"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="type"
-        label="任务描述"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="type"
-        label="任务佣金"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
-        <template slot-scope="scope">
-          <el-switch
-            :value="scope.row.status"
-            active-color="rgb(28,134,224)"
-            inactive-color="#ff4949"
-            active-text="显示"
-          ></el-switch>
-        </template>
-      </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
@@ -64,6 +39,13 @@
             @click.native.prevent="deleteRow(scope.$index, tableData)"
           >
             编辑
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click.prevent="showDetail(scope.$index, tableData)"
+          >
+            详情
           </el-button>
           <el-button
             type="text"
@@ -88,16 +70,16 @@
     </div>
 
     <el-dialog
-      title="添加任务"
+      :title="detail ? '二维码详情' : '添加二维码'"
       :visible.sync="showModal"
       width="30%"
-      top="15vh"
+      top="20vh"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="任务名称:" prop="name" required>
+        <el-form-item label="二维码名称:" prop="name" :required="!detail">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="任务图标:" prop="number" required>
+        <el-form-item label="二维码图片:" prop="number" :required="!detail">
           <div class="upload_wrapper">
             <el-upload
               class="avatar-uploader"
@@ -114,61 +96,58 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item label="任务分类:" required>
-          <el-select size="medium">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="任务类型:" required>
-          <el-select size="medium">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="绑定任务:" required>
-          <el-select size="medium">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="任务佣金:" prop="number" required>
-          <el-input v-model="Form.number"></el-input>
-        </el-form-item>
-        <el-form-item label="任务时间:" required>
-          <el-col :span="11">
-            <el-date-picker
-              v-model="Form.date1"
-              type="date"
-              placeholder="选择日期"
-              style="width: 100%"
-            ></el-date-picker>
-          </el-col>
-          <el-col class="line" :span="2">-</el-col>
-          <el-col :span="11">
-            <el-date-picker
-              v-model="Form.date2"
-              type="date"
-              placeholder="选择日期"
-              style="width: 100%"
-            ></el-date-picker>
-          </el-col>
-        </el-form-item>
-        <el-form-item label="任务描述:" prop="desc" required>
-          <el-input v-model="Form.desc" type="textarea"></el-input>
+
+        <el-form-item label="序号:" prop="name">
+          <el-input v-model="Form.name"></el-input>
         </el-form-item>
 
-        <el-form-item label="状态:" prop="status">
-          <el-radio-group v-model="Form.status">
-            <el-checkbox label="显示"></el-checkbox>
-            <el-checkbox label="隐藏"></el-checkbox>
-          </el-radio-group>
+        <el-form-item label="可使用次数:" :required="!detail">
+          <el-select size="medium">
+            <el-option label="区域一" value="shanghai"></el-option>
+            <el-option label="区域二" value="beijing"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
 
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+      <span v-if="!detail" slot="footer" class="dialog-footer">
+        <el-button
+          @click="
+            showModal = false
+            detail = false
+          "
+        >
+          取 消
+        </el-button>
+        <el-button
+          type="primary"
+          @click="
+            showModal = false
+            detail = false
+          "
+        >
+          确 定
+        </el-button>
+      </span>
+
+      <span v-else slot="footer" class="dialog-footer">
+        <el-button
+          type="danger"
+          @click="
+            showModal = false
+            detail = false
+          "
+        >
+          释放二维码
+        </el-button>
+        <el-button
+          type="primary"
+          @click="
+            showModal = false
+            detail = false
+          "
+        >
+          确 定
+        </el-button>
       </span>
     </el-dialog>
   </div>
@@ -181,16 +160,13 @@
   let time = moment().format('YYYY-MM-DD')
   for (let i = 0; i < 7; i++) {
     tableData.push({
-      date: time,
-      name: '任务名称',
-      address: '上海市普陀区金沙江路 1518 弄',
-      status: i < 5 ? true : false,
-      type: '类型',
+      count: i,
+      picture: 'image',
+      name: '图片',
     })
   }
-  console.log(tableData)
   export default {
-    name: 'TaskManage',
+    name: 'TaskCode',
     data() {
       return {
         currentPage1: 5,
@@ -207,9 +183,14 @@
           date1: '',
           date2: '',
         },
+        detail: false,
       }
     },
     methods: {
+      showDetail() {
+        this.showModal = true
+        this.detail = true
+      },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
       },

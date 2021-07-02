@@ -85,7 +85,7 @@
         <el-form-item label="序号:" prop="number" align="center">
           <el-input v-model="Form.number"></el-input>
         </el-form-item>
-        <el-form-item label="状态:" prop="status" align="center">
+        <el-form-item label="状态:" prop="status">
           <el-radio-group v-model="Form.status">
             <el-checkbox label="显示"></el-checkbox>
             <el-checkbox label="隐藏"></el-checkbox>
