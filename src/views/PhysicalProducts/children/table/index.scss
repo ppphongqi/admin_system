@@ -1,0 +1,20 @@
+.box {
+  width: 300px;
+  height: 300px;
+  background-color: rgb(149, 200, 207);
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-between;
+}
+
+.column {
+  flex-basis: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+.item{
+  width: 100px;
+  height: 100px;
+  background-color: yellow
+}
