@@ -358,7 +358,9 @@ html body .el-dialog__footer, html body .el-message-box__footer,html body .el-me
 html body .el-dialog__body, html body .el-message-box__body{
   border: none;
 }
-
+.el-select{
+  width: 100%;
+}
 
 
 .page_wrapper{

@@ -296,6 +296,16 @@ export const asyncRoutes = [
         },
       },
       {
+        path: 'TaskCode',
+        name: 'TaskCode',
+        component: () => import('@/views/TaskManage/children/code/index'),
+        meta: {
+          title: '二维码库',
+          icon: 'tasks',
+          // affix: true,
+        },
+      },
+      {
         path: 'TaskInfo',
         name: 'TaskInfo',
         component: () => import('@/views/TaskManage/children/info/index'),
