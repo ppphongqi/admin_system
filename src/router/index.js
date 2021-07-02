@@ -56,7 +56,7 @@ export const asyncRoutes = [
   {
     path: '/VirtualProduct',
     component: Layout,
-    redirect: 'VirtualProduct',
+    redirect: 'noRedirect',
     meta: { title: '虚拟产品', icon: 'box-open' },
     children: [
       {
@@ -65,7 +65,19 @@ export const asyncRoutes = [
         // alwaysShow: true,
         component: () => import('@/views/VirtualProduct/index'),
         meta: {
-          title: '虚拟产品',
+          title: '流量业务',
+          icon: 'cloud',
+          // affix: true,
+        },
+      },
+      {
+        path: 'telephone',
+        name: 'telephone',
+        // alwaysShow: true,
+        component: () =>
+          import('@/views/VirtualProduct/children/telephone/index'),
+        meta: {
+          title: '话费业务',
           icon: 'cloud',
           // affix: true,
         },
