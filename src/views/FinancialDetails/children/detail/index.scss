@@ -17,7 +17,7 @@
 
 .money_clock{
   // margin-top: 10px;
-  height: 230px;
+  height: 105px;
   width: 100%;
   // background: #FFF;
   display: flex;
@@ -26,7 +26,7 @@
   flex-wrap: wrap;
   &_items{
     width:24.5%;
-    height: 49%;
+    height: 100%;
     background: #FFF;
     display: flex;
     flex-direction: row;

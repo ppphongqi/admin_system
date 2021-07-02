@@ -86,11 +86,94 @@
         </div>
       </div>
     </div>
+
+    <el-table
+      border
+      :data="tableData"
+      stripe
+      style="width: 100%; margin-top: 10px"
+    >
+      <el-table-column
+        type="selection"
+        width="55"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="name"
+        label="账号"
+        align="center"
+      ></el-table-column>
+      <el-table-column prop="pay" label="名称" align="center"></el-table-column>
+      <el-table-column
+        prop="status"
+        label="充值时间"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        label="充值类型"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        label="充值前金额"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        label="充值后金额"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        label="充值金额"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="status"
+        label="备注"
+        align="center"
+      ></el-table-column>
+      <el-table-column label="操作" align="center">
+        <template slot-scope="scope">
+          <el-button
+            type="text"
+            size="small"
+            @click.native.prevent="open(scope.row)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div class="pagination">
+      <el-pagination
+        :current-page="currentPage4"
+        :page-sizes="[100, 200, 300, 400]"
+        :page-size="100"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="400"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+    </div>
   </div>
 </template>
 
 <script>
   import './index.scss'
+  import moment from 'moment'
+  let tableData = []
+  let time = moment().format('YYYY-MM-DD')
+  for (let i = 0; i < 4; i++) {
+    tableData.push({
+      date: time,
+      name: '任务' + i,
+      pay: i * 100,
+      status: i < 3 ? '完成' : '未完成',
+    })
+  }
   export default {
     name: 'Detail',
     data() {
@@ -103,7 +186,7 @@
         date: '',
         value: '',
         input3: '',
-        tableData: {},
+        tableData: tableData,
         showModal: false,
         Form: {},
         list: [
@@ -120,8 +203,8 @@
     },
     methods: {
       showDialog() {},
+      handleSizeChange() {},
+      handleCurrentChange() {},
     },
   }
 </script>
-
-<style lang="scss" scoped></style>
