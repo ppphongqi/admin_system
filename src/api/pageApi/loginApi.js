@@ -19,6 +19,14 @@ class LoginApi {
       responseType: 'arraybuffer',
     })
   }
+
+  // 退出登录
+  logout = () => {
+    return request({
+      url: '/pc/login/logout',
+      method: 'get',
+    })
+  }
 }
 
 const loginApi = new LoginApi()

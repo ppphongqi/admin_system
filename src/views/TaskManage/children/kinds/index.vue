@@ -22,7 +22,7 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="date"
+        prop="timeAdd"
         label="创建时间"
         align="center"
       ></el-table-column>
@@ -37,7 +37,6 @@
             :value="scope.row.status"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
-            active-text="显示"
           ></el-switch>
         </template>
       </el-table-column>
@@ -103,19 +102,8 @@
 
 <script>
   import './index.scss'
+  import { taskApi } from '@/api/index'
   import moment from 'moment'
-  let tableData = []
-  let time = moment().format('YYYY-MM-DD')
-  for (let i = 0; i < 7; i++) {
-    tableData.push({
-      date: time,
-      name: '任务名称',
-      address: '上海市普陀区金沙江路 1518 弄',
-      status: i < 5 ? true : false,
-      type: '类型',
-    })
-  }
-  console.log(tableData)
 
   export default {
     name: 'TaskKinds',
@@ -125,7 +113,7 @@
         currentPage2: 5,
         currentPage3: 5,
         currentPage4: 4,
-        tableData: tableData,
+        tableData: [],
         showModal: false,
         Form: {
           name: '',
@@ -134,7 +122,15 @@
         },
       }
     },
+    mounted() {
+      this.getList()
+    },
     methods: {
+      async getList() {
+        const { data } = await taskApi.getTasks()
+        this.tableData = data
+      },
+
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
       },

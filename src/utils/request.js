@@ -61,11 +61,7 @@ instance.interceptors.request.use(
         config.data,
         Vue.prototype.$baseLodash.identity
       )
-    if (
-      config.data &&
-      config.headers['Content-Type'] ===
-        'application/x-www-form-urlencoded;charset=UTF-8'
-    )
+    if (config.data && config.headers['Content-Type'] === 'application/json;')
       config.data = qs.stringify(config.data)
     if (debounce.some((item) => config.url.includes(item)))
       loadingInstance = Vue.prototype.$baseLoading()

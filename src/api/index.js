@@ -1,3 +1,5 @@
-import loginApi from './loginApi'
+import loginApi from './pageApi/loginApi'
+import taskApi from './pageApi/taskApi'
+import roleApi from './pageApi/roleApi'
 
-export { loginApi }
+export { loginApi, taskApi, roleApi }

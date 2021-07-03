@@ -97,7 +97,7 @@
         <el-form-item label="任务名称:" prop="name" required>
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="任务图标:" prop="number" required>
+        <el-form-item label="任务图标:" prop="missionIcon" required>
           <div class="upload_wrapper">
             <el-upload
               class="avatar-uploader"
@@ -115,15 +115,23 @@
           </div>
         </el-form-item>
         <el-form-item label="任务分类:" required>
-          <el-select size="medium">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="Form.missionClassifyAid" size="medium">
+            <el-option
+              v-for="(item, index) in kindsOption"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="任务类型:" required>
-          <el-select size="medium">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="Form.missionTypeAid" size="medium">
+            <el-option
+              v-for="item in typeOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="绑定任务:" required>
@@ -132,8 +140,8 @@
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="任务佣金:" prop="number" required>
-          <el-input v-model="Form.number"></el-input>
+        <el-form-item label="任务佣金:" prop="missionReward" required>
+          <el-input v-model="Form.missionReward"></el-input>
         </el-form-item>
         <el-form-item label="任务时间:" required>
           <el-col :span="11">
@@ -154,21 +162,21 @@
             ></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="任务描述:" prop="desc" required>
-          <el-input v-model="Form.desc" type="textarea"></el-input>
+        <el-form-item label="任务描述:" prop="missionDescribe" required>
+          <el-input v-model="Form.missionDescribe" type="textarea"></el-input>
         </el-form-item>
 
-        <el-form-item label="状态:" prop="status">
-          <el-radio-group v-model="Form.status">
-            <el-checkbox label="显示"></el-checkbox>
-            <el-checkbox label="隐藏"></el-checkbox>
+        <el-form-item label="状态:" prop="missionState">
+          <el-radio-group v-model="Form.missionState">
+            <el-radio label="0" value="0">显示</el-radio>
+            <el-radio label="1" value="1">隐藏</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+        <el-button type="primary" @click="modalConfirm(true)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -176,6 +184,8 @@
 
 <script>
   import './index.scss'
+  import { taskApi } from '@/api/index'
+
   import moment from 'moment'
   let tableData = []
   let time = moment().format('YYYY-MM-DD')
@@ -193,6 +203,7 @@
     name: 'TaskManage',
     data() {
       return {
+        imageUrl: '',
         currentPage1: 5,
         currentPage2: 5,
         currentPage3: 5,
@@ -200,21 +211,62 @@
         tableData: tableData,
         showModal: false,
         Form: {
-          name: '',
-          number: '',
-          status: [],
-          desc: '',
-          date1: '',
-          date2: '',
+          name: '', //任务名称
+          sort: '', //排序，数字越大，优先级越高
+          missionClassifyAid: '', // 任务分类aid
+          missionTypeAid: '', // 任务类型aid
+          missionIcon: '', // 任务图标
+          missionDescribe: '', // 任务描述
+          missionReward: '', //任务酬金
+          missionState: '', //任务状态（0：显示，1：禁止）
         },
+        typeOption: [],
+        kindsOption: [],
       }
     },
+    mounted() {
+      this.getType()
+      this.getKinds()
+    },
     methods: {
+      // 获取任务类型
+      async getType() {
+        const { data } = await taskApi.getType()
+        data.forEach((item) => {
+          this.typeOption.push({
+            value: item.aid,
+            label: item.name,
+          })
+        })
+        console.log(this.typeOption, 'typeOption')
+      },
+      // 获取任务分类
+      async getKinds() {
+        const { data } = await taskApi.getTasks()
+        data.forEach((item) => {
+          console.log(item)
+          this.kindsOption.push({
+            id: item.aid,
+            name: item.name,
+          })
+        })
+        console.log(this.kindsOption, 'kindsOption')
+      },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
       },
       handleCurrentChange(val) {
         console.log(`当前页: ${val}`)
+      },
+      async modalConfirm(flag) {
+        if (flag) {
+          const res = await taskApi.addTasks(this.Form)
+          console.log(res, 'res')
+          this.showModal = false
+        } else {
+          this.showModal = false
+        }
+        console.log(this.Form, 'Form')
       },
       deleteRow(item) {
         console.log(item)
@@ -222,6 +274,8 @@
       showDialog() {
         this.showModal = true
       },
+      handleAvatarSuccess() {},
+      beforeAvatarUpload() {},
     },
   }
 </script>

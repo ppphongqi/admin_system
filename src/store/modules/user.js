@@ -5,6 +5,7 @@
 
 import Vue from 'vue'
 import { getUserInfo, login, logout } from '@/api/user'
+import { loginApi } from '@/api/index'
 import {
   getAccessToken,
   removeAccessToken,
@@ -95,7 +96,7 @@ const actions = {
     }
   },
   async logout({ dispatch }) {
-    await logout(state.accessToken)
+    await loginApi.logout(state.accessToken) // 暂时注释
     await dispatch('resetAccessToken')
     await resetRouter()
   },

@@ -20,26 +20,26 @@
         >
           <div class="title">hello !</div>
           <div class="title-tips">欢迎来到{{ title }}！</div>
-          <el-form-item style="margin-top: 40px" prop="username">
+          <el-form-item style="margin-top: 40px" prop="phone">
             <span class="svg-container svg-container-admin">
               <vab-icon :icon="['fas', 'user']" />
             </span>
             <el-input
-              v-model.trim="form.username"
+              v-model.trim="form.phone"
               v-focus
               placeholder="请输入用户名"
               tabindex="1"
               type="text"
             />
           </el-form-item>
-          <el-form-item prop="password">
+          <el-form-item prop="loginKey">
             <span class="svg-container">
               <vab-icon :icon="['fas', 'lock']" />
             </span>
             <el-input
               :key="passwordType"
               ref="password"
-              v-model.trim="form.password"
+              v-model.trim="form.loginKey"
               :type="passwordType"
               tabindex="2"
               placeholder="请输入密码"
@@ -56,14 +56,14 @@
               <vab-icon :icon="['fas', 'eye']"></vab-icon>
             </span>
           </el-form-item>
-          <el-form-item prop="code">
+          <el-form-item prop="verificationCode">
             <el-col :span="10">
               <span class="svg-container">
                 <vab-icon :icon="['fas', 'lock']" />
               </span>
               <el-input
                 ref="password"
-                v-model.trim="form.code"
+                v-model.trim="form.verificationCode"
                 tabindex="2"
                 placeholder="验证码"
                 @keyup.enter.native="handleLogin"
@@ -120,28 +120,42 @@
           callback()
         }
       }
+      const validateVerification = (rule, value, callback) => {
+        if ('' == value) {
+          callback(new Error('验证码不能为空'))
+        } else {
+          callback()
+        }
+      }
       return {
         nodeEnv: process.env.NODE_ENV,
         title: this.$baseTitle,
         form: {
-          username: '',
-          password: '',
-          code: '',
+          phone: '',
+          loginKey: '',
+          verificationCode: '',
         },
         image: '',
         rules: {
-          username: [
+          phone: [
             {
               required: true,
               trigger: 'blur',
               validator: validateusername,
             },
           ],
-          password: [
+          loginKey: [
             {
               required: true,
               trigger: 'blur',
               validator: validatePassword,
+            },
+          ],
+          verificationCode: [
+            {
+              required: true,
+              trigger: 'blur',
+              validator: validateVerification,
             },
           ],
         },
@@ -166,8 +180,8 @@
       document.body.style.overflow = 'auto'
     },
     mounted() {
-      this.form.username = 'admin'
-      this.form.password = '123456'
+      this.form.phone = '17606995730'
+      this.form.loginKey = 'admin123456'
       // setTimeout(() => {
       //   this.handleLogin()
       // }, 3000)
@@ -188,7 +202,7 @@
             this.$store
               .dispatch('user/login', this.form)
               .then(() => {
-                console.log('logining')
+                // console.log('logining')
                 const routerPath =
                   this.redirect === '/404' || this.redirect === '/401'
                     ? '/'
@@ -216,7 +230,7 @@
           )
         )
         this.image = 'data:image/png;base64,' + img
-        console.log(res, '验证码')
+        // console.log(res, '验证码')
       },
     },
   }
