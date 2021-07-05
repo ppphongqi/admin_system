@@ -42,7 +42,7 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
+            @click.native.prevent="compail(scope.$index, tableData)"
           >
             编辑
           </el-button>
@@ -69,7 +69,7 @@
     </div>
 
     <el-dialog
-      title="编辑角色"
+      :title="add ? '添加角色' : '编辑角色'"
       :visible.sync="showModal"
       width="30%"
       top="15vh"
@@ -98,7 +98,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -106,24 +106,16 @@
 
 <script>
   import './index.scss'
-  let tableData = []
-  for (let i = 0; i < 7; i++) {
-    tableData.push({
-      name: i,
-      nickname: '小可爱',
-      role: '权限',
-      status: i < 5 ? true : false,
-    })
-  }
-  console.log(tableData)
+  import { roleApi } from '@/api/index'
 
   export default {
     name: 'RoleManage',
     data() {
       return {
         currentPage: 5,
-        tableData: tableData,
+        tableData: [],
         showModal: false,
+        add: false,
         Form: {
           name: '',
           if: '',
@@ -184,7 +176,85 @@
         },
       }
     },
+    mounted() {
+      this.getPerList()
+      this.getTableData()
+    },
     methods: {
+      // 获取权限列表
+      async getPerList() {
+        const { data } = await roleApi.getPerList()
+        const list = []
+        // 接口格式转换tree格式
+        data.forEach((item) => {
+          if (item.permissionList !== []) {
+            let children = []
+            item.permissionList.forEach((data) => {
+              children.push({
+                id: data.aid,
+                label: data.anotherName,
+              })
+            })
+            let obj = {
+              id: item.aid,
+              label: item.name,
+              children,
+            }
+            list.push(obj)
+          } else {
+            let obj = {
+              id: item.aid,
+              label: item.name,
+            }
+            list.push(obj)
+          }
+        })
+        this.data = [...list]
+
+        console.log(data, 'res')
+      },
+      // 获取选中树结构选中项
+      getCheckedNodes() {
+        return this.$refs.tree.getCheckedNodes()
+        // console.log(this.$refs.tree.getCheckedNodes())
+      },
+      async modalConfirm(flag) {
+        // flag确定是新增还是修改
+        if (flag) {
+          const preList = this.getCheckedNodes()
+          const list = []
+          preList.forEach((item) => {
+            list.push(item.id)
+          })
+          let form = {
+            aid: -1,
+            name: this.Form.name,
+            sort: 1,
+            roleUserRoleDTOList: list,
+          }
+          const res = await roleApi.addRole(form)
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        }
+        // this.showModal = false
+        // this.getCheckedNodes()
+      },
+      // 获取表格数据
+      async getTableData(page = 1, pageRows = 7) {
+        const { data } = await roleApi.getList()
+        if (data) {
+          this.tableData = data
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
       },
@@ -194,7 +264,14 @@
       deleteRow(item) {
         console.log(item)
       },
+      // 添加
       showDialog() {
+        this.add = true
+        this.showModal = true
+      },
+      // 编辑
+      compail() {
+        this.add = false
         this.showModal = true
       },
     },

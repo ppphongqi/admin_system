@@ -23,14 +23,18 @@
       </el-menu>
     </div>
     <!-- 金额信息块 -->
-    <div class="money_clock">
-      <div v-for="(item, index) in list" :key="index" class="money_clock_items">
-        <div class="money_clock_items_left">
+    <div class="money_clock2">
+      <div
+        v-for="(item, index) in list"
+        :key="index"
+        class="money_clock2_items"
+      >
+        <div class="money_clock2_items_left">
           <div class="img_test" :style="{ background: item.color }"></div>
         </div>
-        <div class="money_clock_items_right">
-          <div class="money_clock_items_right_top">6333</div>
-          <div class="money_clock_items_right_down">{{ item.title }}</div>
+        <div class="money_clock2_items_right">
+          <div class="money_clock2_items_right_top">6333</div>
+          <div class="money_clock2_items_right_down">{{ item.title }}</div>
         </div>
       </div>
     </div>
@@ -93,7 +97,7 @@
         border
         :data="tableData"
         stripe
-        style="width: 100%; margin-top: 10px"
+        style="width: 100%; margin-top: 10px; margin-bottom: 100px"
       >
         <el-table-column
           type="selection"
@@ -168,7 +172,7 @@
         border
         :data="tableData"
         stripe
-        style="width: 100%; margin-top: 10px"
+        style="width: 100%; margin-top: 10px; margin-bottom: 100px"
       >
         <el-table-column
           type="selection"
@@ -260,7 +264,7 @@
         border
         :data="tableData"
         stripe
-        style="width: 100%; margin-top: 10px"
+        style="width: 100%; margin-top: 10px; margin-bottom: 100px"
       >
         <el-table-column
           type="selection"
@@ -391,7 +395,7 @@
 <script>
   import './index.scss'
   let tableData = []
-  for (let i = 0; i < 7; i++) {
+  for (let i = 0; i < 3; i++) {
     tableData.push({
       number: '123321',
       name: '客户1',
