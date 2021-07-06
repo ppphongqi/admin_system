@@ -4,7 +4,7 @@
       <div class="ck_title">
         <div class="ck_title">二维码库</div>
         <div class="ck_buttons">
-          <el-button type="success" icon="el-icon-plus" @click="showDialog">
+          <el-button type="success" icon="el-icon-plus" @click="addCode">
             添加二维码
           </el-button>
         </div>
@@ -17,29 +17,29 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="name"
+        prop="codeName"
         label="二维码名称"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="picture"
+        prop="imgUrl"
         label="二维码图片"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="count"
+        prop="useNumber"
         label="可使用次数"
         align="center"
       ></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button type="text" size="small" @click="showDialog(scope.row)">
+          <el-button type="text" size="small" @click="editCode(scope.row)">
             编辑
           </el-button>
           <el-button
             type="text"
             size="small"
-            @click.prevent="showDetail(scope.$index, tableData)"
+            @click.prevent="showDetail(scope.row)"
           >
             详情
           </el-button>
@@ -55,11 +55,11 @@
     </el-table>
     <div class="pagination">
       <el-pagination
-        :current-page="currentPage4"
+        :current-page="currentPage"
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       ></el-pagination>
@@ -72,10 +72,10 @@
       top="20vh"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="二维码名称:" prop="name" :required="!detail">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="二维码名称:" prop="codeName" :required="!detail">
+          <el-input v-model="Form.codeName" :disabled="disabled"></el-input>
         </el-form-item>
-        <el-form-item label="二维码图片:" prop="number" :required="!detail">
+        <el-form-item label="二维码图片:" prop="imgUrl" :required="!detail">
           <div class="upload_wrapper">
             <el-upload
               class="avatar-uploader"
@@ -93,55 +93,35 @@
           </div>
         </el-form-item>
 
-        <el-form-item label="序号:" prop="name">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="序号:" prop="sort">
+          <el-input v-model="Form.sort" :disabled="disabled"></el-input>
         </el-form-item>
 
-        <el-form-item label="可使用次数:" :required="!detail">
-          <el-select size="medium">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+        <el-form-item label="可使用次数:" prop="useNumber" :required="!detail">
+          <el-select
+            v-model="Form.useNumber"
+            :disabled="disabled"
+            size="medium"
+          >
+            <el-option label="1" value="1"></el-option>
+            <el-option label="2" value="2"></el-option>
+            <el-option label="3" value="3"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
 
       <span v-if="!detail" slot="footer" class="dialog-footer">
-        <el-button
-          @click="
-            showModal = false
-            detail = false
-          "
-        >
-          取 消
-        </el-button>
-        <el-button
-          type="primary"
-          @click="
-            showModal = false
-            detail = false
-          "
-        >
+        <el-button @click="closeShowModal()">取 消</el-button>
+        <el-button type="primary" @click="modalConfirm(!detail)">
           确 定
         </el-button>
       </span>
 
       <span v-else slot="footer" class="dialog-footer">
-        <el-button
-          type="danger"
-          @click="
-            showModal = false
-            detail = false
-          "
-        >
+        <el-button type="danger" @click="closeShowModal()">
           释放二维码
         </el-button>
-        <el-button
-          type="primary"
-          @click="
-            showModal = false
-            detail = false
-          "
-        >
+        <el-button type="primary" @click="modalConfirm(!detail)">
           确 定
         </el-button>
       </span>
@@ -151,41 +131,115 @@
 
 <script>
   import './index.scss'
-  import moment from 'moment'
-  let tableData = []
-  let time = moment().format('YYYY-MM-DD')
-  for (let i = 0; i < 7; i++) {
-    tableData.push({
-      count: i,
-      picture: 'image',
-      name: '图片',
-    })
-  }
+  import { taskApi } from '@/api/index'
   export default {
     name: 'TaskCode',
     data() {
       return {
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
-        tableData: tableData,
+        imageUrl: '',
+        currentPage: 0,
+        total: 0,
+        tableData: [],
         showModal: false,
-        Form: {
-          name: '',
-          number: '',
-          status: [],
-          desc: '',
-          date1: '',
-          date2: '',
-        },
         detail: false,
+        disabled: false,
+        Form: {
+          codeName: '',
+          useNumber: '',
+          sort: '',
+        },
       }
     },
+    mounted() {
+      this.getList()
+    },
     methods: {
-      showDetail() {
+      // 获取任务分类列表
+      async getList(page = 1, pageRows = 7) {
+        const params = {
+          page,
+          pageRows,
+        }
+        const data = await taskApi.getTaskQrCodeList(params)
+        console.log(data, 'data')
+        if (data) {
+          this.tableData = data.data
+          this.currentPage = data.totalPageNum
+          this.total = data.totalRecord
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      // 添加/修改二维码
+      async modalConfirm(flag) {
+        // flag确定是新增还是修改
+        if (flag) {
+          let form = {
+            name: this.Form.name,
+            sort: this.Form.number,
+            state: this.Form.status,
+          }
+          const res = await taskApi.addCode(form)
+          this.showModal = false
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        } else {
+          let form = {
+            name: this.Form.name,
+            sort: this.Form.number,
+            state: this.Form.status,
+          }
+          console.log(form, 'form')
+          const res = await taskApi.addCode(form)
+          this.showModal = false
+          console.log(res, 'form')
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        }
+      },
+      addCode() {
+        this.showModal = true
+        this.detail = false
+      },
+      editCode(row) {
         this.showModal = true
         this.detail = true
+        this.Form = {
+          codeName: row.codeName,
+          useNumber: row.useNumber,
+          sort: row.sort,
+        }
+      },
+      showDetail(row) {
+        this.showModal = true
+        this.detail = true
+        this.disabled = true
+        this.Form = {
+          codeName: row.codeName,
+          useNumber: row.useNumber,
+          sort: row.sort,
+        }
+      },
+      closeShowModal() {
+        this.showModal = false
+        this.detail = false
+        this.disabled = false
+        this.Form = {
+          codeName: '',
+          useNumber: '',
+          sort: '',
+        }
       },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
@@ -196,9 +250,8 @@
       deleteRow(item) {
         console.log(item)
       },
-      showDialog() {
-        this.showModal = true
-      },
+      handleAvatarSuccess() {},
+      beforeAvatarUpload() {},
     },
   }
 </script>

@@ -139,24 +139,23 @@
       top="15vh"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="任务名称:" prop="name">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="任务名称:" prop="missionName">
+          <el-input v-model="Form.missionName"></el-input>
         </el-form-item>
-
-        <el-form-item label="任务状态:" prop="number">
-          <el-input v-model="Form.number"></el-input>
+        <el-form-item label="任务状态:" prop="stateName">
+          <el-input v-model="Form.stateName"></el-input>
         </el-form-item>
-        <el-form-item label="任务酬金:" prop="name">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="任务酬金:" prop="missionReward">
+          <el-input v-model="Form.missionReward"></el-input>
         </el-form-item>
-        <el-form-item label="人物事件:" prop="name">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="任务时间:" prop="timeAdd">
+          <el-input v-model="Form.timeAdd"></el-input>
         </el-form-item>
-        <el-form-item label="提交人:" prop="name">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="提交人:" prop="stateName">
+          <el-input v-model="Form.stateName"></el-input>
         </el-form-item>
-        <el-form-item label="提交时间:" prop="name">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="提交时间:" prop="stateTime">
+          <el-input v-model="Form.stateTime"></el-input>
         </el-form-item>
       </el-form>
 
@@ -183,7 +182,14 @@
         input3: '',
         tableData: [],
         showModal: false,
-        Form: {},
+        Form: {
+          missionName: '',
+          stateName: '',
+          missionReward: '',
+          timeAdd: '',
+          stateName: '',
+          stateTime: '',
+        },
       }
     },
     mounted() {
@@ -210,7 +216,8 @@
         }
       },
       //审核
-      async audi(row, flag) {
+      async audit(row, flag) {
+        console.log(row, flag, 'audit')
         if (flag) {
           console.log('通过')
           let form = {}
@@ -233,8 +240,16 @@
           }
         }
       },
-      open() {
+      open(row) {
         this.showModal = true
+        this.Form = {
+          missionName: row.missionName,
+          stateName: row.stateName,
+          missionReward: row.missionReward,
+          timeAdd: row.timeAdd,
+          stateName: row.stateName,
+          stateTime: row.stateTime,
+        }
       },
       Download() {
         console.log('导出报表')

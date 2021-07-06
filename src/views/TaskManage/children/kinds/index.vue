@@ -50,7 +50,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <div class="pagination">
+    <!-- <div class="pagination">
       <el-pagination
         :current-page="currentPage"
         :page-sizes="[100, 200, 300, 400]"
@@ -60,7 +60,7 @@
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       ></el-pagination>
-    </div>
+    </div> -->
 
     <el-dialog
       :title="add ? '添加任务分类' : '编辑任务分类'"
@@ -123,12 +123,9 @@
           page,
           pageRows,
         }
-        const data = await taskApi.getTasks(params)
+        const { data } = await taskApi.getTasks(params)
         if (data) {
-          console.log(data, 'data')
-          this.tableData = data.data
-          this.currentPage = data.totalPageNum
-          this.total = data.totalRecord
+          this.tableData = data
         } else {
           this.$message({
             message: '接口未返回数据',
@@ -152,11 +149,12 @@
         // flag确定是新增还是修改
         if (flag) {
           let form = {
-            name: '',
-            number: '',
-            status: 0,
+            name: this.Form.name,
+            sort: this.Form.number,
+            state: this.Form.status,
           }
           const res = await taskApi.addTasks(form)
+          this.showModal = false
           if (!res) {
             this.$message({
               message: '接口未返回数据',
@@ -165,11 +163,14 @@
           }
         } else {
           let form = {
-            name: '',
-            number: '',
-            status: 0,
+            name: this.Form.name,
+            sort: this.Form.number,
+            state: this.Form.status,
           }
+          console.log(form, 'form')
           const res = await taskApi.addTasks(form)
+          this.showModal = false
+          console.log(res, 'form')
           if (!res) {
             this.$message({
               message: '接口未返回数据',
@@ -178,12 +179,12 @@
           }
         }
       },
-      handleSizeChange(val) {
-        console.log(`每页 ${val} 条`)
-      },
-      handleCurrentChange(val) {
-        console.log(`当前页: ${val}`)
-      },
+      // handleSizeChange(val) {
+      //   console.log(`每页 ${val} 条`)
+      // },
+      // handleCurrentChange(val) {
+      //   console.log(`当前页: ${val}`)
+      // },
       deleteRow(item) {
         console.log(item)
       },
@@ -194,7 +195,11 @@
       editTask(row) {
         this.add = false
         this.showModal = true
-        console.log(row)
+        this.Form = {
+          name: row.name,
+          number: row.sort,
+          status: row.state,
+        }
       },
       closeShowModal() {
         this.showModal = false

@@ -254,14 +254,46 @@
         console.log(`当前页: ${val}`)
       },
       async modalConfirm(flag) {
+        // flag确定是新增还是修改
         if (flag) {
-          const res = await taskApi.addTasks(this.Form)
-          console.log(res, 'res')
+          let form = {
+            name: this.Form.name, //任务名称
+            missionClassifyName: this.Form.missionClassifyName, // 任务分类Name
+            missionTypeName: this.Form.missionTypeName, // 任务类型Name
+            missionIcon: this.Form.missionIcon, // 任务图标
+            missionDescribe: this.Form.missionDescribe, // 任务描述
+            missionReward: this.Form.missionReward, //任务酬金
+            missionState: this.Form.missionState, //任务状态（0：显示，1：禁止）
+          }
+          const res = await taskApi.addTasks(form)
           this.showModal = false
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
         } else {
+          let form = {
+            name: this.Form.name, //任务名称
+            missionClassifyName: this.Form.missionClassifyName, // 任务分类Name
+            missionTypeName: this.Form.missionTypeName, // 任务类型Name
+            missionIcon: this.Form.missionIcon, // 任务图标
+            missionDescribe: this.Form.missionDescribe, // 任务描述
+            missionReward: this.Form.missionReward, //任务酬金
+            missionState: this.Form.missionState, //任务状态（0：显示，1：禁止）
+          }
+          console.log(form, 'form')
+          const res = await taskApi.addTasks(form)
           this.showModal = false
+          console.log(res, 'form')
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
         }
-        console.log(this.Form, 'Form')
       },
       deleteRow(item) {
         console.log(item)
@@ -274,14 +306,24 @@
         this.add = false
         this.showModal = true
         console.log(row)
+        this.Form = {
+          name: row.name, //任务名称
+          sort: row.sort, //排序，数字越大，优先级越高
+          missionClassifyName: row.missionClassifyName, // 任务分类aid
+          missionTypeName: row.missionTypeName, // 任务类型aid
+          missionIcon: row.missionIcon, // 任务图标
+          missionDescribe: row.missionDescribe, // 任务描述
+          missionReward: row.missionReward, //任务酬金
+          missionState: row.missionState, //任务状态（0：显示，1：禁止）
+        }
       },
       closeShowModal() {
         this.showModal = false
         this.Form = {
           name: '', //任务名称
           sort: '', //排序，数字越大，优先级越高
-          missionClassifyAid: '', // 任务分类aid
-          missionTypeAid: '', // 任务类型aid
+          missionClassifyName: '', // 任务分类aid
+          missionTypeName: '', // 任务类型aid
           missionIcon: '', // 任务图标
           missionDescribe: '', // 任务描述
           missionReward: '', //任务酬金
