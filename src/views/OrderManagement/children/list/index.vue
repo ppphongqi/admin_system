@@ -1,16 +1,11 @@
 <template>
   <div class="page_wrapper">
-    <div class="page_title">
+    <div class="page_title" style="margin-bottom: 0px">
       <div class="ck_title">
         <div class="ck_title">订单管理</div>
       </div>
     </div>
     <div class="page_content">
-      <!-- <el-tabs v-model="activeName" @click="tabChange">
-        <el-tab-pane label="全部订单(1205)" name="first"></el-tab-pane>
-        <el-tab-pane label="实物产品(1205)" name="second"></el-tab-pane>
-        <el-tab-pane label="虚拟产品(1205)" name="third"></el-tab-pane>
-      </el-tabs> -->
       <el-menu
         :default-active="activeIndex"
         class="el-menu-demo"
@@ -23,18 +18,18 @@
       </el-menu>
     </div>
     <!-- 金额信息块 -->
-    <div class="money_clock2">
+    <div class="money_clock3">
       <div
         v-for="(item, index) in list"
         :key="index"
-        class="money_clock2_items"
+        class="money_clock3_items"
       >
-        <div class="money_clock2_items_left">
+        <div class="money_clock3_items_left">
           <div class="img_test" :style="{ background: item.color }"></div>
         </div>
-        <div class="money_clock2_items_right">
-          <div class="money_clock2_items_right_top">6333</div>
-          <div class="money_clock2_items_right_down">{{ item.title }}</div>
+        <div class="money_clock3_items_right">
+          <div class="money_clock3_items_right_top">6333</div>
+          <div class="money_clock3_items_right_down">{{ item.title }}</div>
         </div>
       </div>
     </div>

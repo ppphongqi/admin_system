@@ -1,6 +1,6 @@
 <template>
   <div class="page_wrapper">
-    <div class="page_title">
+    <div class="page_title" style="margin-bottom: 0px">
       <div class="ck_title">
         <div class="ck_title">流量业务</div>
         <div class="ck_buttons">
