@@ -5,7 +5,7 @@
         <div class="ti_title_wrapper">
           <div>任务情况</div>
           <div class="ti_buttons">
-            <el-button type="success" @cliti="showDialog">导出报表</el-button>
+            <el-button type="success" @click="Download">导出报表</el-button>
           </div>
         </div>
 
@@ -42,12 +42,9 @@
             </el-col>
             <el-col :span="3">
               <el-select v-model="value" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
+                <el-option label="1" value="1"></el-option>
+                <el-option label="2" value="2"></el-option>
+                <el-option label="3" value="3"></el-option>
               </el-select>
             </el-col>
           </el-row>
@@ -82,17 +79,17 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="name"
+        prop="missionName"
         label="任务名称"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="pay"
+        prop="missionReward"
         label="任务酬金"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="status"
+        prop="stateName"
         label="任务状态"
         align="center"
       ></el-table-column>
@@ -111,8 +108,12 @@
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item>通过</el-dropdown-item>
-              <el-dropdown-item>不通过</el-dropdown-item>
+              <el-dropdown-item @click="audit(scope.row, 1)">
+                通过
+              </el-dropdown-item>
+              <el-dropdown-item @click="audit(scope.row, 0)">
+                不通过
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -121,11 +122,11 @@
 
     <div class="pagination">
       <el-pagination
-        :current-page="currentPage4"
+        :current-page="currentPage"
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       ></el-pagination>
@@ -169,37 +170,80 @@
 
 <script>
   import './index.scss'
-  import moment from 'moment'
-  let tableData = []
-  let time = moment().format('YYYY-MM-DD')
-  for (let i = 0; i < 5; i++) {
-    tableData.push({
-      date: time,
-      name: '任务' + i,
-      pay: i * 100,
-      status: i < 3 ? '完成' : '未完成',
-    })
-  }
+  import { taskApi } from '@/api/index'
   export default {
     name: 'TaskInfo',
     data() {
       return {
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
+        currentPage: 0,
+        total: 0,
         tabPosition: 'top',
         date: '',
         value: '',
         input3: '',
-        tableData: tableData,
+        tableData: [],
         showModal: false,
         Form: {},
       }
     },
+    mounted() {
+      this.getList()
+    },
     methods: {
+      //获取列表
+      async getList(page = 1, pageRows = 7) {
+        const params = {
+          page,
+          pageRows,
+        }
+        const data = await taskApi.getTaskAudit(params)
+        if (data) {
+          console.log(data, 'data')
+          this.tableData = data.data
+          this.currentPage = data.totalPageNum
+          this.total = data.totalRecord
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      //审核
+      async audi(row, flag) {
+        if (flag) {
+          console.log('通过')
+          let form = {}
+          const res = await taskApi.audit(form)
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        } else {
+          console.log('不通过')
+          let form = {}
+          const res = await taskApi.audit(form)
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        }
+      },
       open() {
         this.showModal = true
+      },
+      Download() {
+        console.log('导出报表')
+      },
+      handleSizeChange(val) {
+        console.log(`每页 ${val} 条`)
+      },
+      handleCurrentChange(val) {
+        console.log(`当前页: ${val}`)
       },
     },
   }

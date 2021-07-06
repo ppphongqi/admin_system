@@ -245,7 +245,11 @@
       },
       // 获取表格数据
       async getTableData(page = 1, pageRows = 7) {
-        const { data } = await roleApi.getList()
+        const params = {
+          page,
+          pageRows,
+        }
+        const { data } = await roleApi.getList(params)
         if (data) {
           this.tableData = data
         } else {

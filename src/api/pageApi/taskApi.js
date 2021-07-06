@@ -63,6 +63,47 @@ class TaskApi {
       data,
     })
   }
+
+  //获取任务列表
+  getTaskList = (params = {}) => {
+    return request({
+      url: '/pc/mission/GetMissionList',
+      method: 'get',
+      params,
+    })
+  }
+  //获取二维码（链接）列表
+  getTaskQrCodeList = (params = {}) => {
+    return request({
+      url: '/pc/mission/GetMissionQrCodeList',
+      method: 'get',
+      params,
+    })
+  }
+  //获取二维码状态
+  getTaskQrCodeState = (params = {}) => {
+    return request({
+      url: '/pc/mission/GetMissionState',
+      method: 'get',
+      params,
+    })
+  }
+  //修改任务状态
+  updateTaskState = (params = {}) => {
+    return request({
+      url: '/pc/mission/MissionState',
+      method: 'get',
+      params,
+    })
+  }
+  //根据aid查询任务信息（用于修改）
+  getTaskInfo = (params = {}) => {
+    return request({
+      url: '/pc/mission/GetMissionAid',
+      method: 'get',
+      params,
+    })
+  }
 }
 
 const taskApi = new TaskApi()

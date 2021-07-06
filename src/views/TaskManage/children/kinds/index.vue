@@ -4,7 +4,7 @@
       <div class="ck_title">
         <div class="ck_title">任务分类</div>
         <div class="ck_buttons">
-          <el-button type="success" icon="el-icon-plus" @click="showDialog">
+          <el-button type="success" icon="el-icon-plus" @click="addTask">
             添加分类
           </el-button>
         </div>
@@ -26,15 +26,10 @@
         label="创建时间"
         align="center"
       ></el-table-column>
-      <el-table-column
-        prop="type"
-        label="任务类型"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
+      <el-table-column prop="state" label="状态" align="center">
         <template slot-scope="scope">
           <el-switch
-            :value="scope.row.status"
+            v-model="scope.row.state"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
           ></el-switch>
@@ -42,11 +37,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
-          >
+          <el-button type="text" size="small" @click="editTask(scope.row)">
             编辑
           </el-button>
           <el-button
@@ -61,18 +52,18 @@
     </el-table>
     <div class="pagination">
       <el-pagination
-        :current-page="currentPage4"
+        :current-page="currentPage"
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       ></el-pagination>
     </div>
 
     <el-dialog
-      title="添加任务分类"
+      :title="add ? '添加任务分类' : '编辑任务分类'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
@@ -86,15 +77,15 @@
         </el-form-item>
         <el-form-item label="状态:" prop="status">
           <el-radio-group v-model="Form.status">
-            <el-checkbox label="显示"></el-checkbox>
-            <el-checkbox label="隐藏"></el-checkbox>
+            <el-radio :label="1">显示</el-radio>
+            <el-radio :label="0">隐藏</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+        <el-button @click="closeShowModal()">取 消</el-button>
+        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -103,34 +94,90 @@
 <script>
   import './index.scss'
   import { taskApi } from '@/api/index'
-  import moment from 'moment'
 
   export default {
     name: 'TaskKinds',
     data() {
       return {
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
+        currentPage: 0,
+        total: 0,
         tableData: [],
+        typeOption: [],
         showModal: false,
+        add: false,
         Form: {
           name: '',
           number: '',
-          status: [],
+          status: 0,
         },
       }
     },
     mounted() {
       this.getList()
+      this.getType()
     },
     methods: {
-      async getList() {
-        const { data } = await taskApi.getTasks()
-        this.tableData = data
+      // 获取任务分类列表
+      async getList(page = 1, pageRows = 7) {
+        const params = {
+          page,
+          pageRows,
+        }
+        const data = await taskApi.getTasks(params)
+        if (data) {
+          console.log(data, 'data')
+          this.tableData = data.data
+          this.currentPage = data.totalPageNum
+          this.total = data.totalRecord
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
       },
-
+      //获取任务类型
+      async getType() {
+        const { data } = await taskApi.getType()
+        data.forEach((item) => {
+          this.typeOption.push({
+            value: item.aid,
+            label: item.name,
+          })
+        })
+        console.log(this.typeOption, 'typeOption')
+      },
+      // 添加/编辑任务分类
+      async modalConfirm(flag) {
+        // flag确定是新增还是修改
+        if (flag) {
+          let form = {
+            name: '',
+            number: '',
+            status: 0,
+          }
+          const res = await taskApi.addTasks(form)
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        } else {
+          let form = {
+            name: '',
+            number: '',
+            status: 0,
+          }
+          const res = await taskApi.addTasks(form)
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        }
+      },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
       },
@@ -140,8 +187,22 @@
       deleteRow(item) {
         console.log(item)
       },
-      showDialog() {
+      addTask() {
+        this.add = true
         this.showModal = true
+      },
+      editTask(row) {
+        this.add = false
+        this.showModal = true
+        console.log(row)
+      },
+      closeShowModal() {
+        this.showModal = false
+        this.Form = {
+          name: '',
+          number: '',
+          status: 0,
+        }
       },
     },
   }

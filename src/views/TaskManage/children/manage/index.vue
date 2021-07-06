@@ -4,7 +4,7 @@
       <div class="ck_title">
         <div class="ck_title">任务管理</div>
         <div class="ck_buttons">
-          <el-button type="success" icon="el-icon-plus" @click="showDialog">
+          <el-button type="success" icon="el-icon-plus" @click="addTask">
             添加任务
           </el-button>
         </div>
@@ -22,34 +22,34 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="date"
+        prop="missionIcon"
         label="任务图标"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="type"
+        prop="missionClassifyName"
         label="任务分类"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="type"
+        prop="missionTypeName"
         label="任务类型"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="type"
+        prop="missionDescribe"
         label="任务描述"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="type"
+        prop="missionReward"
         label="任务佣金"
         align="center"
       ></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
+      <el-table-column prop="missionState" label="状态" align="center">
         <template slot-scope="scope">
           <el-switch
-            :value="scope.row.status"
+            v-model="scope.row.state"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
             active-text="显示"
@@ -58,11 +58,7 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
-          >
+          <el-button type="text" size="small" @click="editTask(scope.row)">
             编辑
           </el-button>
           <el-button
@@ -77,18 +73,18 @@
     </el-table>
     <div class="pagination">
       <el-pagination
-        :current-page="currentPage4"
+        :current-page="currentPage"
         :page-sizes="[100, 200, 300, 400]"
         :page-size="100"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       ></el-pagination>
     </div>
 
     <el-dialog
-      title="添加任务"
+      :title="add ? '添加任务' : '编辑任务'"
       :visible.sync="showModal"
       width="30%"
       top="15vh"
@@ -115,7 +111,7 @@
           </div>
         </el-form-item>
         <el-form-item label="任务分类:" required>
-          <el-select v-model="Form.missionClassifyAid" size="medium">
+          <el-select v-model="Form.missionClassifyName" size="medium">
             <el-option
               v-for="(item, index) in kindsOption"
               :key="index"
@@ -125,19 +121,13 @@
           </el-select>
         </el-form-item>
         <el-form-item label="任务类型:" required>
-          <el-select v-model="Form.missionTypeAid" size="medium">
+          <el-select v-model="Form.missionTypeName" size="medium">
             <el-option
               v-for="item in typeOption"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="绑定任务:" required>
-          <el-select size="medium">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="任务佣金:" prop="missionReward" required>
@@ -175,8 +165,8 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="modalConfirm(true)">确 定</el-button>
+        <el-button @click="closeShowModal">取 消</el-button>
+        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -185,36 +175,21 @@
 <script>
   import './index.scss'
   import { taskApi } from '@/api/index'
-
-  import moment from 'moment'
-  let tableData = []
-  let time = moment().format('YYYY-MM-DD')
-  for (let i = 0; i < 7; i++) {
-    tableData.push({
-      date: time,
-      name: '任务名称',
-      address: '上海市普陀区金沙江路 1518 弄',
-      status: i < 5 ? true : false,
-      type: '类型',
-    })
-  }
-  console.log(tableData)
   export default {
     name: 'TaskManage',
     data() {
       return {
         imageUrl: '',
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
-        tableData: tableData,
+        currentPage: 0,
+        total: 0,
+        add: false,
+        tableData: [],
         showModal: false,
         Form: {
           name: '', //任务名称
           sort: '', //排序，数字越大，优先级越高
-          missionClassifyAid: '', // 任务分类aid
-          missionTypeAid: '', // 任务类型aid
+          missionClassifyName: '', // 任务分类Name
+          missionTypeName: '', // 任务类型Name
           missionIcon: '', // 任务图标
           missionDescribe: '', // 任务描述
           missionReward: '', //任务酬金
@@ -225,10 +200,30 @@
       }
     },
     mounted() {
+      this.getList()
       this.getType()
       this.getKinds()
     },
     methods: {
+      // 获取任务列表
+      async getList(page = 1, pageRows = 7) {
+        const params = {
+          page,
+          pageRows,
+        }
+        const data = await taskApi.getTaskList(params)
+        if (data) {
+          console.log(data, 'data')
+          this.tableData = data.data
+          this.currentPage = data.totalPageNum
+          this.total = data.totalRecord
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
       // 获取任务类型
       async getType() {
         const { data } = await taskApi.getType()
@@ -271,8 +266,27 @@
       deleteRow(item) {
         console.log(item)
       },
-      showDialog() {
+      addTask() {
+        this.add = true
         this.showModal = true
+      },
+      editTask(row) {
+        this.add = false
+        this.showModal = true
+        console.log(row)
+      },
+      closeShowModal() {
+        this.showModal = false
+        this.Form = {
+          name: '', //任务名称
+          sort: '', //排序，数字越大，优先级越高
+          missionClassifyAid: '', // 任务分类aid
+          missionTypeAid: '', // 任务类型aid
+          missionIcon: '', // 任务图标
+          missionDescribe: '', // 任务描述
+          missionReward: '', //任务酬金
+          missionState: '', //任务状态（0：显示，1：禁止）
+        }
       },
       handleAvatarSuccess() {},
       beforeAvatarUpload() {},

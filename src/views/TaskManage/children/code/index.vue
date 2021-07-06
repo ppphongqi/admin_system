@@ -33,11 +33,7 @@
       ></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
-          >
+          <el-button type="text" size="small" @click="showDialog(scope.row)">
             编辑
           </el-button>
           <el-button
