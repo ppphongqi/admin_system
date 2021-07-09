@@ -26,6 +26,11 @@
         label="创建时间"
         align="center"
       ></el-table-column>
+      <el-table-column
+        prop="timeLastUpdate"
+        label="更新时间"
+        align="center"
+      ></el-table-column>
       <el-table-column prop="state" label="状态" align="center">
         <template slot-scope="scope">
           <el-switch
@@ -51,17 +56,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <!-- <div class="pagination">
-      <el-pagination
-        :current-page="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      ></el-pagination>
-    </div> -->
 
     <el-dialog
       :title="add ? '添加任务分类' : '编辑任务分类'"
@@ -74,12 +68,12 @@
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
         <el-form-item label="序号:" prop="number" align="center">
-          <el-input v-model="Form.number"></el-input>
+          <el-input v-model="Form.number" type="number"></el-input>
         </el-form-item>
         <el-form-item label="状态:" prop="status">
           <el-radio-group v-model="Form.status">
-            <el-radio :label="1">显示</el-radio>
-            <el-radio :label="0">隐藏</el-radio>
+            <el-radio :label="0" value="0">显示</el-radio>
+            <el-radio :label="1" value="1">隐藏</el-radio>
           </el-radio-group>
         </el-form-item>
       </el-form>
@@ -164,7 +158,7 @@
             sort: this.Form.number,
             state: !this.Form.status,
           }
-          console.log(form, 'form')
+          console.log(form, 'addform')
           const res = await taskApi.addTaskClass(form)
           console.log(res, 'res')
           this.showModal = false
@@ -181,7 +175,7 @@
             sort: this.Form.number,
             state: !this.Form.status,
           }
-          console.log(form, 'form')
+          console.log(form, 'editform')
           const res = await taskApi.addTaskClass(form)
           this.showModal = false
           console.log(res, 'res')
@@ -210,12 +204,6 @@
           this.getList()
         }
       },
-      // handleSizeChange(val) {
-      //   console.log(`每页 ${val} 条`)
-      // },
-      // handleCurrentChange(val) {
-      //   console.log(`当前页: ${val}`)
-      // },
       addTask() {
         this.add = true
         this.showModal = true
@@ -229,6 +217,7 @@
           number: row.sort,
           status: row.state,
         }
+        console.log(this.Form, 'form')
       },
       closeShowModal() {
         this.showModal = false

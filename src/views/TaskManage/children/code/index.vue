@@ -21,9 +21,19 @@
         label="二维码名称"
         align="center"
       ></el-table-column>
+      <el-table-column prop="imgUrl" label="二维码图片" align="center">
+        <template slot-scope="scope">
+          <el-image :src="scope.row.imgUrl" fit="fill"></el-image>
+        </template>
+      </el-table-column>
       <el-table-column
-        prop="imgUrl"
-        label="二维码图片"
+        prop="url"
+        label="二维码链接"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="missionTypeName"
+        label="类型"
         align="center"
       ></el-table-column>
       <el-table-column
@@ -75,14 +85,35 @@
         <el-form-item label="二维码名称:" prop="codeName" :required="!detail">
           <el-input v-model="Form.codeName" :disabled="disabled"></el-input>
         </el-form-item>
+        <el-form-item
+          label="二维码类型:"
+          prop="missionClassifyName"
+          :required="!detail"
+        >
+          <el-select
+            v-model="Form.missionClassifyName"
+            :disabled="disabled"
+            size="medium"
+          >
+            <el-option
+              v-for="item in typeOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="二维码图片:" prop="imgUrl" :required="!detail">
           <div class="upload_wrapper">
             <el-upload
+              ref="upload"
               class="avatar-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action="http://localhost/api/pc/oss/upload"
+              :limit="1"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
+              :disabled="disabled"
             >
               <img v-if="imageUrl" :src="imageUrl" class="avatar" />
               <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -92,11 +123,9 @@
             </div>
           </div>
         </el-form-item>
-
-        <el-form-item label="序号:" prop="sort">
-          <el-input v-model="Form.sort" :disabled="disabled"></el-input>
+        <el-form-item label="二维码地址:" prop="url" :required="!detail">
+          <el-input v-model="Form.url" :disabled="disabled"></el-input>
         </el-form-item>
-
         <el-form-item label="可使用次数:" prop="useNumber" :required="!detail">
           <el-select
             v-model="Form.useNumber"
@@ -140,18 +169,22 @@
         currentPage: 0,
         total: 0,
         tableData: [],
+        typeOption: [],
         showModal: false,
         detail: false,
         disabled: false,
         Form: {
+          aid: '',
+          missionClassifyName: 2,
           codeName: '',
           useNumber: '',
-          sort: '',
+          url: '',
         },
       }
     },
     mounted() {
       this.getList()
+      this.getType()
     },
     methods: {
       // 获取二维码列表
@@ -178,9 +211,11 @@
         // flag确定是新增还是修改
         if (flag) {
           let form = {
-            name: this.Form.name,
-            sort: this.Form.number,
-            state: this.Form.status,
+            aid: -1,
+            useNumber: this.Form.useNumber,
+            url: this.Form.url,
+            missionTypeAid: this.Form.missionClassifyName,
+            name: this.Form.codeName,
           }
           const res = await taskApi.addCode(form)
           this.showModal = false
@@ -192,9 +227,11 @@
           }
         } else {
           let form = {
-            name: this.Form.name,
-            sort: this.Form.number,
-            state: this.Form.status,
+            aid: this.Form.aid,
+            useNumber: this.Form.useNumber,
+            url: this.Form.url,
+            missionTypeAid: this.Form.missionClassifyName,
+            name: this.Form.codeName,
           }
           console.log(form, 'form')
           const res = await taskApi.addCode(form)
@@ -208,18 +245,39 @@
           }
         }
       },
+      //获取二维码类型
+      async getType() {
+        const { data } = await taskApi.getType()
+        data.forEach((item) => {
+          this.typeOption.push({
+            value: item.aid,
+            label: item.name,
+          })
+        })
+        console.log(this.typeOption, 'typeOption')
+      },
+      //获取二维码状态getTaskQrCodeState
+      async getCodeState() {
+        const res = await taskApi.getTaskQrCodeState()
+        console.log(res, 'res')
+      },
       addCode() {
         this.showModal = true
         this.detail = false
+        this.disabled = false
       },
       editCode(row) {
         this.showModal = true
         this.detail = true
+        this.disabled = false
         this.Form = {
           codeName: row.codeName,
           useNumber: row.useNumber,
-          sort: row.sort,
+          aid: row.aid,
+          missionClassifyName: row.missionTypeName,
+          url: row.url,
         }
+        this.imageUrl = row.imageUrl
       },
       showDetail(row) {
         this.showModal = true
@@ -228,8 +286,11 @@
         this.Form = {
           codeName: row.codeName,
           useNumber: row.useNumber,
-          sort: row.sort,
+          aid: row.aid,
+          missionClassifyName: row.missionTypeName,
+          url: row.url,
         }
+        this.imageUrl = row.imageUrl
       },
       closeShowModal() {
         this.showModal = false
@@ -238,8 +299,11 @@
         this.Form = {
           codeName: '',
           useNumber: '',
-          sort: '',
+          url: '',
+          aid: '',
+          missionClassifyName: 2,
         }
+        this.imageUrl = ''
       },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
@@ -250,8 +314,26 @@
       deleteRow(item) {
         console.log(item)
       },
-      handleAvatarSuccess() {},
-      beforeAvatarUpload() {},
+      handleAvatarSuccess(response, file, fileList) {
+        this.imageUrl = file.url
+        console.log(file, fileList, response, this.imageUrl)
+        this.$refs.upload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      beforeAvatarUpload(file) {
+        let isLt2M = true
+        isLt2M = file.size / 1024 / 1024 < 100
+        if (!isLt2M) {
+          this.loading = false
+          this.$message.error('上传文件大小不能超过 100MB!')
+        }
+        this.filename = file.name
+        return isLt2M
+      },
     },
   }
 </script>

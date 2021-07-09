@@ -90,10 +90,10 @@ class TaskApi {
     })
   }
 
-  // 获取任务类型
-  getType = (params = {}) => {
+  //获取二维码（链接）列表
+  getTaskQrCodeList = (params = {}) => {
     return request({
-      url: '/pc/mission/GetMissionTypeList',
+      url: '/pc/mission/GetMissionQrCodeList',
       method: 'get',
       params,
     })
@@ -105,6 +105,23 @@ class TaskApi {
       url: '/pc/mission/AddUpdateMissionQRCode',
       method: 'post',
       data,
+    })
+  }
+
+  //获取二维码类型
+  getType = (params = {}) => {
+    return request({
+      url: '/pc/mission/GetMissionTypeList',
+      method: 'get',
+      params,
+    })
+  }
+  //获取二维码状态
+  getTaskQrCodeState = (params = {}) => {
+    return request({
+      url: '/pc/mission/GetMissionState',
+      method: 'get',
+      params,
     })
   }
 
@@ -123,32 +140,6 @@ class TaskApi {
       url: '/pc/mission/CheckMission',
       method: 'post',
       data,
-    })
-  }
-
-  //获取二维码（链接）列表
-  getTaskQrCodeList = (params = {}) => {
-    return request({
-      url: '/pc/mission/GetMissionQrCodeList',
-      method: 'get',
-      params,
-    })
-  }
-  //获取二维码状态
-  getTaskQrCodeState = (params = {}) => {
-    return request({
-      url: '/pc/mission/GetMissionState',
-      method: 'get',
-      params,
-    })
-  }
-
-  //根据aid查询任务信息（用于修改）
-  getTaskInfo = (params = {}) => {
-    return request({
-      url: '/pc/mission/GetMissionAid',
-      method: 'get',
-      params,
     })
   }
 }

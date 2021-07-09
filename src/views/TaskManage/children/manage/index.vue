@@ -94,6 +94,9 @@
         <el-form-item label="任务名称:" prop="name" required>
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
+        <el-form-item label="排序:" prop="sort" required>
+          <el-input v-model="Form.sort"></el-input>
+        </el-form-item>
         <el-form-item label="任务图标:" prop="missionIcon" required>
           <div class="upload_wrapper">
             <el-upload
@@ -237,7 +240,7 @@
           })
         }
       },
-      // 获取任务类型
+      // 获取类型
       async getType() {
         const { data } = await taskApi.getType()
         data.forEach((item) => {
@@ -292,7 +295,7 @@
             sort: this.Form.sort, //任务排序
             missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
             missionTypeAid: this.Form.missionTypeName, // 任务类型Name
-            missionIcon: this.Form.missionIcon, // 任务图标
+            missionIcon: ' this.Form.missionIcon', // 任务图标
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
