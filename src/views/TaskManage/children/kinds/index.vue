@@ -32,6 +32,7 @@
             v-model="scope.row.state"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
+            @change="changeState(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
@@ -43,7 +44,7 @@
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
+            @click.native.prevent="deleteRow(scope.row)"
           >
             删除
           </el-button>
@@ -106,6 +107,7 @@
         showModal: false,
         add: false,
         Form: {
+          aid: '',
           name: '',
           number: '',
           status: 0,
@@ -114,7 +116,6 @@
     },
     mounted() {
       this.getList()
-      this.getType()
     },
     methods: {
       // 获取任务分类列表
@@ -123,7 +124,8 @@
           page,
           pageRows,
         }
-        const { data } = await taskApi.getTasks(params)
+        const { data } = await taskApi.getTaskClassList(params)
+        console.log(data)
         if (data) {
           this.tableData = data
         } else {
@@ -133,27 +135,38 @@
           })
         }
       },
-      //获取任务类型
-      async getType() {
-        const { data } = await taskApi.getType()
-        data.forEach((item) => {
-          this.typeOption.push({
-            value: item.aid,
-            label: item.name,
+      //修改任务状态
+      async changeState(row) {
+        const params = {
+          aid: row.aid,
+          state: !row.state,
+        }
+        console.log(params, 'params')
+        const res = await taskApi.changeTaskClassStatus(params)
+        if (!res) {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
           })
-        })
-        console.log(this.typeOption, 'typeOption')
+        } else {
+          console.log(res, 'res')
+          this.getList()
+        }
       },
       // 添加/编辑任务分类
       async modalConfirm(flag) {
+        console.log(flag, 'flag')
         // flag确定是新增还是修改
         if (flag) {
           let form = {
+            aid: -1,
             name: this.Form.name,
             sort: this.Form.number,
-            state: this.Form.status,
+            state: !this.Form.status,
           }
-          const res = await taskApi.addTasks(form)
+          console.log(form, 'form')
+          const res = await taskApi.addTaskClass(form)
+          console.log(res, 'res')
           this.showModal = false
           if (!res) {
             this.$message({
@@ -163,14 +176,15 @@
           }
         } else {
           let form = {
+            aid: this.Form.aid,
             name: this.Form.name,
             sort: this.Form.number,
-            state: this.Form.status,
+            state: !this.Form.status,
           }
           console.log(form, 'form')
-          const res = await taskApi.addTasks(form)
+          const res = await taskApi.addTaskClass(form)
           this.showModal = false
-          console.log(res, 'form')
+          console.log(res, 'res')
           if (!res) {
             this.$message({
               message: '接口未返回数据',
@@ -179,15 +193,29 @@
           }
         }
       },
+      //删除任务分类
+      async deleteRow(row) {
+        const params = {
+          aid: row.aid,
+        }
+        console.log(params, 'params')
+        const res = await taskApi.delTaskClass(params)
+        if (!res) {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        } else {
+          console.log(res, 'res')
+          this.getList()
+        }
+      },
       // handleSizeChange(val) {
       //   console.log(`每页 ${val} 条`)
       // },
       // handleCurrentChange(val) {
       //   console.log(`当前页: ${val}`)
       // },
-      deleteRow(item) {
-        console.log(item)
-      },
       addTask() {
         this.add = true
         this.showModal = true
@@ -196,6 +224,7 @@
         this.add = false
         this.showModal = true
         this.Form = {
+          aid: row.aid,
           name: row.name,
           number: row.sort,
           status: row.state,
@@ -204,6 +233,7 @@
       closeShowModal() {
         this.showModal = false
         this.Form = {
+          aid: '',
           name: '',
           number: '',
           status: 0,

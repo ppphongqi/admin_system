@@ -154,7 +154,7 @@
       this.getList()
     },
     methods: {
-      // 获取任务分类列表
+      // 获取二维码列表
       async getList(page = 1, pageRows = 7) {
         const params = {
           page,
