@@ -65,23 +65,23 @@ export const asyncRoutes = [
         // alwaysShow: true,
         component: () => import('@/views/VirtualProduct/index'),
         meta: {
-          title: '流量业务',
+          title: '虚拟产品',
           icon: 'cloud',
           // affix: true,
         },
       },
-      {
-        path: 'telephone',
-        name: 'telephone',
-        // alwaysShow: true,
-        component: () =>
-          import('@/views/VirtualProduct/children/telephone/index'),
-        meta: {
-          title: '话费业务',
-          icon: 'cloud',
-          // affix: true,
-        },
-      },
+      // {
+      //   path: 'telephone',
+      //   name: 'telephone',
+      //   // alwaysShow: true,
+      //   component: () =>
+      //     import('@/views/VirtualProduct/children/telephone/index'),
+      //   meta: {
+      //     title: '话费业务',
+      //     icon: 'cloud',
+      //     // affix: true,
+      //   },
+      // },
     ],
   },
   {
@@ -97,6 +97,17 @@ export const asyncRoutes = [
           import('@/views/PhysicalProducts/children/list/index.vue'),
         meta: {
           title: '产品列表',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'ProductKinds',
+        name: 'ProductKinds',
+        component: () =>
+          import('@/views/PhysicalProducts/children/kinds/index.vue'),
+        meta: {
+          title: '产品分类',
           icon: 'cart-plus',
           // affix: true,
         },
