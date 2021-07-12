@@ -50,6 +50,8 @@
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.state"
+            :active-value="0"
+            :inactive-value="1"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
             active-text="显示"
@@ -299,7 +301,7 @@
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
-            missionState: this.Form.missionState, //任务状态（0：显示，1：禁止）
+            missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
           console.log(form, 'form')
           const res = await taskApi.addTasks(form)
@@ -321,7 +323,7 @@
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
-            missionState: this.Form.missionState, //任务状态（0：显示，1：禁止）
+            missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
           console.log(form, 'form')
           const res = await taskApi.addTasks(form)

@@ -35,6 +35,8 @@
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.state"
+            :active-value="0"
+            :inactive-value="1"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
             @change="changeState(scope.row)"
@@ -119,7 +121,7 @@
           pageRows,
         }
         const { data } = await taskApi.getTaskClassList(params)
-        console.log(data)
+        console.log(data, 'data')
         if (data) {
           this.tableData = data
         } else {
@@ -131,9 +133,14 @@
       },
       //修改任务状态
       async changeState(row) {
+        console.log(row)
         const params = {
           aid: row.aid,
-          state: !row.state,
+        }
+        if (row.state) {
+          params.state = 1
+        } else {
+          params.state = 0
         }
         console.log(params, 'params')
         const res = await taskApi.changeTaskClassStatus(params)
@@ -156,7 +163,11 @@
             aid: -1,
             name: this.Form.name,
             sort: this.Form.number,
-            state: !this.Form.status,
+          }
+          if (this.Form.status) {
+            form.state = 0
+          } else {
+            form.state = 1
           }
           console.log(form, 'addform')
           const res = await taskApi.addTaskClass(form)
@@ -173,7 +184,11 @@
             aid: this.Form.aid,
             name: this.Form.name,
             sort: this.Form.number,
-            state: !this.Form.status,
+          }
+          if (this.Form.status) {
+            form.state = 0
+          } else {
+            form.state = 1
           }
           console.log(form, 'editform')
           const res = await taskApi.addTaskClass(form)
