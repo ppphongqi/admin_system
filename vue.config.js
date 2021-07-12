@@ -60,6 +60,7 @@ module.exports = {
         // target: 'http://gonghuo.wanmou.cn/api',
         target: 'http://139.159.248.113:8090',
         // target: 'https://yapi.wanmou.cn/mock/14',
+        // target: 'http://192.168.31.179:8080',
         changeOrigin: true,
         pathRewrite: {
           '^/api': '',

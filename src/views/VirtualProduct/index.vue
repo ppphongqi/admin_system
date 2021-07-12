@@ -2,10 +2,10 @@
   <div class="page_wrapper">
     <div class="page_title" style="margin-bottom: 0px">
       <div class="ck_title">
-        <div class="ck_title">流量业务</div>
+        <div class="ck_title">虚拟产品</div>
         <div class="ck_buttons">
           <el-button type="success" icon="el-icon-plus" @click="showDialog">
-            添加套餐
+            添加产品
           </el-button>
         </div>
       </div>
@@ -23,13 +23,79 @@
         </el-form-item>
       </el-form>
     </div>
-    <el-table border :data="tableData" stripe style="width: 100%">
+    <el-table border :data="tableData" stripe style="width: 200%">
       <el-table-column
         prop="name"
-        label="套餐名称"
+        label="产品名称"
         align="center"
+        width="150"
       ></el-table-column>
       <el-table-column
+        prop="code"
+        label="产品编号"
+        align="center"
+        width="180"
+      ></el-table-column>
+      <el-table-column
+        prop="packageAid"
+        label="套餐"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="sourceAid"
+        label="来源"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="classAid"
+        label="父类型"
+        align="center"
+        width="150"
+      >
+        <template slot-scope="scope">
+          <div v-if="scope.row.classAid == 0">流量</div>
+          <div v-else>话费</div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="childClassAid"
+        label="子类型"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column prop="state" label="状态" align="center" width="150">
+        <template slot-scope="scope">
+          <div v-if="scope.row.state == 0">启用</div>
+          <div v-else>下架</div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="activityStartTime"
+        label="活动开始时间"
+        align="center"
+        width="200"
+      ></el-table-column>
+      <el-table-column
+        prop="activityEndTime"
+        label="活动结束时间"
+        align="center"
+        width="200"
+      ></el-table-column>
+      <el-table-column
+        prop="offShelfTime"
+        label="下架时间"
+        align="center"
+        width="200"
+      ></el-table-column>
+      <el-table-column
+        prop="remark"
+        label="备注"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <!-- <el-table-column
         prop="productType"
         label="产品类型"
         align="center"
@@ -63,8 +129,8 @@
         prop="remark"
         label="备注"
         align="center"
-      ></el-table-column>
-      <el-table-column label="操作" align="center">
+      ></el-table-column> -->
+      <el-table-column label="操作" align="center" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -207,6 +273,7 @@
 
 <script>
   import './index.scss'
+  import { virtualProductApi } from '@/api/index'
   let tableData = []
   for (let i = 0; i < 7; i++) {
     tableData.push({
@@ -242,6 +309,9 @@
         },
       }
     },
+    mounted() {
+      this.getData({ page: 1, pageRow: 10 })
+    },
     methods: {
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
@@ -260,6 +330,47 @@
       },
       search() {
         console.log('检索')
+      },
+      // 获取表格数据
+      async getData(content) {
+        const {
+          name,
+          code,
+          packageAid,
+          sourceAid,
+          state,
+          startTime,
+          endTime,
+          timeAdd,
+          classAid,
+          childClassAid,
+          page,
+          pageRow,
+        } = content
+        const params = {
+          name: name || '',
+          code: code || '',
+          packageAid: packageAid || '',
+          sourceAid: sourceAid || '',
+          state: state || '',
+          startTime: startTime || '',
+          endTime: endTime || '',
+          timeAdd: timeAdd || '',
+          classAid: classAid || '',
+          childClassAid: childClassAid || '',
+          page: page || '',
+          pageRow: pageRow || '',
+        }
+        const { data } = await virtualProductApi.getGoodsVirtual(params)
+        this.tableData = data
+        console.log(data, 'data')
+      },
+      // 获取套餐列表
+      async getVirtualPackageList() {
+        const params = {
+          classAid: 0,
+        }
+        // const {data}
       },
     },
   }
