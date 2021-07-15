@@ -211,6 +211,15 @@
         <el-button type="primary" @click="editorConfirm">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!-- 删除提示 -->
+    <el-dialog title="提示" :visible.sync="deleteShow" width="30%">
+      <span>确定删除该分类？</span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deleteShow = false">取 消</el-button>
+        <el-button type="primary" @click="deleteItem">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -221,6 +230,7 @@
   export default {
     data() {
       return {
+        deleteShow: false,
         value: '',
         value1: '',
         value2: '',
@@ -285,6 +295,13 @@
         console.log(`当前页: ${val}`)
       },
       showDialogAdd() {
+        this.$router.push({
+          name: 'ProductAdd',
+          query: {
+            // id:this.id
+          },
+        })
+        return
         this.showModalAdd = true
       },
       showDialogEdit(item) {

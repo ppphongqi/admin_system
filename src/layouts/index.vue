@@ -37,7 +37,9 @@
         class="mask"
         @click="handleFoldSideBar"
       />
+
       <vab-side-bar />
+
       <div class="vab-main" :class="collapse ? 'is-collapse-main' : ''">
         <div :class="header === 'fixed' ? 'fixed-header' : ''">
           <vab-nav-bar />
