@@ -22,17 +22,22 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="avatar"
-        label="用户头像"
+        prop="userName"
+        label="用户名称"
         align="center"
       ></el-table-column>
+      <el-table-column prop="images" label="用户头像" align="center">
+        <template slot-scope="scope">
+          <el-image :src="scope.row.images" fit="fill"></el-image>
+        </template>
+      </el-table-column>
       <el-table-column
-        prop="name"
+        prop="nickName"
         label="用户昵称"
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="type"
+        prop="typeAid"
         label="用户类型"
         align="center"
       ></el-table-column>
@@ -42,34 +47,49 @@
         align="center"
       ></el-table-column>
       <el-table-column
-        prop="count"
+        prop="email"
+        label="用户邮箱"
+        align="center"
+        width="200"
+      ></el-table-column>
+      <el-table-column
+        prop="balance"
         label="余额"
         align="center"
       ></el-table-column>
-      <el-table-column prop="status" label="状态" align="center">
+      <el-table-column prop="isUsed" label="用户状态" align="center">
         <template slot-scope="scope">
           <el-switch
-            :value="scope.row.status"
+            v-model="scope.row.isUsed"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
+            :active-value="0"
+            :inactive-value="1"
+            @change="changeState(scope.row)"
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column
+        width="100"
+        prop="openId"
+        label="用户标识"
+        align="center"
+      ></el-table-column>
+      <el-table-column fixed="right" label="操作" align="center">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="discount(scope.$index, tableData)"
-          >
-            指定折扣
-          </el-button>
           <el-button
             type="text"
             size="small"
             @click="open(scope.$index, tableData)"
           >
             编辑
+          </el-button>
+          <el-button
+            type="text"
+            size="small"
+            @click="open(scope.$index, tableData)"
+          >
+            角色
           </el-button>
           <el-dropdown style="margin-left: 10px" @command="detail">
             <el-button type="text" size="small">
@@ -79,6 +99,7 @@
             <el-dropdown-menu slot="dropdown" @click="detail">
               <el-dropdown-item command="用户详情">用户详情</el-dropdown-item>
               <el-dropdown-item command="余额充值">余额充值</el-dropdown-item>
+              <el-dropdown-item command="指定折扣">指定折扣</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -87,11 +108,11 @@
 
     <div class="pagination">
       <el-pagination
-        :current-page="currentPage4"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :current-page="currentPage"
+        :page-sizes="[7, 10, 20]"
+        :page-size="PageSize"
         layout="total, sizes, prev, pager, next, jumper"
-        :total="400"
+        :total="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
       ></el-pagination>
@@ -202,30 +223,18 @@
 
 <script>
   import './index.scss'
+  import { userApi } from '@/api/index'
   import UserDetail from '../../components/userDetail.vue'
-  let tableData = []
-  for (let i = 0; i < 7; i++) {
-    tableData.push({
-      count: i,
-      picture: 'image',
-      name: '名称',
-      avatar: '头像' + i,
-      type: '类型',
-      phone: '12345678910',
-      count: '100.00',
-      status: true,
-    })
-  }
   export default {
     name: 'UserList',
     components: { UserDetail },
     data() {
       return {
-        tableData: tableData,
-        currentPage1: 5,
-        currentPage2: 5,
-        currentPage3: 5,
-        currentPage4: 4,
+        tableData: [],
+        typeOption: [],
+        currentPage: 1,
+        total: 1,
+        PageSize: 7,
         Form: {
           desc: '',
           name: '',
@@ -319,7 +328,79 @@
         },
       }
     },
+    mounted() {
+      this.getList()
+      this.getType()
+      this.getRole()
+    },
     methods: {
+      //获取用户列表
+      async getList(page = 1, pageRows = 7) {
+        const params = {
+          page,
+          pageRows,
+        }
+        const data = await userApi.getUserList(params)
+        console.log(data, 'data')
+        if (data) {
+          this.tableData = data.data
+          this.total = data.totalRecord
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      //获取用户类型
+      async getType() {
+        const { data } = await userApi.getUserTypeList()
+        // data.forEach((item) => {
+        //   this.typeOption.push({
+        //     value: item.aid,
+        //     label: item.name,
+        //   })
+        // })
+        console.log(data, 'data')
+      },
+      //获取用户权限
+      async getRole(page = 1, pageRows = 10) {
+        const params = {
+          page,
+          pageRows,
+        }
+        const { data } = await userApi.getRoleList(params)
+        // data.forEach((item) => {
+        //   this.typeOption.push({
+        //     value: item.aid,
+        //     label: item.name,
+        //   })
+        // })
+        console.log(data, 'Role')
+      },
+      //修改用户状态
+      async changeState(row) {
+        console.log(row)
+        const params = {
+          aid: row.aid,
+        }
+        if (row.isUsed) {
+          params.state = 1
+        } else {
+          params.state = 0
+        }
+        console.log(params, 'params')
+        const res = await userApi.editUserState(params)
+        if (!res) {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        } else {
+          console.log(res, 'res')
+          this.getList()
+        }
+      },
       open() {
         this.showModal = true
       },
@@ -334,10 +415,20 @@
           case '余额充值':
             this.showCharge = true
             break
+          case '指定折扣':
+            this.showDiscount = true
+            break
         }
       },
-      handleSizeChange() {},
-      handleCurrentChange() {},
+      handleSizeChange(val) {
+        this.PageSize = val
+        this.getList(1, val)
+        this.currentPage = 1
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val
+        this.getList(val, this.PageSize)
+      },
     },
   }
 </script>
