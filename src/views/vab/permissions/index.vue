@@ -71,11 +71,11 @@
             prop="redirect"
             label="redirect"
           ></el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             show-overflow-tooltip
             prop="meta.title"
             label="标题"
-          ></el-table-column>
+          ></el-table-column> -->
           <el-table-column show-overflow-tooltip label="图标">
             <template #default="{ row }">
               <span v-if="row.meta">

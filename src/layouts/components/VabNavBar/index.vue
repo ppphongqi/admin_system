@@ -24,11 +24,11 @@
             @click="refreshRoute"
           />
           <vab-avatar />
-          <!--  <vab-icon
+          <!-- <vab-icon
             title="退出系统"
             :icon="['fas', 'sign-out-alt']"
             @click="logout"
-          />-->
+          /> -->
         </div>
       </el-col>
     </el-row>

@@ -100,6 +100,18 @@ export const asyncRoutes = [
           icon: 'cart-plus',
           // affix: true,
         },
+        // hidden: true,
+      },
+      {
+        path: 'ProductAdd',
+        name: 'ProductAdd',
+        component: () =>
+          import('@/views/PhysicalProducts/children/add/index.vue'),
+        meta: {
+          title: '添加产品',
+          // affix: true,
+        },
+        hidden: true,
       },
       {
         path: 'ProductKinds',
@@ -518,16 +530,6 @@ export const asyncRoutes = [
   //       name: 'MarkdownEditor',
   //       component: () => import('@/views/vab/markdownEditor/index'),
   //       meta: { title: 'markdown编辑器', permissions: ['admin'] },
-  //     },
-  //     {
-  //       path: 'editor',
-  //       name: 'Editor',
-  //       component: () => import('@/views/vab/editor/index'),
-  //       meta: {
-  //         title: '富文本编辑器',
-  //         permissions: ['admin'],
-  //         badge: 'New',
-  //       },
   //     },
   //     {
   //       path: 'backToTop',
