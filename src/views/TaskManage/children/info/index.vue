@@ -123,8 +123,8 @@
     <div class="pagination">
       <el-pagination
         :current-page="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :page-sizes="[7, 10, 20]"
+        :page-size="PageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handleSizeChange"
@@ -174,8 +174,9 @@
     name: 'TaskInfo',
     data() {
       return {
-        currentPage: 0,
-        total: 0,
+        currentPage: 1,
+        total: 1,
+        PageSize: 7,
         tabPosition: 'top',
         date: '',
         value: '',
@@ -206,7 +207,6 @@
         if (data) {
           console.log(data, 'data')
           this.tableData = data.data
-          this.currentPage = data.totalPageNum
           this.total = data.totalRecord
         } else {
           this.$message({
@@ -255,10 +255,13 @@
         console.log('导出报表')
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`)
+        this.PageSize = val
+        this.getList(1, val)
+        this.currentPage = 1
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`)
+        this.currentPage = val
+        this.getList(val, this.PageSize)
       },
     },
   }

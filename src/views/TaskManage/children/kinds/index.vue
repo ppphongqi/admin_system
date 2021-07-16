@@ -207,7 +207,6 @@
         const params = {
           aid: row.aid,
         }
-        console.log(params, 'params')
         const res = await taskApi.delTaskClass(params)
         if (!res) {
           this.$message({
@@ -215,7 +214,10 @@
             type: 'warning',
           })
         } else {
-          console.log(res, 'res')
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
           this.getList()
         }
       },

@@ -66,8 +66,8 @@
     <div class="pagination">
       <el-pagination
         :current-page="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :page-sizes="[7, 20, 40]"
+        :page-size="PageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handleSizeChange"
@@ -80,6 +80,7 @@
       :visible.sync="showModal"
       width="30%"
       top="20vh"
+      :before-close="closeShowModal"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
         <el-form-item label="二维码名称:" prop="codeName" :required="!detail">
@@ -94,6 +95,7 @@
             v-model="Form.missionClassifyName"
             :disabled="disabled"
             size="medium"
+            @change="$forceUpdate()"
           >
             <el-option
               v-for="item in typeOption"
@@ -103,27 +105,40 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="二维码图片:" prop="imgUrl" :required="!detail">
+        <el-form-item
+          v-if="Form.missionClassifyName == '1'"
+          label="二维码图片:"
+          prop="imgUrl"
+          :required="!detail"
+        >
           <div class="upload_wrapper">
             <el-upload
               ref="upload"
               class="avatar-uploader"
               action="http://localhost/api/pc/oss/upload"
-              :limit="1"
+              :limit="3"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
               :before-upload="beforeAvatarUpload"
               :disabled="disabled"
+              :data="{ module: 'img' }"
             >
-              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <div v-for="url in imgUrlList" :key="url.index">
+                <img :src="url.imgUrl" class="avatar" />
+              </div>
+              <i class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
             <div class="upload_tips">
               （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
             </div>
           </div>
         </el-form-item>
-        <el-form-item label="二维码地址:" prop="url" :required="!detail">
+        <el-form-item
+          v-if="Form.missionClassifyName == '2'"
+          label="二维码地址:"
+          prop="url"
+          :required="!detail"
+        >
           <el-input v-model="Form.url" :disabled="disabled"></el-input>
         </el-form-item>
         <el-form-item label="可使用次数:" prop="useNumber" :required="!detail">
@@ -166,8 +181,9 @@
     data() {
       return {
         imageUrl: '',
-        currentPage: 0,
-        total: 0,
+        currentPage: 1,
+        total: 1,
+        PageSize: 7,
         tableData: [],
         typeOption: [],
         showModal: false,
@@ -180,6 +196,7 @@
           useNumber: '',
           url: '',
         },
+        imgUrlList: [],
       }
     },
     mounted() {
@@ -187,6 +204,10 @@
       this.getType()
     },
     methods: {
+      changeselect() {
+        this.$set
+        console.log('ok')
+      },
       // 获取二维码列表
       async getList(page = 1, pageRows = 7) {
         const params = {
@@ -197,7 +218,6 @@
         console.log(data, 'data')
         if (data) {
           this.tableData = data.data
-          this.currentPage = data.totalPageNum
           this.total = data.totalRecord
         } else {
           this.$message({
@@ -216,6 +236,7 @@
             url: this.Form.url,
             missionTypeAid: this.Form.missionClassifyName,
             name: this.Form.codeName,
+            imgUrlList: this.imgUrlList,
           }
           const res = await taskApi.addCode(form)
           this.showModal = false
@@ -232,9 +253,10 @@
             url: this.Form.url,
             missionTypeAid: this.Form.missionClassifyName,
             name: this.Form.codeName,
+            imgUrl: this.imgUrlList,
           }
           console.log(form, 'form')
-          const res = await taskApi.addCode(form)
+          const res = await taskApi.updateCode(form)
           this.showModal = false
           console.log(res, 'form')
           if (!res) {
@@ -274,10 +296,18 @@
           codeName: row.codeName,
           useNumber: row.useNumber,
           aid: row.aid,
-          missionClassifyName: row.missionTypeName,
           url: row.url,
         }
-        this.imageUrl = row.imageUrl
+        if (row.missionTypeName == '二维码模式') {
+          this.Form.missionClassifyName = 1
+        } else if (row.missionTypeName == '链接模式') {
+          this.Form.missionClassifyName = 2
+        }
+        if (row.imgUrl == null) {
+          this.imgUrlList = []
+        } else {
+          this.imgUrlList = Array({ imgUrl: row.imgUrl })
+        }
       },
       showDetail(row) {
         this.showModal = true
@@ -287,10 +317,18 @@
           codeName: row.codeName,
           useNumber: row.useNumber,
           aid: row.aid,
-          missionClassifyName: row.missionTypeName,
           url: row.url,
         }
-        this.imageUrl = row.imageUrl
+        if (row.missionTypeName == '二维码模式') {
+          this.Form.missionClassifyName = 1
+        } else if (row.missionTypeName == '链接模式') {
+          this.Form.missionClassifyName = 2
+        }
+        if (row.imgUrl == null) {
+          this.imgUrlList = []
+        } else {
+          this.imgUrlList = Array({ imgUrl: row.imgUrl })
+        }
       },
       closeShowModal() {
         this.showModal = false
@@ -303,20 +341,23 @@
           aid: '',
           missionClassifyName: 2,
         }
-        this.imageUrl = ''
+        this.imgUrlList = []
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`)
+        this.PageSize = val
+        this.getList(1, val)
+        this.currentPage = 1
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`)
+        this.currentPage = val
+        this.getList(val, this.PageSize)
       },
       deleteRow(item) {
         console.log(item)
       },
       handleAvatarSuccess(response, file, fileList) {
-        this.imageUrl = file.url
-        console.log(file, fileList, response, this.imageUrl)
+        this.imgUrlList.push({ imgUrl: response.message })
+        console.log(this.imgUrlList)
         this.$refs.upload.clearFiles()
         this.$notify({
           title: '上传成功',

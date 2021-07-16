@@ -384,7 +384,10 @@ html body .el-dialog__body, html body .el-message-box__body{
 }
 .pagination{
   height: 50px;
-  position: absolute;
-  bottom: 10px;
+  // position: absolute;
+  // bottom: 10px;
+  background: #FFF;
+  display: flex;
+  justify-content: center;
   width: 100%;
 }

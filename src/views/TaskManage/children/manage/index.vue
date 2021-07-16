@@ -49,7 +49,7 @@
       <el-table-column prop="missionState" label="状态" align="center">
         <template slot-scope="scope">
           <el-switch
-            v-model="scope.row.state"
+            v-model="scope.row.missionState"
             :active-value="0"
             :inactive-value="1"
             active-color="rgb(28,134,224)"
@@ -77,8 +77,8 @@
     <div class="pagination">
       <el-pagination
         :current-page="currentPage"
-        :page-sizes="[100, 200, 300, 400]"
-        :page-size="100"
+        :page-sizes="[7, 10, 20]"
+        :page-size="PageSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="total"
         @size-change="handleSizeChange"
@@ -194,8 +194,9 @@
         dialogVisible: false,
         disabled: false,
         imageUrl: '',
-        currentPage: 0,
-        total: 0,
+        currentPage: 1,
+        total: 1,
+        PageSize: 7,
         add: false,
         tableData: [],
         showModal: false,
@@ -233,7 +234,6 @@
         if (data) {
           console.log(data, 'data')
           this.tableData = data.data
-          this.currentPage = data.totalPageNum
           this.total = data.totalRecord
         } else {
           this.$message({
@@ -271,7 +271,6 @@
           aid: row.aid,
           missionState: row.missionState,
         }
-        console.log(params, 'params')
         const res = await taskApi.updateTaskState(params)
         if (!res) {
           this.$message({
@@ -338,10 +337,13 @@
         }
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`)
+        this.PageSize = val
+        this.getList(1, val)
+        this.currentPage = 1
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`)
+        this.currentPage = val
+        this.getList(val, this.PageSize)
       },
       deleteRow(item) {
         console.log(item)

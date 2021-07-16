@@ -99,10 +99,19 @@ class TaskApi {
     })
   }
 
-  //添加/修改二维码（链接）
+  //添加二维码（链接）
   addCode = (data = {}) => {
     return request({
-      url: '/pc/mission/AddUpdateMissionQRCode',
+      url: '/pc/mission/AddMissionQRCode',
+      method: 'post',
+      data,
+    })
+  }
+
+  //修改二维码
+  updateCode = (data = {}) => {
+    return request({
+      url: '/pc/mission/UpdateMissionQRCode',
       method: 'post',
       data,
     })
