@@ -19,6 +19,15 @@ class RoleApi {
     })
   }
 
+  //修改角色状态
+  changeRoleState = (params = {}) => {
+    return request({
+      url: '/pc/role/RoleState',
+      method: 'get',
+      params,
+    })
+  }
+
   // 删除角色
   deleteRole = (data = {}) => {
     return request({
@@ -70,6 +79,33 @@ class RoleApi {
       url: '/pc/permission/DeletePermissionClassify',
       method: 'get',
       params,
+    })
+  }
+
+  //获取管理员列表
+  getAdminList = (params = {}) => {
+    return request({
+      url: '/pc/user/administratorList',
+      method: 'get',
+      params,
+    })
+  }
+
+  //添加/修改时获取角色列表
+  getAdminRoleList = (params = {}) => {
+    return request({
+      url: '  /pc/user/RoleList',
+      method: 'get',
+      params,
+    })
+  }
+
+  //添加/修改管理员
+  updateAdmin = (data = {}) => {
+    return request({
+      url: '/pc/user/administratorInsert',
+      method: 'post',
+      data,
     })
   }
 }

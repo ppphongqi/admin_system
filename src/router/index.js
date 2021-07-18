@@ -289,15 +289,25 @@ export const asyncRoutes = [
   {
     path: '/RoleManage',
     component: Layout,
-    redirect: 'RoleManage',
+    redirect: 'noRedirect',
     meta: { title: '角色管理', icon: 'box-open' },
     children: [
       {
-        path: 'RoleManage',
-        name: 'RoleManage',
-        component: () => import('@/views/RoleManage/index'),
+        path: 'RoleList',
+        name: 'RoleList',
+        component: () => import('@/views/RoleManage/childern/list/index'),
         meta: {
           title: '角色管理',
+          icon: 'user-plus',
+          // affix: true,
+        },
+      },
+      {
+        path: 'RoleAdminList',
+        name: 'RoleAdminList',
+        component: () => import('@/views/RoleManage/childern/adminList/index'),
+        meta: {
+          title: '管理员列表',
           icon: 'user-plus',
           // affix: true,
         },

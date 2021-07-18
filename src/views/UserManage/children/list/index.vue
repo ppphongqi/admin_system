@@ -4,11 +4,7 @@
       <div class="ul_title">
         <div class="ul_title">用户管理</div>
         <div class="ul_buttons">
-          <el-button
-            type="success"
-            icon="el-icon-plus"
-            @click="showModal = true"
-          >
+          <el-button type="success" icon="el-icon-plus" @click="addUser">
             添加用户
           </el-button>
         </div>
@@ -34,11 +30,6 @@
       <el-table-column
         prop="nickName"
         label="用户昵称"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="typeAid"
-        label="用户类型"
         align="center"
       ></el-table-column>
       <el-table-column
@@ -70,6 +61,11 @@
         </template>
       </el-table-column>
       <el-table-column
+        prop="typeAid"
+        label="用户类型"
+        align="center"
+      ></el-table-column>
+      <el-table-column
         width="100"
         prop="openId"
         label="用户标识"
@@ -77,18 +73,10 @@
       ></el-table-column>
       <el-table-column fixed="right" label="操作" align="center">
         <template slot-scope="scope">
-          <el-button
-            type="text"
-            size="small"
-            @click="open(scope.$index, tableData)"
-          >
+          <el-button type="text" size="small" @click="editUser(scope.row)">
             编辑
           </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click="open(scope.$index, tableData)"
-          >
+          <el-button type="text" size="small" @click="editUserRole(scope.row)">
             角色
           </el-button>
           <el-dropdown style="margin-left: 10px" @command="detail">
@@ -120,35 +108,61 @@
 
     <!-- 编辑用户 -->
     <el-dialog
-      title="编辑用户"
+      :title="add ? '添加用户' : '编辑用户'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
+      :before-close="closeShowModal"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="真实姓名:" required>
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="用户名称:" required>
+          <el-input v-model="Form.userName"></el-input>
         </el-form-item>
-        <el-form-item label="身份证号:" required>
-          <el-input v-model="Form.number"></el-input>
+        <el-form-item label="用户手机号:" required>
+          <el-input v-model="Form.phone"></el-input>
         </el-form-item>
-        <el-form-item label="手机号:" required>
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="用户昵称:" required>
+          <el-input v-model="Form.nickName"></el-input>
         </el-form-item>
-        <el-form-item label="生日:">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="用户头像:" required>
+          <el-input v-model="Form.images"></el-input>
         </el-form-item>
-        <el-form-item label="地址:">
-          <el-input v-model="Form.name"></el-input>
+        <el-form-item label="用户邮箱:" required>
+          <el-input v-model="Form.email"></el-input>
         </el-form-item>
-        <el-form-item label="备注:">
-          <el-input v-model="Form.desc" type="textarea"></el-input>
+        <el-form-item label="用户QQ:">
+          <el-input v-model="Form.qq"></el-input>
+        </el-form-item>
+        <el-form-item label="账户状态:" required>
+          <el-radio-group v-model="Form.isUsed">
+            <el-radio :label="0" value="0">启用</el-radio>
+            <el-radio :label="1" value="1">禁用</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <el-form-item label="用户类型:" required>
+          <el-input v-model="Form.typeAid"></el-input>
         </el-form-item>
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+        <el-button @click="closeShowModal">取 消</el-button>
+        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
+      </span>
+    </el-dialog>
+    <!-- 角色 -->
+    <el-dialog title="角色" :visible.sync="showRole" width="30%" top="25vh">
+      <el-checkbox-group v-model="roleAidList">
+        <el-checkbox
+          v-for="(item, index) in roleList"
+          :key="index"
+          :label="item.value"
+        >
+          {{ item.label }}
+        </el-checkbox>
+      </el-checkbox-group>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showRole = false">取 消</el-button>
+        <el-button type="primary" @click="changeRole">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 指定折扣 -->
@@ -225,26 +239,38 @@
   import './index.scss'
   import { userApi } from '@/api/index'
   import UserDetail from '../../components/userDetail.vue'
+  import { List } from 'echarts'
   export default {
     name: 'UserList',
     components: { UserDetail },
     data() {
       return {
         tableData: [],
+        roleAidList: [],
+        roleList: [],
         typeOption: [],
         currentPage: 1,
         total: 1,
         PageSize: 7,
         Form: {
-          desc: '',
-          name: '',
-          number: '',
+          aid: '',
+          userName: '',
+          phone: '',
+          nickName: '',
+          images: '',
+          email: '',
+          qq: '',
+          roleAid: [],
+          isUsed: 0,
+          typeAid: '',
         },
         ChargeForm: {
           add: false,
           count: '',
         },
+        add: false,
         showModal: false,
+        showRole: false,
         showDiscount: false,
         showDetail: false,
         showCharge: false,
@@ -370,13 +396,41 @@
           pageRows,
         }
         const { data } = await userApi.getRoleList(params)
-        // data.forEach((item) => {
-        //   this.typeOption.push({
-        //     value: item.aid,
-        //     label: item.name,
-        //   })
-        // })
+        data.forEach((item) => {
+          this.roleList.push({
+            value: item.aid,
+            label: item.name,
+          })
+        })
         console.log(data, 'Role')
+      },
+      //角色权限
+      async changeRole() {
+        console.log(Array.from(this.roleAidList))
+        this.roleAidList = Array.from(this.roleAidList)
+        let form = {
+          aid: this.Form.aid,
+          userName: this.Form.userName,
+          phone: this.Form.phone,
+          nickName: this.Form.nickName,
+          images: this.Form.images,
+          email: this.Form.email,
+          qq: this.Form.qq,
+          roleAid: this.roleAidList,
+          isUsed: this.Form.isUsed,
+          typeAid: this.Form.typeAid,
+        }
+        console.log(form, 'editform')
+        const res = await userApi.editUser(form)
+        this.showRole = false
+        this.roleAidList = []
+        console.log(res, 'res')
+        if (!res) {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
       },
       //修改用户状态
       async changeState(row) {
@@ -399,6 +453,111 @@
         } else {
           console.log(res, 'res')
           this.getList()
+        }
+      },
+      //添加/修改用户信息
+      async modalConfirm(flag) {
+        console.log(flag, 'flag')
+        // flag确定是新增还是修改
+        if (flag) {
+          let form = {
+            aid: -1,
+            userName: this.Form.userName,
+            phone: this.Form.phone,
+            nickName: this.Form.nickName,
+            images: this.Form.images,
+            email: this.Form.email,
+            qq: this.Form.qq,
+            roleAid: this.Form.roleAid,
+            isUsed: this.Form.isUsed,
+            typeAid: this.Form.typeAid,
+          }
+          console.log(form, 'addform')
+          // const res = await userApi.addUser(form)
+          console.log(res, 'res')
+          this.showModal = false
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        } else {
+          let form = {
+            aid: this.Form.aid,
+            userName: this.Form.userName,
+            phone: this.Form.phone,
+            nickName: this.Form.nickName,
+            images: this.Form.images,
+            email: this.Form.email,
+            qq: this.Form.qq,
+            roleAid: this.Form.roleAid,
+            isUsed: this.Form.isUsed,
+            typeAid: this.Form.typeAid,
+          }
+          console.log(form, 'editform')
+          const res = await userApi.editUser(form)
+          this.showModal = false
+          console.log(res, 'res')
+          if (!res) {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        }
+      },
+      //添加用户
+      addUser() {
+        this.add = true
+        this.showModal = true
+      },
+      //修改用户
+      editUser(row) {
+        this.add = false
+        this.showModal = true
+        this.Form = {
+          aid: row.aid,
+          userName: row.userName,
+          phone: row.phone,
+          nickName: row.nickName,
+          images: row.images,
+          email: row.email,
+          qq: row.qq,
+          roleAid: row.roleAid,
+          isUsed: row.isUsed,
+          typeAid: row.typeAid,
+        }
+        console.log(this.Form, 'form')
+      },
+      editUserRole(row) {
+        this.showRole = true
+        this.roleAidList = Array.of(row.roleAid)
+        this.Form = {
+          aid: row.aid,
+          userName: row.userName,
+          phone: row.phone,
+          nickName: row.nickName,
+          images: row.images,
+          email: row.email,
+          qq: row.qq,
+          isUsed: row.isUsed,
+          typeAid: row.typeAid,
+        }
+      },
+      closeShowModal() {
+        this.showModal = false
+        this.Form = {
+          aid: '',
+          userName: '',
+          phone: '',
+          nickName: '',
+          images: '',
+          email: '',
+          qq: '',
+          roleAid: [],
+          isUsed: 0,
+          typeAid: '',
         }
       },
       open() {
