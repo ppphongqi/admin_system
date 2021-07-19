@@ -3,72 +3,70 @@
     <el-tabs
       v-model="activeName"
       style="margin-left: 20px; margin-top: 30px; height: 10%"
-      @tab-click="handleClick"
     >
       <el-tab-pane label="商品信息" name="1"></el-tab-pane>
       <el-tab-pane label="商品详情" name="2"></el-tab-pane>
-      <el-tab-pane label="其他设置" name="3"></el-tab-pane>
     </el-tabs>
-    <!-- 商品信息 -->
-    <!-- <div
-      v-if="activeName == 1"
-      v-loading="fullscreenLoading"
-      :rules="ruleValidate"
-      class="add_main"
-    > -->
     <el-form
-      ref="form"
+      ref="formOne"
       v-loading="fullscreenLoading"
       :rules="ruleValidate"
       :model="formValidate"
       label-width="120px"
-      style="display: flex; flex-direction: column; width: 40%"
+      style="display: flex; flex-direction: column; width: 100%"
     >
       <el-row v-show="activeName == 1" :gutter="24">
-        <el-col v-bind="grid2">
-          <el-form-item label="商品名称：" prop="storeName">
+        <el-col>
+          <el-form-item label="商品名称：" prop="name">
             <el-input
               v-model="formValidate.name"
               maxlength="249"
+              style="width: 360px"
               placeholder="请输入商品名称"
             />
           </el-form-item>
         </el-col>
-        <el-col v-bind="grid2">
-          <el-form-item label="商品分类：" prop="cateIds">
-            <el-cascader
-              v-model="formValidate.cateIds"
-              :options="merCateList"
-              :props="props2"
-              clearable
-              class="selWidth"
-              :show-all-levels="false"
-              :disabled="isDisabled"
-            />
+        <el-col>
+          <el-form-item label="商品分类：" prop="classAid">
+            <el-select
+              v-model="formValidate.classAid"
+              style="width: 360px"
+              placeholder="请选择"
+            >
+              <el-option
+                v-for="item in typeList"
+                :key="item.aid"
+                :label="item.name"
+                :value="item.aid"
+              ></el-option>
+            </el-select>
           </el-form-item>
         </el-col>
-        <el-col v-bind="grid2">
+        <el-col>
           <el-form-item label="商品关键字：">
             <el-input
               v-model="formValidate.keyword"
+              style="width: 360px"
               placeholder="请输入商品关键字"
               :disabled="isDisabled"
             />
           </el-form-item>
         </el-col>
-        <el-col v-bind="grid2">
-          <el-form-item label="单位：" prop="unitName">
+        <el-col>
+          <el-form-item label="单位：" prop="unit">
             <el-input
-              v-model="formValidate.unitName"
+              v-model="formValidate.unit"
+              style="width: 360px"
               placeholder="请输入单位"
               :disabled="isDisabled"
             />
           </el-form-item>
         </el-col>
-        <el-col v-bind="grid2">
-          <el-form-item label="商品简介：">
+        <el-col>
+          <el-form-item label="商品简介：" prop="introduction">
             <el-input
-              v-model="formValidate.storeInfo"
+              v-model="formValidate.introduction"
+              style="width: 80%"
               type="textarea"
               maxlength="250"
               :rows="3"
@@ -77,120 +75,69 @@
             />
           </el-form-item>
         </el-col>
-        <el-col v-bind="grid2">
-          <el-form-item label="商品封面图：" prop="image">
-            <el-upload action="#" list-type="picture-card" :auto-upload="false">
-              <i slot="default" class="el-icon-plus"></i>
-              <div slot="file" slot-scope="{ file }">
-                <img
-                  class="el-upload-list__item-thumbnail"
-                  :src="file.url"
-                  alt=""
-                />
-                <span class="el-upload-list__item-actions">
-                  <span
-                    class="el-upload-list__item-preview"
-                    @click="handlePictureCardPreview(file)"
-                  >
-                    <i class="el-icon-zoom-in"></i>
-                  </span>
-                  <span
-                    v-if="!disabled"
-                    class="el-upload-list__item-delete"
-                    @click="handleDownload(file)"
-                  >
-                    <i class="el-icon-download"></i>
-                  </span>
-                  <span
-                    v-if="!disabled"
-                    class="el-upload-list__item-delete"
-                    @click="handleRemove(file)"
-                  >
-                    <i class="el-icon-delete"></i>
-                  </span>
-                </span>
-              </div>
+        <el-col>
+          <el-form-item label="商品封面图：" prop="coverPicture">
+            <el-upload
+              action="#"
+              list-type="picture-card"
+              :multiple="false"
+              :auto-upload="false"
+              :limit="1"
+              :on-preview="handlePictureCardPreview"
+              :on-remove="handleRemove"
+            >
+              <i class="el-icon-plus"></i>
             </el-upload>
+            <el-dialog :visible.sync="dialogProdImgVisible">
+              <img width="100%" :src="dialogProdImageUrl" alt="" />
+            </el-dialog>
           </el-form-item>
         </el-col>
-
-        <!-- <el-col :span="24">
-          <el-form-item label="商品轮播图：" prop="sliderImages">
-            <div class="acea-row">
-              <div
-                v-for="(item, index) in formValidate.sliderImages"
-                :key="index"
-                class="pictrue"
-                draggable="true"
-                @dragstart="handleDragStart($event, item)"
-                @dragover.prevent="handleDragOver($event, item)"
-                @dragenter="handleDragEnter($event, item)"
-                @dragend="handleDragEnd($event, item)"
-              >
-                <img :src="item" />
-                <i
-                  v-if="!isDisabled"
-                  class="el-icon-error btndel"
-                  @click="handleRemove(index)"
-                />
-              </div>
-              <div
-                v-if="formValidate.sliderImages.length < 10 && !isDisabled"
-                class="upLoadPicBox"
-                @click="modalPicTap('2')"
-              >
-                <div class="upLoad">
-                  <i class="el-icon-camera cameraIconfont" />
-                </div>
-              </div>
-            </div>
-          </el-form-item>
-        </el-col> -->
-
         <el-col :span="24">
-          <el-form-item label="产品规格" prop="tempId">
+          <el-form-item label="产品规格" prop="specificationAid">
             <div class="acea-row">
               <el-select
-                v-model="formValidate.tempId"
+                v-model="formValidate.specificationAid"
                 placeholder="请选择"
                 class="selWidthd mr20"
                 :disabled="isDisabled"
               >
                 <el-option
-                  v-for="item in shippingList"
+                  v-for="item in specificationList"
                   :key="item.id"
                   :label="item.name"
                   :value="item.id"
                 />
               </el-select>
-              <el-button v-show="!isDisabled" class="mr15" @click="addTem">
-                添加产品规格
-              </el-button>
+              <el-button class="mr15" @click="addTem">添加产品规格</el-button>
             </div>
           </el-form-item>
         </el-col>
-        <!-- <el-col :span="24">
-          <el-form-item label="商品状态" props="specType">
-            <el-radio-group
-              v-model="formValidate.specType"
-              :disabled="isDisabled"
-              @change="onChangeSpec(formValidate.specType)"
-            >
-              <el-radio :label="0" class="radio">在售</el-radio>
-              <el-radio :label="1">下架</el-radio>
+        <el-col :span="24">
+          <el-form-item label="商品状态" prop="state">
+            <el-radio-group v-model="formValidate.state">
+              <el-radio label="0" class="radio">在售</el-radio>
+              <el-radio label="1">下架</el-radio>
             </el-radio-group>
           </el-form-item>
-          <el-form-item label="是否为分销商品" props="isSub">
-            <el-radio-group
-              v-model="formValidate.isSub"
-              :disabled="isDisabled"
-              @change="onChangetype(formValidate.isSub)"
-            >
-              <el-radio :label="0" class="radio">是</el-radio>
-              <el-radio :label="1">不是</el-radio>
+        </el-col>
+        <el-col :span="24">
+          <el-form-item label="分销商品" prop="isDistribution">
+            <el-radio-group v-model="formValidate.isDistribution">
+              <el-radio label="0" class="radio">是</el-radio>
+              <el-radio label="1">否</el-radio>
             </el-radio-group>
           </el-form-item>
-        </el-col> -->
+        </el-col>
+        <el-col>
+          <el-form-item label="排序：" prop="sort">
+            <el-input
+              v-model="formValidate.sort"
+              style="width: 360px"
+              placeholder="请输入排序"
+            />
+          </el-form-item>
+        </el-col>
         <el-col :span="12">
           <el-form-item>
             <el-button type="primary" @click="onSubmit">下一步</el-button>
@@ -202,70 +149,12 @@
     <!-- 商品详情 -->
     <div v-if="activeName == 2" class="add_main">
       <el-row :gutter="24">
-        <el-col :span="1">详情:</el-col>
-        <el-col :span="21">
-          <vab-quill
-            v-model="content"
-            :min-height="400"
-            :options="options"
-          ></vab-quill>
+        <el-col :span="2">详情:</el-col>
+        <el-col :span="22">
+          <vab-quill v-model="content" :min-height="400"></vab-quill>
         </el-col>
       </el-row>
       <el-row :gutter="24" style="margin-top: 30px">
-        <el-col :span="5">
-          <el-button v-if="activeName !== 1" @click="sendBack">
-            上一步
-          </el-button>
-          <el-button type="primary" @click="onSubmit">下一步</el-button>
-        </el-col>
-      </el-row>
-    </div>
-    <!-- 其他设置 -->
-    <div v-if="activeName == 3" class="add_main">
-      <el-form
-        ref="form"
-        v-loading="fullscreenLoading"
-        :rules="ruleValidate"
-        :model="formValidate"
-        label-width="120px"
-        style="
-          display: flex;
-          flex-direction: column;
-          width: 40%;
-          text-align: left;
-        "
-      >
-        <el-row :gutter="24">
-          <el-col :span="24" style="text-align: left">
-            <el-form-item
-              label="商品状态"
-              props="specType"
-              style="text-align: left"
-            >
-              <el-radio-group
-                v-model="formValidate.specType"
-                :disabled="isDisabled"
-                @change="onChangeSpec(formValidate.specType)"
-              >
-                <el-radio :label="0" class="radio">在售</el-radio>
-                <el-radio :label="1">下架</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="是否为分销商品" props="isSub">
-              <el-radio-group
-                v-model="formValidate.isSub"
-                :disabled="isDisabled"
-                @change="onChangetype(formValidate.isSub)"
-              >
-                <el-radio :label="0" class="radio">是</el-radio>
-                <el-radio :label="1">不是</el-radio>
-              </el-radio-group>
-            </el-form-item>
-          </el-col>
-        </el-row>
-      </el-form>
-
-      <el-row :gutter="24">
         <el-col :span="5">
           <el-button v-if="activeName !== 1" @click="sendBack">
             上一步
@@ -280,48 +169,6 @@
 <script>
   import { physicalProductApi } from '@/api/index'
   import vabQuill from '@/plugins/vabQuill'
-  const defaultObj = {
-    image: '',
-    sliderImages: [],
-    sliderImage: '',
-    storeName: '',
-    storeInfo: '',
-    keyword: '',
-    cateIds: [], // 商品分类id
-    cateId: null, // 商品分类id传值
-    unitName: '',
-    sort: 0,
-    giveIntegral: 0,
-    ficti: 0,
-    isShow: false,
-    isBenefit: false,
-    isNew: false,
-    isGood: false,
-    isHot: false,
-    isBest: false,
-    tempId: '',
-    attrValue: [
-      {
-        image: '',
-        price: 0,
-        cost: 0,
-        otPrice: 0,
-        stock: 0,
-        barCode: '',
-        weight: 0,
-        volume: 0,
-      },
-    ],
-    attr: [],
-    selectRule: '',
-    isSub: false,
-    content: '',
-    specType: false,
-    id: 0,
-    couponIds: [],
-    coupons: [],
-    activity: ['默认', '秒杀', '砍价', '拼团'],
-  }
   export default {
     name: 'PhySicalProductsAdd',
     components: { vabQuill },
@@ -331,43 +178,30 @@
         isDisabled: false,
         fullscreenLoading: false,
         ruleValidate: {
-          storeName: [
+          name: [
             { required: true, message: '请输入商品名称', trigger: 'blur' },
           ],
-          cateIds: [
-            {
-              required: true,
-              message: '请选择商品分类',
-              trigger: 'change',
-              type: 'array',
-              min: '1',
-            },
+          classAid: [
+            { required: true, message: '请选择商品分类', trigger: 'change' },
           ],
           keyword: [
             { required: true, message: '请输入商品关键字', trigger: 'blur' },
           ],
-          unitName: [
-            { required: true, message: '请输入单位', trigger: 'blur' },
-          ],
-          storeInfo: [
+          unit: [{ required: true, message: '请输入单位', trigger: 'blur' }],
+          introduction: [
             { required: true, message: '请输入商品简介', trigger: 'blur' },
           ],
-          tempId: [
-            { required: true, message: '请选择运费模板', trigger: 'change' },
-          ],
-          image: [
-            { required: true, message: '请上传商品图', trigger: 'change' },
-          ],
-          sliderImages: [
+          // coverPicture: [
+          //   { required: true, message: '请上传商品图', trigger: 'change' },
+          // ],
+          sort: [{ required: true, message: '请输入排序', trigger: 'blur' }],
+          state: [{ required: true, message: '请选择状态', trigger: 'change' }],
+          isDistribution: [
             {
               required: true,
-              message: '请上传商品轮播图',
-              type: 'array',
+              message: '请选择是否分销商品',
               trigger: 'change',
             },
-          ],
-          specType: [
-            { required: true, message: '请选择商品规格', trigger: 'change' },
           ],
         },
         activeName: '1',
@@ -381,59 +215,130 @@
           resource: '',
           desc: '',
         },
-        grid2: {
-          xl: 24,
-          lg: 12,
-          md: 12,
-          sm: 24,
-          xs: 24,
-        },
-        formValidate: Object.assign({}, defaultObj),
+        formValidate: {},
+        // 分类
+        typeList: [],
+        specificationList: [],
+        dialogProdImageUrl: '',
+        dialogProdImgVisible: false,
+        addProdItem: null,
       }
     },
+    created() {
+      // 获取分类列表
+      this.getTypeList()
+      // 获取规格列表
+      // this.getSpecificationList()
+    },
     methods: {
+      // 获取分类列表
+      async getTypeList(page = '1', pageRows = '100', name = '') {
+        const params = {
+          page,
+          pageRows,
+          name,
+        }
+        const { data } = await physicalProductApi.getEntityClassList(params)
+        this.typeList = data.records
+        console.log(this.typeList, 'typeList')
+      },
+      // 获取规格列表
+      async getSpecificationList(page = '1', pageRows = '100', name = '') {
+        const params = {
+          page,
+          pageRows,
+          name,
+        }
+        const { data } = await physicalProductApi.getEntityClassList(params)
+        this.specificationList = data.records
+      },
       validate(prop, status, error) {
         if (status === false) {
           this.$message.warning(error)
         }
       },
       imgUpload() {},
-      handleDragStart(e, item) {
-        if (!this.isDisabled) this.dragging = item
-      },
-      handleDragEnd(e, item) {
-        if (!this.isDisabled) this.dragging = null
-      },
-      handleDragOver(e) {
-        if (!this.isDisabled) e.dataTransfer.dropEffect = 'move'
-      },
-      handleDragEnter(e, item) {
-        if (!this.isDisabled) {
-          e.dataTransfer.effectAllowed = 'move'
-          if (item === this.dragging) {
-            return
-          }
-          const newItems = [...this.formValidate.sliderImages]
-          const src = newItems.indexOf(this.dragging)
-          const dst = newItems.indexOf(item)
-          newItems.splice(dst, 0, ...newItems.splice(src, 1))
-          this.formValidate.sliderImages = newItems
-        }
-      },
-      handleRemove(file) {
-        console.log(file)
+      handleRemove(file, fileList) {
+        this.dialogProdImageUrl = ''
       },
       handlePictureCardPreview(file) {
-        this.dialogImageUrl = file.url
-        this.dialogVisible = true
+        this.dialogProdImageUrl = file.url
+        this.dialogProdImgVisible = true
       },
-      handleDownload(file) {
-        console.log(file)
-      },
+      // 添加产品规格
+      addTem() {},
       onSubmit() {
-        if (this.activeName < 3) {
+        if (this.activeName === '1') {
+          this.$refs['formOne'].validate((valid) => {
+            if (valid) {
+              this.addProd()
+            } else {
+              return false
+            }
+          })
+        }
+        if (this.activeName === '2') {
+          if (this.content === '') {
+            this.$message({
+              message: '请填写商品详情信息',
+              type: 'warning',
+            })
+            return false
+          }
+          this.addProdDetail()
+        }
+      },
+      // 新增商品
+      async addProd() {
+        this.addProdItem = null
+        const params = this.formValidate
+        params.aid = -1
+        const res = await physicalProductApi.addEntity(params)
+        if (res.code === 10000) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
           const num = Number(this.activeName) + 1
           this.activeName = `${num}`
+          this.addProdItem = res.data
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning',
+          })
+        }
+      },
+      // 新增商品详情
+      async addProdDetail() {
+        if (!this.addProdItem) {
+          this.$message({
+            message: '未识别到需要添加详情的商品，请重新添加或者去编辑！',
+            type: 'warning',
+          })
+          const num = Number(this.activeName) - 1
+          this.activeName = `${num}`
+          return false
+        }
+        const params = {
+          aid: -1,
+          entityAid: this.addProdItem.aid,
+          content: this.content,
+        }
+        const res = await physicalProductApi.addEntityDetail(params)
+        if (res.code === 10000) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.$router.push({
+            name: 'ProductList',
+          })
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'warning',
+          })
         }
       },
       sendBack() {

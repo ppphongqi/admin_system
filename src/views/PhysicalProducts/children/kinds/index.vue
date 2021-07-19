@@ -152,7 +152,7 @@
         this.showModalAdd = true
       },
       // 获取分类列表
-      async getData(page = '1', pageRows = '7', name = '') {
+      async getData(page = '1', pageRows = '10', name = '') {
         const params = {
           page,
           pageRows,
