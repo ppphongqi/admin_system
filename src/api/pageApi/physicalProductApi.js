@@ -49,6 +49,22 @@ class PhysicalProductApi {
       data,
     })
   }
+  // 增加实物产品详情
+  addEntityDetail = (data = {}) => {
+    return request({
+      url: '/pc/goodsEntity/goodsParticular',
+      method: 'post',
+      data,
+    })
+  }
+  // 获取实物产品详情
+  getEntityDetail = (params = {}) => {
+    return request({
+      url: '/pc/goodsEntity/getGoodsParticular',
+      method: 'get',
+      params,
+    })
+  }
   // 删除实物产品
   delEntity = (data = {}) => {
     return request({

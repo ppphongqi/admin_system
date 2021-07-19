@@ -45,6 +45,24 @@ class ChannelApi {
       params,
     })
   }
+
+  //获取通道所有地区联动
+  getDistrictTwo = (params = {}) => {
+    return request({
+      url: '/pc/channel/getDistrictTwo',
+      method: 'get',
+      params,
+    })
+  }
+
+  //获取通道所有地区联动
+  deleteChannel = (params = {}) => {
+    return request({
+      url: '/pc/channel/deleteChannel',
+      method: 'get',
+      params,
+    })
+  }
 }
 
 const channelApi = new ChannelApi()
