@@ -164,7 +164,7 @@
     },
     methods: {
       //获取权限
-      async getRole(page = 1, pageRows = 10) {
+      async getRole(page = 1, pageRows = 100) {
         const params = {
           page,
           pageRows,
@@ -292,15 +292,7 @@
       editAdmin(row) {
         this.add = false
         this.showModal = true
-        this.Form = {
-          aid: row.aid,
-          userName: row.userName,
-          phone: row.phone,
-          nickName: row.nickName,
-          loginKey: row.loginKey,
-          roleAid: row.roleAid,
-          isUsed: row.isUsed,
-        }
+        this.Form = row
       },
       closeShowModal() {
         this.showModal = false

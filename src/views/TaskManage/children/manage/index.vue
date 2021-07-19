@@ -91,6 +91,7 @@
       :visible.sync="showModal"
       width="30%"
       top="15vh"
+      :before-close="closeShowModal"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
         <el-form-item label="任务名称:" prop="name" required>

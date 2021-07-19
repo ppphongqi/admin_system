@@ -292,12 +292,7 @@
         this.showModal = true
         this.detail = true
         this.disabled = false
-        this.Form = {
-          codeName: row.codeName,
-          useNumber: row.useNumber,
-          aid: row.aid,
-          url: row.url,
-        }
+        this.Form = row
         if (row.missionTypeName == '二维码模式') {
           this.Form.missionClassifyName = 1
         } else if (row.missionTypeName == '链接模式') {
@@ -313,12 +308,7 @@
         this.showModal = true
         this.detail = true
         this.disabled = true
-        this.Form = {
-          codeName: row.codeName,
-          useNumber: row.useNumber,
-          aid: row.aid,
-          url: row.url,
-        }
+        this.Form = row
         if (row.missionTypeName == '二维码模式') {
           this.Form.missionClassifyName = 1
         } else if (row.missionTypeName == '链接模式') {

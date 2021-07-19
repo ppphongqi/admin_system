@@ -317,11 +317,7 @@
       compail(row) {
         this.add = false
         this.showModal = true
-        this.Form = {
-          aid: row.aid,
-          name: row.name,
-          state: row.state,
-        }
+        this.Form = row
       },
       closeShowModal() {
         this.showModal = false

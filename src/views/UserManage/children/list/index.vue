@@ -390,7 +390,7 @@
         console.log(data, 'data')
       },
       //获取用户权限
-      async getRole(page = 1, pageRows = 10) {
+      async getRole(page = 1, pageRows = 100) {
         const params = {
           page,
           pageRows,
@@ -516,34 +516,13 @@
       editUser(row) {
         this.add = false
         this.showModal = true
-        this.Form = {
-          aid: row.aid,
-          userName: row.userName,
-          phone: row.phone,
-          nickName: row.nickName,
-          images: row.images,
-          email: row.email,
-          qq: row.qq,
-          roleAid: row.roleAid,
-          isUsed: row.isUsed,
-          typeAid: row.typeAid,
-        }
+        this.Form = row
         console.log(this.Form, 'form')
       },
       editUserRole(row) {
         this.showRole = true
         this.roleAidList = Array.of(row.roleAid)
-        this.Form = {
-          aid: row.aid,
-          userName: row.userName,
-          phone: row.phone,
-          nickName: row.nickName,
-          images: row.images,
-          email: row.email,
-          qq: row.qq,
-          isUsed: row.isUsed,
-          typeAid: row.typeAid,
-        }
+        this.Form = row
       },
       closeShowModal() {
         this.showModal = false

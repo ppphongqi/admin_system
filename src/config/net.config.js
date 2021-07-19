@@ -12,6 +12,7 @@ const network = {
   successCode: [200, 0, '10000'],
   //登录失效code
   invalidCode: 402,
+  // invalidCode: 10001,
   //无权限code
   noPermissionCode: 401,
 }
