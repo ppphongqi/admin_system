@@ -63,9 +63,21 @@ export const asyncRoutes = [
         path: 'VirtualProduct',
         name: 'VirtualProduct',
         // alwaysShow: true,
-        component: () => import('@/views/VirtualProduct/index'),
+        component: () => import('@/views/VirtualProduct/children/list/index'),
         meta: {
           title: '虚拟产品',
+          icon: 'cloud',
+          // affix: true,
+        },
+      },
+      {
+        path: 'VirtualSetMenu',
+        name: 'VirtualSetMenu',
+        // alwaysShow: true,
+        component: () =>
+          import('@/views/VirtualProduct/children/setMenu/index'),
+        meta: {
+          title: '套餐业务',
           icon: 'cloud',
           // affix: true,
         },

@@ -54,12 +54,6 @@
         align="center"
         width="150"
       ></el-table-column>
-      <el-table-column
-        prop="stock"
-        label="优先级"
-        align="center"
-        width="150"
-      ></el-table-column>
       <el-table-column prop="state" label="状态" align="center" width="150">
         <template slot-scope="scope">
           <el-switch
@@ -130,101 +124,109 @@
     </div>
 
     <el-dialog
-      :title="add ? '添加产品' : '编辑产品'"
+      :title="add ? '添加套餐' : '编辑套餐'"
       :visible.sync="showModal"
       width="70%"
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="名称:" prop="name" required>
-          <el-input v-model="Form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="优先级:" prop="priority" required>
-          <el-input v-model="Form.priority"></el-input>
-        </el-form-item>
-        <el-form-item label="排序:" prop="sort" required>
-          <el-input v-model="Form.sort"></el-input>
-        </el-form-item>
-        <el-form-item label="来源:" prop="sourceAid" required>
-          <el-input v-model="Form.sourceAid"></el-input>
-        </el-form-item>
-        <el-form-item label="库存:" prop="stock" required>
-          <el-input v-model="Form.stock"></el-input>
-        </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
-          <el-radio-group v-model="Form.state">
-            <el-radio :label="0" value="0">开启</el-radio>
-            <el-radio :label="1" value="1">关闭</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="开始时间:" prop="activityStartTime">
-          <el-date-picker
-            v-model="Form.activityStartTime"
-            type="datetime"
-            placeholder="选择日期"
-            style="width: 100%"
-            format="yyyy-MM-dd HH:mm:ss"
-            value-format="yyyy-MM-dd HH:mm:ss"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="结束时间:" prop="activityEndTime">
-          <el-date-picker
-            v-model="Form.activityEndTime"
-            type="datetime"
-            placeholder="选择日期"
-            style="width: 100%"
-            format="yyyy-MM-dd HH:mm:ss"
-            value-format="yyyy-MM-dd HH:mm:ss"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="下架时间:" prop="offShelfTime" required>
-          <el-date-picker
-            v-model="Form.offShelfTime"
-            type="datetime"
-            placeholder="选择日期"
-            style="width: 100%"
-            format="yyyy-MM-dd HH:mm:ss"
-            value-format="yyyy-MM-dd HH:mm:ss"
-          ></el-date-picker>
-        </el-form-item>
-        <el-form-item label="套餐:" prop="packageAid" required>
-          <el-select v-model="Form.packageAid" multiple placeholder="请选择">
-            <el-option
-              v-for="item in packages"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="支持的通道:" prop="channelList" required>
-          <el-select v-model="Form.channelList" multiple placeholder="请选择">
-            <el-option
-              v-for="item in channel"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="运营商:" prop="operatorList" required>
-          <el-select v-model="Form.operatorList" multiple placeholder="请选择">
-            <el-option
-              v-for="item in operator"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="备注:" prop="remark">
-          <el-input v-model="Form.remark" type="textarea"></el-input>
+      <el-form
+        :inline="true"
+        :model="Form"
+        label-width="100px"
+        label-position="right"
+        class="demo-form-inline"
+      >
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="套餐名称:" prop="name" required>
+              <el-input v-model="Form.name"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="产品类型:" prop="productType" required>
+              <el-input v-model="Form.productType"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="运营商:" prop="isp" required>
+              <el-select v-model="Form.isp">
+                <el-option
+                  v-for="item in operator"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="8">
+            <el-form-item label="基础价:" prop="price" required>
+              <el-input v-model="Form.price"></el-input>
+            </el-form-item>
+          </el-col>
+          <el-col :span="8">
+            <el-form-item label="折扣价:" prop="discountPrice" required>
+              <el-input v-model="Form.discountPrice"></el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-form-item label="产品编码:" prop="productCode">
+            <el-row>
+              <el-button>10M</el-button>
+              <el-button>50M</el-button>
+              <el-button>100M</el-button>
+              <el-button>200M</el-button>
+              <el-button>500M</el-button>
+              <el-button>1G</el-button>
+              <el-button>2G</el-button>
+            </el-row>
+            <el-row>
+              <el-button>10G</el-button>
+              <el-button>20G</el-button>
+              <el-button>100G</el-button>
+              <el-button @click="showDialog2">自定义</el-button>
+            </el-row>
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="备注:" prop="remark">
+              <el-input
+                v-model="textarea"
+                type="textarea"
+                :rows="2"
+                placeholder="请输入内容"
+              >
+                >
+              </el-input>
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeShowModal = false">取 消</el-button>
+        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog :visible.sync="showModal2" title="自定义" width="20%" top="15vh">
+      <el-form
+        :inline="true"
+        :model="setForm"
+        label-width="100px"
+        label-position="right"
+        class="demo-form-inline"
+      >
+        <el-form-item>
+          <el-input v-model="Form.productCode" placeholder="请输入"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="closeShowModal">取 消</el-button>
-        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
+        <el-button @click="showModal2 = false">取 消</el-button>
+        <el-button type="primary" @click="showModal2 = false">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -232,7 +234,7 @@
 
 <script>
   import './index.scss'
-  import { virtualProductApi, channelApi } from '@/api/index'
+  import { virtualProductApi } from '@/api/index'
 
   export default {
     name: 'VirtualProduct',
@@ -244,11 +246,10 @@
         tableData: [],
         virtualClass: [],
         virtualchildClass: [],
-        packages: [],
-        channel: [],
         operator: [],
         search_value: '',
         showModal: false,
+        showModal2: false,
         add: false,
         textarea: '',
         Form: {
@@ -275,8 +276,6 @@
       this.getVirtualClass()
       this.getVirtualchildClass()
       this.getVirtualOperator()
-      this.getChannel()
-      this.getPackages()
     },
     methods: {
       handleSizeChange(val) {
@@ -338,10 +337,9 @@
           page: page || '',
           pageRow: pageRow || '',
         }
-        const { data } = await virtualProductApi.getGoodsVirtual(params)
-        this.tableData = data.records
-        this.total = data.total
-        console.log(data.records, 'data')
+        const data = await virtualProductApi.getGoodsVirtual(params)
+        this.tableData = data.data
+        console.log(data, 'data')
       },
       //获取业务父类
       async getVirtualClass() {
@@ -375,46 +373,6 @@
           })
         })
         console.log(this.operator, 'operator')
-      },
-      //获取通道
-      async getChannel() {
-        const { data } = await channelApi.getChannel({ page: 1, pageRow: 100 })
-        if (data) {
-          data.records.forEach((item) => {
-            this.channel.push({
-              value: item.aid,
-              label: item.company_name,
-            })
-          })
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
-        console.log(this.channel, 'channel')
-      },
-      // 获取套餐列表
-      async getPackages() {
-        const { data } = await virtualProductApi.getVirtualPackageList({
-          classAid: 0,
-          page: 1,
-          pageRow: 100,
-        })
-        if (data) {
-          data.records.forEach((item) => {
-            this.packages.push({
-              value: item.aid,
-              label: item.name,
-            })
-          })
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
-        console.log(this.packages, 'packages')
       },
       //修改状态
       async changeState(row) {
@@ -472,6 +430,13 @@
             })
           }
         }
+      },
+      // 获取套餐列表
+      async getVirtualPackageList() {
+        const params = {
+          classAid: 0,
+        }
+        // const {data}
       },
     },
   }
