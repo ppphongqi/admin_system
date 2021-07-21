@@ -37,7 +37,7 @@
         width="180"
       ></el-table-column>
       <el-table-column
-        prop="sourceAid"
+        prop="source_aid"
         label="来源"
         align="center"
         width="150"
@@ -56,7 +56,7 @@
       ></el-table-column>
       <el-table-column
         prop="stock"
-        label="优先级"
+        label="库存"
         align="center"
         width="150"
       ></el-table-column>
@@ -73,19 +73,19 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="activityStartTime"
+        prop="activity_start_time"
         label="活动开始时间"
         align="center"
         width="200"
       ></el-table-column>
       <el-table-column
-        prop="activityEndTime"
+        prop="activity_end_time"
         label="活动结束时间"
         align="center"
         width="200"
       ></el-table-column>
       <el-table-column
-        prop="offShelfTime"
+        prop="off_shelf_time"
         label="下架时间"
         align="center"
         width="200"
@@ -101,18 +101,8 @@
           <el-button type="text" size="small" @click="editModal(scope.row)">
             编辑
           </el-button>
-          <el-button size="mini" type="text">
-            <el-dropdown trigger="click">
-              <span class="el-dropdown-link">
-                管理
-                <i class="el-icon-arrow-down"></i>
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item>下架套餐</el-dropdown-item>
-                <el-dropdown-item>上线套餐</el-dropdown-item>
-                <el-dropdown-item>移除套餐</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+          <el-button type="text" size="small" @click="deleteRow(scope.row)">
+            删除
           </el-button>
         </template>
       </el-table-column>
@@ -132,7 +122,7 @@
     <el-dialog
       :title="add ? '添加产品' : '编辑产品'"
       :visible.sync="showModal"
-      width="70%"
+      width="40%"
       top="15vh"
       :before-close="closeShowModal"
     >
@@ -146,7 +136,7 @@
         <el-form-item label="排序:" prop="sort" required>
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
-        <el-form-item label="来源:" prop="sourceAid" required>
+        <el-form-item label="来源:" prop="source_aid" required>
           <el-input v-model="Form.sourceAid"></el-input>
         </el-form-item>
         <el-form-item label="库存:" prop="stock" required>
@@ -158,7 +148,7 @@
             <el-radio :label="1" value="1">关闭</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="开始时间:" prop="activityStartTime">
+        <el-form-item label="开始时间:" prop="activity_start_time">
           <el-date-picker
             v-model="Form.activityStartTime"
             type="datetime"
@@ -168,7 +158,7 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="结束时间:" prop="activityEndTime">
+        <el-form-item label="结束时间:" prop="activity_end_time">
           <el-date-picker
             v-model="Form.activityEndTime"
             type="datetime"
@@ -178,7 +168,7 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="下架时间:" prop="offShelfTime" required>
+        <el-form-item label="下架时间:" prop="off_shelf_time" required>
           <el-date-picker
             v-model="Form.offShelfTime"
             type="datetime"
@@ -189,7 +179,7 @@
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="套餐:" prop="packageAid" required>
-          <el-select v-model="Form.packageAid" multiple placeholder="请选择">
+          <el-select v-model="Form.packageAid" placeholder="请选择">
             <el-option
               v-for="item in packages"
               :key="item.value"
@@ -253,17 +243,17 @@
         textarea: '',
         Form: {
           aid: -1,
-          priority: '',
-          packageAid: '',
-          sourceAid: '',
-          stock: '',
-          state: '',
+          priority: 0,
+          packageAid: 1,
+          sourceAid: 1,
+          stock: 0,
+          state: 0,
           name: '',
           remark: '',
           offShelfTime: '',
           activityStartTime: '',
           activityEndTime: '',
-          sort: '',
+          sort: 0,
           channelList: [],
           operatorList: [],
         },
@@ -292,7 +282,22 @@
         console.log(row)
         this.showModal = true
         this.add = false
-        this.Form = row
+        this.Form = {
+          aid: row.aid,
+          packageAid: row.packageAid,
+          sourceAid: row.source_aid,
+          stock: row.stock,
+          state: row.state,
+          name: row.name,
+          activityStartTime: row.activity_start_time,
+          activityEndTime: row.activity_end_time,
+          offShelfTime: row.off_shelf_time,
+          sort: row.sort,
+          priority: row.priority,
+          channelList: row.channelList,
+          operatorList: row.operatorList,
+          remark: row.remark,
+        }
       },
       showDialog() {
         this.showModal = true
@@ -300,7 +305,22 @@
       },
       closeShowModal() {
         this.showModal = false
-        this.Form = {}
+        this.Form = {
+          aid: -1,
+          priority: 0,
+          packageAid: 1,
+          sourceAid: 1,
+          stock: 0,
+          state: 0,
+          name: '',
+          remark: '',
+          offShelfTime: '',
+          activityStartTime: '',
+          activityEndTime: '',
+          sort: 0,
+          channelList: [],
+          operatorList: [],
+        }
       },
       showDialog2() {
         this.showModal2 = true
@@ -423,9 +443,9 @@
           aid: row.aid,
         }
         if (row.state) {
-          params.state = 1
+          params.state = '1'
         } else {
-          params.state = 0
+          params.state = '0'
         }
         console.log(params, 'params')
         const res = await virtualProductApi.updateGoodsVirtualState(params)
@@ -440,38 +460,25 @@
         }
       },
       //添加/修改虚拟产品
-      async modalConfirm(flag) {
-        console.log(flag, 'flag')
-        // flag确定是新增还是修改
-        if (flag) {
-          let form = {
-            aid: -1,
-          }
-          console.log(form, 'addform')
-          const res = await virtualProductApi.editingGoodsVirtual(form)
-          console.log(res, 'res')
-          this.showModal = false
-          if (!res) {
-            this.$message({
-              message: '接口未返回数据',
-              type: 'warning',
-            })
-          }
-        } else {
-          let form = {
-            aid: this.Form.aid,
-          }
-          console.log(form, 'editform')
-          const res = await virtualProductApi.editingGoodsVirtual(form)
-          this.showModal = false
-          console.log(res, 'res')
-          if (!res) {
-            this.$message({
-              message: '接口未返回数据',
-              type: 'warning',
-            })
-          }
+      async modalConfirm() {
+        console.log(this.Form, 'form')
+        if (this.Form.state === 0) {
+          this.Form.state = '0'
         }
+        const res = await virtualProductApi.editingGoodsVirtual(this.Form)
+        console.log(res, 'res')
+        this.closeShowModal()
+        this.getData({ page: 1, pageRow: 10 })
+        if (!res) {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      //删除虚拟产品
+      deleteRow(item) {
+        console.log(item)
       },
     },
   }
