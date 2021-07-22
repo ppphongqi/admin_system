@@ -259,6 +259,16 @@ export const asyncRoutes = [
         },
       },
       {
+        path: 'AdminList',
+        name: 'AdminList',
+        component: () => import('@/views/UserManage/children/adminList/index'),
+        meta: {
+          title: '管理员列表',
+          icon: 'user-plus',
+          // affix: true,
+        },
+      },
+      {
         path: 'Merchants',
         name: 'Merchants',
         component: () => import('@/views/UserManage/children/merchants/index'),
@@ -307,20 +317,38 @@ export const asyncRoutes = [
       {
         path: 'RoleList',
         name: 'RoleList',
-        component: () => import('@/views/RoleManage/childern/list/index'),
+        component: () => import('@/views/RoleManage/children/list/index'),
         meta: {
           title: '角色管理',
           icon: 'user-plus',
           // affix: true,
         },
       },
+    ],
+  },
+  {
+    path: '/PowerManage',
+    component: Layout,
+    redirect: 'noRedirect',
+    meta: { title: '权限管理', icon: 'box-open' },
+    children: [
       {
-        path: 'RoleAdminList',
-        name: 'RoleAdminList',
-        component: () => import('@/views/RoleManage/childern/adminList/index'),
+        path: 'PowerList',
+        name: 'PowerList',
+        component: () => import('@/views/powerManagement/children/list/index'),
         meta: {
-          title: '管理员列表',
-          icon: 'user-plus',
+          title: '权限管理',
+          icon: 'cube',
+          // affix: true,
+        },
+      },
+      {
+        path: 'PowerKinds',
+        name: 'PowerKinds',
+        component: () => import('@/views/powerManagement/children/kinds/index'),
+        meta: {
+          title: '权限分类',
+          icon: 'cube',
           // affix: true,
         },
       },

@@ -92,7 +92,9 @@
         width="200"
       >
         <template slot-scope="scope">
-          <div>{{ moment(scope.row.timeAdd).format('YYYY-MM-DD') }}</div>
+          <div>
+            {{ moment(scope.row.timeAdd).format('YYYY-MM-DD HH:mm:ss') }}
+          </div>
         </template>
       </el-table-column>
       <el-table-column
@@ -102,7 +104,9 @@
         width="200"
       >
         <template slot-scope="scope">
-          <div>{{ moment(scope.row.timeAdd).format('YYYY-MM-DD') }}</div>
+          <div>
+            {{ moment(scope.row.timeAdd).format('YYYY-MM-DD HH:mm:ss') }}
+          </div>
         </template>
       </el-table-column>
       <el-table-column
@@ -293,7 +297,7 @@
     },
     computed: {
       getTime(date) {
-        return moment(date).format('YYYY-MM-DD,HH:mm:ss')
+        return moment(date).format('YYYY-MM-DD HH:mm:ss')
       },
     },
     mounted() {

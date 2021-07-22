@@ -67,7 +67,7 @@ class RoleApi {
   // 新增/编辑权限分类
   addPerType = (data = {}) => {
     return request({
-      url: '/pc/permission/DeletePermission',
+      url: '/pc/permission/AddUpdatePermissionClassify',
       method: 'post',
       data,
     })
@@ -94,7 +94,7 @@ class RoleApi {
   //添加/修改时获取角色列表
   getAdminRoleList = (params = {}) => {
     return request({
-      url: '  /pc/user/RoleList',
+      url: '/pc/user/RoleList',
       method: 'get',
       params,
     })
