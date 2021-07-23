@@ -439,9 +439,9 @@
           aid: row.aid,
         }
         if (row.isUsed) {
-          params.state = 1
+          params.state = '1'
         } else {
-          params.state = 0
+          params.state = '0'
         }
         console.log(params, 'params')
         const res = await userApi.editUserState(params)

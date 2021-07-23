@@ -100,7 +100,32 @@
         <el-form-item label="排序:" prop="sort" required>
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
-        <el-form-item label="任务图标:" prop="missionIcon" required>
+        <el-form-item v-if="add" label="任务图标:" prop="missionIcon" required>
+          <div class="upload_wrapper">
+            <el-upload
+              ref="uploadFileList"
+              class="avatar-uploader"
+              action="http://localhost/api/pc/oss/uploadList"
+              :limit="5"
+              :show-file-list="false"
+              multiple
+              :auto-upload="false"
+              :on-change="changeUpload"
+              :on-success="handleAvatarSuccessOne"
+              :before-upload="beforeAvatarUpload"
+              :data="{ module: 'img' }"
+            >
+              <div v-for="url in imgUrlList" :key="url.index">
+                <img :src="url.imgUrl" class="avatar" />
+              </div>
+              <i class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+            <div class="upload_tips">
+              （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item v-else label="任务图标:" prop="missionIcon" required>
           <div class="upload_wrapper">
             <el-upload
               ref="upload"
@@ -108,11 +133,14 @@
               action="http://localhost/api/pc/oss/upload"
               :limit="1"
               :show-file-list="false"
-              :on-success="handleAvatarSuccess"
+              :on-success="handleAvatarSuccessTwo"
               :before-upload="beforeAvatarUpload"
+              :data="{ module: 'img' }"
             >
-              <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+              <div v-for="url in imgUrlList" :key="url.index">
+                <img :src="url.imgUrl" class="avatar" />
+              </div>
+              <i class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
             <div class="upload_tips">
               （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
@@ -187,6 +215,7 @@
 <script>
   import './index.scss'
   import { taskApi } from '@/api/index'
+  import axios from 'axios'
   export default {
     name: 'TaskManage',
     data() {
@@ -194,12 +223,13 @@
         dialogImageUrl: '',
         dialogVisible: false,
         disabled: false,
-        imageUrl: '',
+        imgUrlList: [],
         currentPage: 1,
         total: 1,
         PageSize: 7,
         add: false,
         tableData: [],
+        file: [],
         showModal: false,
         Form: {
           aid: '', //任务id
@@ -217,6 +247,7 @@
         },
         typeOption: [],
         kindsOption: [],
+        maxFileLen: 0,
       }
     },
     mounted() {
@@ -297,15 +328,23 @@
             sort: this.Form.sort, //任务排序
             missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
             missionTypeAid: this.Form.missionTypeName, // 任务类型Name
-            missionIcon: ' this.Form.missionIcon', // 任务图标
+            missionIcon: this.imgUrlList, // 任务图标
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
           console.log(form, 'form')
+          if (form.missionIcon.length === 0) {
+            this.$message({
+              message: '未上传二维码',
+              type: 'warning',
+            })
+            return
+          }
           const res = await taskApi.addTasks(form)
-          this.showModal = false
+          this.closeShowModal()
+          this.getList()
           if (!res) {
             this.$message({
               message: '接口未返回数据',
@@ -326,8 +365,9 @@
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
           console.log(form, 'form')
-          const res = await taskApi.addTasks(form)
-          this.showModal = false
+          const res = await taskApi.editTasks(form)
+          this.closeShowModal()
+          this.getList()
           console.log(res, 'form')
           if (!res) {
             this.$message({
@@ -375,7 +415,11 @@
         }
         this.Form.date1 = this.Form.missionValidityTime.split(',')[0]
         this.Form.date2 = this.Form.missionValidityTime.split(',')[1]
-        this.imageUrl = this.Form.missionIcon
+        if (data.missionIcon == null) {
+          this.imgUrlList = []
+        } else {
+          this.imgUrlList = Array({ imgUrl: row.missionIcon })
+        }
       },
       closeShowModal() {
         this.showModal = false
@@ -391,11 +435,53 @@
           missionValidityTime: '', //任务有效期
           missionState: '', //任务状态（0：显示，1：禁止）
         }
-        this.imageUrl = ''
+        this.imgUrlList = []
       },
-      handleAvatarSuccess(response, file, fileList) {
-        this.imageUrl = file.url
-        console.log(file, fileList, response, this.imageUrl)
+      changeUpload(file, fileList) {
+        console.log(file, fileList, '1')
+        let currLength = fileList.length
+        this.maxFileLen = Math.max(currLength, this.maxFileLen)
+        setTimeout(() => {
+          if (currLength != this.maxFileLen) return
+          console.log('start')
+          this.uploadFileList(fileList)
+        }, 0)
+      },
+      uploadFileList(fileList) {
+        let formData = new FormData()
+        let list = []
+        fileList.forEach((v) => {
+          // list.push(v.raw)
+          formData.append('fileList', Array(v.raw))
+        })
+        console.log(list, 'val')
+        // formData.append('fileList', list[0], list[1])
+        formData.append('module', 'img')
+        axios({
+          method: 'post',
+          url: 'http://localhost/api/pc/oss/uploadList',
+          headers: { 'Content-Type': 'multipart/form-data' },
+          data: formData,
+        }).then((res) => {
+          console.log(res)
+        })
+      },
+      handleAvatarSuccessOne(response, file, fileList) {
+        response.data.forEach((val) => {
+          this.imgUrlList.push({ imgUrl: val })
+        })
+        console.log(this.imgUrlList)
+        this.$refs.uploadFileList.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      handleAvatarSuccessTwo(response, file, fileList) {
+        console.log(file)
+        this.imgUrlList.push({ imgUrl: response.message })
+        console.log(this.imgUrlList)
         this.$refs.upload.clearFiles()
         this.$notify({
           title: '上传成功',

@@ -63,10 +63,19 @@ class TaskApi {
     })
   }
 
-  // 添加/修改任务
-  addTasks = (data = {}) => {
+  // 修改任务
+  editTasks = (data = {}) => {
     return request({
       url: '/pc/mission/AddUpdateMission',
+      method: 'post',
+      data,
+    })
+  }
+
+  //添加任务
+  addTasks = (data = {}) => {
+    return request({
+      url: '/pc/mission/ImportFileMissionQrCode',
       method: 'post',
       data,
     })

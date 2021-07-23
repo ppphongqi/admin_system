@@ -21,7 +21,18 @@
         prop="permissionClassifyList"
         label="权限"
         align="center"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.permissionClassifyList.length > 0"
+            type="text"
+            @click="roleDetail(scope.row.permissionClassifyList)"
+          >
+            查看权限明细
+          </el-button>
+          <span v-else style="color: #aaa">--</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="state" label="状态" align="center">
         <template slot-scope="scope">
           <el-switch
@@ -87,6 +98,7 @@
             default-expand-all
             node-key="id"
             highlight-current
+            :default-checked-keys="defaultCheckedProps"
             :props="defaultProps"
           ></el-tree>
         </el-form-item>
@@ -95,6 +107,22 @@
         <el-button @click="closeShowModal">取 消</el-button>
         <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
+    </el-dialog>
+
+    <!-- 权限明细 -->
+    <el-dialog
+      title="权限明细"
+      :visible.sync="showRoleDetail"
+      width="500"
+      style="margin-top: 20px"
+      top
+      :before-close="closeRoleDetail"
+    >
+      <div>
+        <p v-for="(item, index) in RoleNames" :key="index">
+          {{ index + 1 }}、{{ item }}
+        </p>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -111,7 +139,9 @@
         PageSize: 7,
         total: 1,
         tableData: [],
+        RoleNames: [],
         showModal: false,
+        showRoleDetail: false,
         add: false,
         Form: {
           aid: '',
@@ -172,6 +202,7 @@
           children: 'children',
           label: 'label',
         },
+        defaultCheckedProps: [],
       }
     },
     mounted() {
@@ -179,6 +210,22 @@
       this.getTableData()
     },
     methods: {
+      // 获取权限名称
+      getRoleName(item) {
+        this.RoleNames = []
+        if (item.length > 0) {
+          item.forEach((v) => {
+            this.RoleNames.push(v.name)
+          })
+        }
+      },
+      roleDetail(item) {
+        this.showRoleDetail = true
+        this.getRoleName(item)
+      },
+      closeRoleDetail() {
+        this.showRoleDetail = false
+      },
       // 获取权限列表
       async getPerList() {
         const { data } = await roleApi.getPerList()
@@ -210,6 +257,15 @@
         this.data = [...list]
 
         console.log(data, 'res')
+      },
+      //设置默认选中
+      setCheckedNodes(item) {
+        this.defaultCheckedProps = []
+        if (item.length > 0) {
+          item.forEach((v) => {
+            this.defaultCheckedProps.push(v.premissionAid)
+          })
+        }
       },
       // 获取选中树结构选中项
       getCheckedNodes() {
@@ -280,9 +336,9 @@
           aid: row.aid,
         }
         if (row.state) {
-          params.state = 1
+          params.state = '1'
         } else {
-          params.state = 0
+          params.state = '0'
         }
         console.log(params, 'params')
         const res = await roleApi.changeRoleState(params)
@@ -317,7 +373,10 @@
       compail(row) {
         this.add = false
         this.showModal = true
-        this.Form = row
+        roleApi.getRoleDetail({ aid: row.aid }).then((res) => {
+          this.Form = res.data
+          this.setCheckedNodes(res.data.roleUserRoleDTOList)
+        })
       },
       closeShowModal() {
         this.showModal = false
@@ -325,6 +384,7 @@
           name: '',
           state: 0,
         }
+        this.$refs.tree.setCheckedNodes([])
       },
     },
   }

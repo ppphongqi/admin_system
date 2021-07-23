@@ -139,9 +139,9 @@
           aid: row.aid,
         }
         if (row.state) {
-          params.state = 1
+          params.state = '1'
         } else {
-          params.state = 0
+          params.state = '0'
         }
         console.log(params, 'params')
         const res = await taskApi.changeTaskClassStatus(params)
@@ -165,15 +165,16 @@
             name: this.Form.name,
             sort: this.Form.number,
           }
-          if (this.Form.status) {
-            form.state = 0
+          if (this.Form.status === 0) {
+            form.state = '0'
           } else {
-            form.state = 1
+            form.state = '1'
           }
           console.log(form, 'addform')
           const res = await taskApi.addTaskClass(form)
           console.log(res, 'res')
-          this.showModal = false
+          this.closeShowModal()
+          this.getList()
           if (!res) {
             this.$message({
               message: '接口未返回数据',
@@ -186,14 +187,15 @@
             name: this.Form.name,
             sort: this.Form.number,
           }
-          if (this.Form.status) {
-            form.state = 0
+          if (this.Form.status === 0) {
+            form.state = '0'
           } else {
-            form.state = 1
+            form.state = '1'
           }
           console.log(form, 'editform')
           const res = await taskApi.addTaskClass(form)
-          this.showModal = false
+          this.closeShowModal()
+          this.getList()
           console.log(res, 'res')
           if (!res) {
             this.$message({

@@ -37,6 +37,15 @@ class RoleApi {
     })
   }
 
+  //编辑时获取角色信息
+  getRoleDetail = (params = {}) => {
+    return request({
+      url: '/pc/role/GetRoleUpdate',
+      method: 'get',
+      params,
+    })
+  }
+
   // 新增/编辑权限
   addPermission = (data) => {
     return request({
