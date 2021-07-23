@@ -488,7 +488,7 @@
           aid: item.aid,
         }
         const res = await physicalProductApi.delEntity(params)
-        if (res.code === 10000) {
+        if (res.code === 200) {
           this.$message({
             message: res.message,
             type: 'success',
@@ -548,7 +548,7 @@
         }
         if (this.isAddDetail) params.aid = -1
         const res = await physicalProductApi.addEntityDetail(params)
-        if (res.code === 10000) {
+        if (res.code === 200) {
           this.$message({
             message: res.message,
             type: 'success',

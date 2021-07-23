@@ -294,7 +294,7 @@
         const params = this.formValidate
         params.aid = -1
         const res = await physicalProductApi.addEntity(params)
-        if (res.code === 10000) {
+        if (res.code === 200) {
           this.$message({
             message: res.message,
             type: 'success',
@@ -326,7 +326,7 @@
           content: this.content,
         }
         const res = await physicalProductApi.addEntityDetail(params)
-        if (res.code === 10000) {
+        if (res.code === 200) {
           this.$message({
             message: res.message,
             type: 'success',

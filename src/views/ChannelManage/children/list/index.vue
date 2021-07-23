@@ -235,6 +235,9 @@
             ></el-option>
           </el-select>
         </el-form-item>
+        <el-form-item label="设置排序值:" prop="sort" required>
+          <el-input v-model="Form.sort" placeholder="请输入"></el-input>
+        </el-form-item>
         <el-form-item label="设置优先级:" prop="priority" required>
           <el-input v-model="Form.priority" placeholder="请输入"></el-input>
         </el-form-item>
@@ -553,7 +556,7 @@
           aid: item.aid,
         }
         const res = await channelApi.deleteChannel(params)
-        if (res.code === 10000) {
+        if (res.code === 200) {
           this.$message({
             message: res.message,
             type: 'success',
