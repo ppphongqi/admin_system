@@ -19,7 +19,9 @@
           :rules="registerRules"
           size="mini"
         >
-          <el-form-item prop="username">
+          <div class="title">hello !</div>
+          <div class="title-tips">欢迎来到{{ title }}！</div>
+          <!-- <el-form-item prop="username">
             <el-input
               v-model.trim="form.username"
               v-focus
@@ -30,7 +32,7 @@
             >
               <vab-icon slot="prefix" :icon="['fas', 'user-alt']"></vab-icon>
             </el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item prop="phone">
             <el-input
               v-model.trim="form.phone"
@@ -43,16 +45,33 @@
               <vab-icon slot="prefix" :icon="['fas', 'mobile-alt']"></vab-icon>
             </el-input>
           </el-form-item>
-          <el-form-item prop="phoneCode" style="position: relative">
+          <el-form-item prop="loginKey">
             <el-input
-              v-model.trim="form.phoneCode"
+              v-model.trim="form.loginKey"
+              type="password"
+              placeholder="设置密码"
+              autocomplete="new-password"
+            >
+              <vab-icon slot="prefix" :icon="['fas', 'unlock']"></vab-icon>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="confirmPwd">
+            <el-input
+              v-model.trim="form.confirmPwd"
+              type="password"
+              placeholder="确认密码"
+              autocomplete="new-password"
+            >
+              <vab-icon slot="prefix" :icon="['fas', 'unlock']"></vab-icon>
+            </el-input>
+          </el-form-item>
+          <el-form-item prop="smsCode" style="position: relative">
+            <el-input
+              v-model.trim="form.smsCode"
               type="text"
               placeholder="手机验证码"
             >
-              <vab-icon
-                slot="prefix"
-                :icon="['fas', 'envelope-open']"
-              ></vab-icon>
+              <vab-icon slot="prefix" :icon="['fas', 'unlock']"></vab-icon>
             </el-input>
             <el-button
               type="primary"
@@ -62,16 +81,6 @@
             >
               {{ phoneCode }}
             </el-button>
-          </el-form-item>
-          <el-form-item prop="password">
-            <el-input
-              v-model.trim="form.password"
-              type="password"
-              placeholder="设置密码"
-              autocomplete="new-password"
-            >
-              <vab-icon slot="prefix" :icon="['fas', 'unlock']"></vab-icon>
-            </el-input>
           </el-form-item>
           <el-form-item>
             <el-button
@@ -93,6 +102,7 @@
 <script>
   import { isPassword, isPhone } from '@/utils/validate'
   import { register } from '@/api/user'
+  import { loginApi } from '@/api/index'
   export default {
     username: 'Register',
     directives: {
@@ -131,22 +141,31 @@
         showRegister: false,
         nodeEnv: process.env.NODE_ENV,
         title: this.$baseTitle,
-        form: {},
+        form: {
+          phone: '',
+          loginKey: '',
+          confirmPwd: '',
+          smsCode: '',
+        },
         registerRules: {
-          username: [
-            { required: true, trigger: 'blur', message: '请输入用户名' },
-            { max: 20, trigger: 'blur', message: '最多不能超过20个字' },
-            { validator: validateusername, trigger: 'blur' },
-          ],
+          // username: [
+          //   { required: true, trigger: 'blur', message: '请输入用户名' },
+          //   { max: 20, trigger: 'blur', message: '最多不能超过20个字' },
+          //   { validator: validateusername, trigger: 'blur' },
+          // ],
           phone: [
             { required: true, trigger: 'blur', message: '请输入手机号码' },
             { validator: validatePhone, trigger: 'blur' },
           ],
-          password: [
+          loginKey: [
             { required: true, trigger: 'blur', message: '请输入密码' },
             { validator: validatePassword, trigger: 'blur' },
           ],
-          phoneCode: [
+          confirmPwd: [
+            { required: true, trigger: 'blur', message: '请再次输入密码' },
+            { validator: validatePassword, trigger: 'blur' },
+          ],
+          smsCode: [
             { required: true, trigger: 'blur', message: '请输入手机验证码' },
           ],
         },
@@ -169,6 +188,7 @@
           this.$refs['registerForm'].validateField('phone')
           return
         }
+        loginApi.getMessageAuthenticationCode(this.form.phone)
         this.isGetphone = true
         let n = 60
         this.getPhoneIntval = setInterval(() => {
@@ -186,14 +206,22 @@
       handleReister() {
         this.$refs['registerForm'].validate(async (valid) => {
           if (valid) {
-            const param = {
-              username: this.form.username,
-              phone: this.form.phone,
-              password: this.form.password,
-              phoneCode: this.form.phoneCode,
+            if (this.form.loginKey != this.form.confirmPwd) {
+              this.$message({
+                message: '密码不一致，请重新输入',
+                type: 'warning',
+              })
+              return
             }
-            const { msg } = await register(param)
-            this.$baseMessage(msg, 'success')
+            // const param = {
+            //   username: this.form.username,
+            //   phone: this.form.phone,
+            //   password: this.form.password,
+            //   phoneCode: this.form.phoneCode,
+            // }
+            // const { msg } = await register(param)
+            // this.$baseMessage(msg, 'success')
+            const data = await loginApi.register(this.form)
           }
         })
       },
@@ -237,7 +265,7 @@
     .register-form {
       position: relative;
       max-width: 100%;
-      margin: calc((100vh - 499px) / 2) 10% 10%;
+      margin: calc((100vh - 625px) / 2) 10% 10%;
       overflow: hidden;
 
       .forget-password {

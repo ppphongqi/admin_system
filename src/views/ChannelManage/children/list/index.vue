@@ -223,6 +223,7 @@
             }"
             style="width: 100%"
             filterable
+            @change="selectItem"
           ></el-cascader>
         </el-form-item>
         <el-form-item label="支持类型:" prop="classAid" required>
@@ -304,6 +305,7 @@
             }"
             style="width: 100%"
             filterable
+            @change="selectItem"
           ></el-cascader>
         </el-form-item>
         <el-form-item label="设置折扣:" prop="discount" required>
@@ -378,6 +380,9 @@
       this.getChannelList()
     },
     methods: {
+      selectItem() {
+        console.log(this.tempIds, '????')
+      },
       getAddressName(ids) {
         this.addressNmaes = []
         ids.forEach((v) => {
@@ -445,6 +450,7 @@
           let cities = []
           data.forEach((v) => {
             let item = v.province
+            item.disable = true
             if (v.city.length > 1) this.$set(item, 'city', v.city)
             else {
               let itemCity = {
@@ -463,6 +469,7 @@
             cities.push(item)
           })
           this.districtList = cities
+          console.log(this.districtList)
         } else {
           this.$message({
             message: '接口未返回数据',
@@ -509,9 +516,47 @@
           ids.push(v[1])
         })
         this.Form.districtAid = ids
+        if (this.Form.state) {
+          this.Form.state = '1'
+        } else {
+          this.Form.state = '0'
+        }
+        if (this.Form.is_backing_callback) {
+          this.Form.is_backing_callback = '1'
+        } else {
+          this.Form.is_backing_callback = '0'
+        }
         console.log(this.Form)
-        const res = await channelApi.editChannel(this.Form)
-        if (!res) {
+        let form = {
+          appId: this.Form.app_id,
+          accessToken: this.Form.access_token,
+          aid: this.Form.aid,
+          sort: this.Form.sort,
+          companyName: this.Form.company_name,
+          apiAddress: this.Form.api_address,
+          apiAccount: this.Form.api_account,
+          isBackingCallback: this.Form.is_backing_callback,
+          appsecret: this.Form.appsecret,
+          activeQueryAddress: this.Form.active_query_address,
+          priority: this.Form.priority,
+          state: this.Form.state,
+          districtAid: this.Form.districtAid,
+          operatorAid: this.Form.operatorAid,
+          classAid: this.Form.classAid,
+        }
+        if (flag) {
+          form.aid = -1
+        }
+        console.log(form)
+        const res = await channelApi.editChannel(form)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.hiddenEditChannelModel()
+          this.getChannelList()
+        } else {
           this.$message({
             message: '接口未返回数据',
             type: 'warning',

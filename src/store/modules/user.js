@@ -47,7 +47,89 @@ const actions = {
     commit('setPermissions', permissions)
   },
   async login({ commit }, userInfo) {
+    console.log(userInfo, 'userinfo')
     const { data } = await login(userInfo)
+    console.log(data, 'login_data')
+    const accessToken = data[tokenName]
+    console.log(accessToken)
+    if (accessToken) {
+      commit('setAccessToken', accessToken)
+      const hour = new Date().getHours()
+      const thisTime =
+        hour < 8
+          ? '早上好'
+          : hour <= 11
+          ? '上午好'
+          : hour <= 13
+          ? '中午好'
+          : hour < 18
+          ? '下午好'
+          : '晚上好'
+      Vue.prototype.$baseNotify(`欢迎登录${title}`, `${thisTime}！`)
+    } else {
+      Vue.prototype.$baseMessage(
+        `登录接口异常，未正确返回${tokenName}...`,
+        'error'
+      )
+    }
+  },
+  async loginCode({ commit }, userInfo) {
+    console.log(userInfo, 'userinfo')
+    const { data } = await loginApi.loginCode(userInfo)
+    console.log(data, 'login_data')
+    const accessToken = data[tokenName]
+    console.log(accessToken)
+    if (accessToken) {
+      commit('setAccessToken', accessToken)
+      const hour = new Date().getHours()
+      const thisTime =
+        hour < 8
+          ? '早上好'
+          : hour <= 11
+          ? '上午好'
+          : hour <= 13
+          ? '中午好'
+          : hour < 18
+          ? '下午好'
+          : '晚上好'
+      Vue.prototype.$baseNotify(`欢迎登录${title}`, `${thisTime}！`)
+    } else {
+      Vue.prototype.$baseMessage(
+        `登录接口异常，未正确返回${tokenName}...`,
+        'error'
+      )
+    }
+  },
+  async loginUserName({ commit }, userInfo) {
+    console.log(userInfo, 'userinfo')
+    const { data } = await loginApi.loginUserName(userInfo)
+    console.log(data, 'login_data')
+    const accessToken = data[tokenName]
+    console.log(accessToken)
+    if (accessToken) {
+      commit('setAccessToken', accessToken)
+      const hour = new Date().getHours()
+      const thisTime =
+        hour < 8
+          ? '早上好'
+          : hour <= 11
+          ? '上午好'
+          : hour <= 13
+          ? '中午好'
+          : hour < 18
+          ? '下午好'
+          : '晚上好'
+      Vue.prototype.$baseNotify(`欢迎登录${title}`, `${thisTime}！`)
+    } else {
+      Vue.prototype.$baseMessage(
+        `登录接口异常，未正确返回${tokenName}...`,
+        'error'
+      )
+    }
+  },
+  async loginEmail({ commit }, userInfo) {
+    console.log(userInfo, 'userinfo')
+    const { data } = await loginApi.loginEmail(userInfo)
     console.log(data, 'login_data')
     const accessToken = data[tokenName]
     console.log(accessToken)
@@ -78,7 +160,6 @@ const actions = {
     //   Vue.prototype.$baseMessage('验证失败，请重新登录...', 'error')
     //   return false
     // }
-    console.log(11231)
     let data = {}
     data.permissions = ['admin']
     data.username = 'admin'

@@ -11,6 +11,15 @@ class LoginApi {
     })
   }
 
+  //登录（手机号+验证码）
+  loginCode = (data) => {
+    return request({
+      url: '/pc/login/userLoginCode',
+      method: 'post',
+      data,
+    })
+  }
+
   // 登录(账户+密码)
   loginUserName = (data) => {
     return request({

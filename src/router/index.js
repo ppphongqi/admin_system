@@ -22,6 +22,11 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: '/findPwd',
+    component: () => import('@/views/findPwd/index'),
+    hidden: true,
+  },
+  {
     path: '/401',
     name: '401',
     component: () => import('@/views/401'),

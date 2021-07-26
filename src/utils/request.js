@@ -24,10 +24,13 @@ let loadingInstance
  * @param {*} code
  * @param {*} msg
  */
-const handleCode = (code, msg) => {
+const handleCode = (code, msg, message) => {
   switch (code) {
     case invalidCode:
-      Vue.prototype.$baseMessage(msg || `后端接口${code}异常`, 'error')
+      Vue.prototype.$baseMessage(
+        msg || message || `后端接口${code}异常`,
+        'error'
+      )
       store.dispatch('user/resetAccessToken').catch(() => {})
       if (loginInterception) {
         location.reload()
@@ -37,7 +40,10 @@ const handleCode = (code, msg) => {
       router.push({ path: '/401' }).catch(() => {})
       break
     default:
-      Vue.prototype.$baseMessage(msg || `后端接口${code}异常`, 'error')
+      Vue.prototype.$baseMessage(
+        msg || message || `后端接口${code}异常`,
+        'error'
+      )
       break
   }
 }
@@ -75,18 +81,20 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
   (response) => {
     if (loadingInstance) loadingInstance.close()
-
     const { data, config } = response
-    const { code, msg } = data
+    const { code, msg, message } = data
     // 操作正常Code数组
     const codeVerificationArray = isArray(successCode)
       ? [...successCode]
       : [...[successCode]]
     // 是否操作正常
-    if (!codeVerificationArray.includes(code)) {
+    if (config.responseType == 'arraybuffer') {
+      return data
+    }
+    if (codeVerificationArray.includes(code)) {
       return data
     } else {
-      handleCode(code, msg)
+      handleCode(code, msg, message)
       return Promise.reject(
         'vue-admin-beautiful请求异常拦截:' +
           JSON.stringify({ url: config.url, code, msg }) || 'Error'
