@@ -51,11 +51,7 @@
           <el-button type="text" size="small" @click="compail(scope.row)">
             编辑
           </el-button>
-          <el-button
-            type="text"
-            size="small"
-            @click.native.prevent="deleteRow(scope.$index, tableData)"
-          >
+          <el-button type="text" size="small" @click="deleteRow(scope.row)">
             删除
           </el-button>
         </template>
@@ -274,9 +270,14 @@
       },
       async modalConfirm(flag) {
         const preList = this.getCheckedNodes()
+        let tempList = []
         const list = []
         preList.forEach((item) => {
-          list.push(item.id)
+          tempList.push(item.id)
+        })
+        tempList = tempList.filter((n) => n)
+        tempList.forEach((item) => {
+          list.push({ premissionAid: item })
         })
         // flag确定是新增还是修改
         if (flag) {
@@ -292,6 +293,9 @@
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.closeShowModal()
+            this.getTableData()
           }
         } else {
           let form = {
@@ -306,6 +310,9 @@
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.closeShowModal()
+            this.getTableData()
           }
         }
         // this.showModal = false
@@ -361,8 +368,14 @@
         this.currentPage = val
         this.getList(val, this.PageSize)
       },
-      deleteRow(item) {
-        console.log(item)
+      deleteRow(row) {
+        roleApi.deleteRole({ ids: row.aid }).then((res) => {
+          this.$message({
+            message: res.message,
+            type: 'warning',
+          })
+          this.tableData()
+        })
       },
       // 添加
       showDialog() {

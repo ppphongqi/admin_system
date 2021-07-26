@@ -48,11 +48,11 @@ class LoginApi {
   }
 
   // 获取短信验证码
-  getMessageAuthenticationCode = (params = {}) => {
+  getMessageAuthenticationCode = (data) => {
     return request({
       url: '/pc/login/messageAuthenticationCode',
-      method: 'get',
-      params,
+      method: 'post',
+      data,
     })
   }
 

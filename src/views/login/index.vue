@@ -454,7 +454,7 @@
           return
         }
         this.isGetphone = true
-        loginApi.getMessageAuthenticationCode(this.codeForm.phone)
+        loginApi.getMessageAuthenticationCode({ phone: this.codeForm.phone })
         let n = 60
         this.getPhoneIntval = setInterval(() => {
           if (n > 0) {
