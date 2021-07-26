@@ -333,6 +333,8 @@
             missionReward: this.Form.missionReward, //任务酬金
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
+            url: 'url',
+            imgUrlList: this.imgUrlList,
           }
           console.log(form, 'form')
           if (form.missionIcon.length === 0) {
@@ -451,11 +453,12 @@
         let formData = new FormData()
         let list = []
         fileList.forEach((v) => {
-          // list.push(v.raw)
-          formData.append('fileList', Array(v.raw))
+          list.push(v.raw)
+          // formData.append('fileList', v.raw)
         })
         console.log(list, 'val')
-        // formData.append('fileList', list[0], list[1])
+
+        formData.append('fileList', list)
         formData.append('module', 'img')
         axios({
           method: 'post',

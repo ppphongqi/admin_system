@@ -210,7 +210,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="支持地区:" prop="tempIds" required>
+        <el-form-item label="支持地区:" required>
           <el-cascader
             v-model="tempIds"
             placeholder="请选择"
@@ -220,6 +220,7 @@
               value: 'aid',
               label: 'name',
               children: 'city',
+              disabled: 'disabled',
             }"
             style="width: 100%"
             filterable
@@ -292,9 +293,9 @@
       :before-close="hiddenDiscountModel"
     >
       <el-form :model="setForm" label-width="100px" label-position="right">
-        <el-form-item label="选择地区:" prop="area" required>
+        <el-form-item label="选择地区:" required>
           <el-cascader
-            v-model="setForm.area"
+            v-model="tempIds"
             placeholder="请选择"
             :options="districtList"
             :props="{
@@ -302,20 +303,15 @@
               value: 'aid',
               label: 'name',
               children: 'city',
+              disabled: 'disabled',
             }"
             style="width: 100%"
             filterable
             @change="selectItem"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="设置折扣:" prop="discount" required>
-          <el-input v-model="setForm.discount"></el-input>
-        </el-form-item>
-        <el-form-item label="状态:" prop="state" align="left">
-          <el-radio-group v-model="setForm.state">
-            <el-radio :label="1">开启</el-radio>
-            <el-radio :label="0">关闭</el-radio>
-          </el-radio-group>
+        <el-form-item label="设置折扣:" prop="rebate" required>
+          <el-input v-model="setForm.rebate"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -358,11 +354,7 @@
         editChannelModel: false,
         add: false,
         Form: {},
-        setForm: {
-          area: '',
-          discount: '',
-          state: 0,
-        },
+        setForm: {},
         operatorList: [],
         classList: [],
         districtList: [],
@@ -381,7 +373,32 @@
     },
     methods: {
       selectItem() {
-        console.log(this.tempIds, '????')
+        let ids = []
+        this.tempIds.forEach((v) => {
+          ids.push(v[1])
+        })
+        if (this.tempIds.length === 0) {
+          this.districtList.forEach((v) => {
+            v.disabled = false
+            v.city.disabled = false
+          })
+          return
+        }
+        if (ids.includes(1)) {
+          this.districtList.forEach((v) => {
+            if (v.aid !== 1) {
+              v.disabled = true
+              v.city.disabled = true
+            }
+          })
+        } else {
+          this.districtList.forEach((v) => {
+            if (v.aid === 1) {
+              v.disabled = true
+              v.city.disabled = true
+            }
+          })
+        }
       },
       getAddressName(ids) {
         this.addressNmaes = []
@@ -451,8 +468,10 @@
           data.forEach((v) => {
             let item = v.province
             item.disable = true
-            if (v.city.length > 1) this.$set(item, 'city', v.city)
-            else {
+            if (v.city.length > 1) {
+              this.$set(item, 'city', v.city)
+              this.$set(item, 'disabled', false)
+            } else {
               let itemCity = {
                 aid: v.province.aid,
                 hierarchy: v.province.hierarchy,
@@ -465,11 +484,11 @@
               let itemCities = []
               itemCities.push(itemCity)
               this.$set(item, 'city', itemCities)
+              this.$set(item, 'disabled', false)
             }
             cities.push(item)
           })
           this.districtList = cities
-          console.log(this.districtList)
         } else {
           this.$message({
             message: '接口未返回数据',
@@ -482,7 +501,6 @@
         const params = {}
         const { data } = await virtualProductApi.getOperator(params)
         if (data) {
-          console.log(data)
           this.operatorList = data
         } else {
           this.$message({
@@ -510,7 +528,6 @@
       },
       // 添加/编辑通道
       async modalConfirm(flag) {
-        console.log(this.Form)
         let ids = []
         this.tempIds.forEach((v) => {
           ids.push(v[1])
@@ -526,7 +543,6 @@
         } else {
           this.Form.is_backing_callback = '0'
         }
-        console.log(this.Form)
         let form = {
           appId: this.Form.app_id,
           accessToken: this.Form.access_token,
@@ -547,7 +563,6 @@
         if (flag) {
           form.aid = -1
         }
-        console.log(form)
         const res = await channelApi.editChannel(form)
         if (res) {
           this.$message({
@@ -579,9 +594,20 @@
         }
       },
       async discountModalConfirm() {
-        let form = {}
-        const res = await channelApi.discountModalConfirm(form)
-        if (!res) {
+        let ids = []
+        this.tempIds.forEach((v) => {
+          ids.push(v[1])
+        })
+        this.setForm.districtAid = ids
+        const res = await channelApi.setChannelDiscount(this.setForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.hiddenDiscountModel()
+          this.getChannelList()
+        } else {
           this.$message({
             message: '接口未返回数据',
             type: 'warning',
@@ -643,25 +669,21 @@
           tempIds.push(addressIds)
         })
         this.tempIds = tempIds
-        console.log(tempIds)
       },
       hiddenEditChannelModel() {
         this.editChannelModel = false
-      },
-      closeDiscountModal() {
-        this.showModal = false
-        this.setForm = {
-          area: '',
-          discount: '',
-          state: 0,
-        }
+        this.tempIds = []
+        this.selectItem()
       },
       // 设置折扣
       showDiscountModel(index, data) {
         this.discountModel = true
+        this.setForm = {}
       },
       hiddenDiscountModel() {
         this.discountModel = false
+        this.tempIds = []
+        this.selectItem()
       },
     },
   }
