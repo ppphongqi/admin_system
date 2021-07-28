@@ -172,14 +172,18 @@
           }
           console.log(form, 'addform')
           const res = await taskApi.addTaskClass(form)
-          console.log(res, 'res')
-          this.closeShowModal()
-          this.getList()
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.closeShowModal()
+            this.getList()
           }
         } else {
           let form = {
@@ -194,14 +198,18 @@
           }
           console.log(form, 'editform')
           const res = await taskApi.addTaskClass(form)
-          this.closeShowModal()
-          this.getList()
-          console.log(res, 'res')
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.closeShowModal()
+            this.getList()
           }
         }
       },

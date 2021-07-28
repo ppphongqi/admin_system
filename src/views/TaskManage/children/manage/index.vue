@@ -23,7 +23,12 @@
       ></el-table-column>
       <el-table-column prop="missionIcon" label="任务图标" align="center">
         <template slot-scope="scope">
-          <el-image :src="scope.row.missionIcon" fit="fill"></el-image>
+          <img
+            v-for="(item, index) in scope.row.missionIcon.split(',')"
+            :key="index"
+            :src="item"
+            style="max-height: 70px; max-width: 70px; padding: 5px"
+          />
         </template>
       </el-table-column>
       <el-table-column
@@ -100,7 +105,26 @@
         <el-form-item label="排序:" prop="sort" required>
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
-        <el-form-item v-if="add" label="任务图标:" prop="missionIcon" required>
+        <el-form-item label="任务类型:" required>
+          <el-select
+            v-model="Form.missionClassifyName"
+            size="medium"
+            @change="$forceUpdate()"
+          >
+            <el-option
+              v-for="item in typeOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="add && Form.missionClassifyName == '1'"
+          label="任务图标:"
+          prop="missionIcon"
+          required
+        >
           <div class="upload_wrapper">
             <el-upload
               ref="uploadFileList"
@@ -113,7 +137,6 @@
               :on-change="changeUpload"
               :on-success="handleAvatarSuccessOne"
               :before-upload="beforeAvatarUpload"
-              :data="{ module: 'img' }"
             >
               <div v-for="url in imgUrlList" :key="url.index">
                 <img :src="url.imgUrl" class="avatar" />
@@ -125,7 +148,12 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item v-else label="任务图标:" prop="missionIcon" required>
+        <el-form-item
+          v-if="!add && Form.missionClassifyName == '1'"
+          label="任务图标:"
+          prop="missionIcon"
+          required
+        >
           <div class="upload_wrapper">
             <el-upload
               ref="upload"
@@ -147,6 +175,14 @@
             </div>
           </div>
         </el-form-item>
+        <el-form-item
+          v-if="Form.missionClassifyName == '2'"
+          label="二维码地址:"
+          prop="url"
+          required
+        >
+          <el-input v-model="Form.url"></el-input>
+        </el-form-item>
         <el-form-item label="任务分类:" required>
           <el-select v-model="Form.missionTypeName" size="medium">
             <el-option
@@ -157,18 +193,11 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="任务类型:" required>
-          <el-select v-model="Form.missionClassifyName" size="medium">
-            <el-option
-              v-for="item in typeOption"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
         <el-form-item label="任务佣金:" prop="missionReward" required>
           <el-input v-model="Form.missionReward"></el-input>
+        </el-form-item>
+        <el-form-item label="可领取次数:" prop="getNumber" required>
+          <el-input v-model="Form.getNumber"></el-input>
         </el-form-item>
         <el-form-item label="任务时间:" required>
           <el-col :span="11">
@@ -236,14 +265,16 @@
           name: '', //任务名称
           sort: '', //排序，数字越大，优先级越高
           missionTypeName: '', // 任务分类Name
-          missionClassifyName: '', // 任务类型Name
+          missionClassifyName: 1, // 任务类型Name
           missionIcon: '', // 任务图标
           missionDescribe: '', // 任务描述
+          getNumber: '',
           missionReward: '', //任务酬金
           missionValidityTime: '', //任务有效期
           missionState: 0, //任务状态（0：显示，1：禁止）
           date1: '',
           date2: '',
+          url: '',
         },
         typeOption: [],
         kindsOption: [],
@@ -314,10 +345,6 @@
           this.getList()
         }
       },
-      //上传二维码图片
-
-      //给任务分配二维码
-
       //添加/修改任务
       async modalConfirm(flag) {
         // flag确定是新增还是修改
@@ -328,30 +355,40 @@
             sort: this.Form.sort, //任务排序
             missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
             missionTypeAid: this.Form.missionTypeName, // 任务类型Name
-            missionIcon: this.imgUrlList, // 任务图标
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
+            getNumber: this.Form.getNumber, //可领取次数
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
-            url: 'url',
-            imgUrlList: this.imgUrlList,
+          }
+          let temp = []
+          this.imgUrlList.forEach((v) => {
+            temp.push(v.imgUrl)
+          })
+          form.missionIcon = String(temp)
+          // 任务图标
+          if (this.Form.missionClassifyName == '1') {
+            form.imgUrlList = this.imgUrlList
+            form.url = ' '
+          } else if (this.Form.missionClassifyName == '2') {
+            form.imgUrlList = []
+            form.url = this.Form.url
+            form.missionIcon = ' '
           }
           console.log(form, 'form')
-          if (form.missionIcon.length === 0) {
-            this.$message({
-              message: '未上传二维码',
-              type: 'warning',
-            })
-            return
-          }
           const res = await taskApi.addTasks(form)
-          this.closeShowModal()
-          this.getList()
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.closeShowModal()
+            this.getList()
           }
         } else {
           let form = {
@@ -360,22 +397,41 @@
             sort: this.Form.sort, //任务排序
             missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
             missionTypeAid: this.Form.missionTypeName, // 任务类型Name
-            missionIcon: this.Form.missionIcon, // 任务图标
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
+            getNumber: this.Form.getNumber, //可领取次数
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
+          let temp = []
+          this.imgUrlList.forEach((v) => {
+            temp.push(v.imgUrl)
+          })
+          form.missionIcon = String(temp)
+          // 任务图标
+          if (this.Form.missionClassifyName == '1') {
+            form.imgUrlList = this.imgUrlList
+            form.url = ' '
+          } else if (this.Form.missionClassifyName == '2') {
+            form.imgUrlList = []
+            form.url = this.Form.url
+            form.missionIcon = ' '
+          }
           console.log(form, 'form')
           const res = await taskApi.editTasks(form)
-          this.closeShowModal()
-          this.getList()
           console.log(res, 'form')
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.closeShowModal()
+            this.getList()
           }
         }
       },
@@ -388,8 +444,21 @@
         this.currentPage = val
         this.getList(val, this.PageSize)
       },
-      deleteRow(item) {
-        console.log(item)
+      async deleteRow(item) {
+        console.log(item.aid)
+        const res = await taskApi.delTasks({ ids: item.aid })
+        if (res) {
+          this.getList()
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+        } else {
+          this.$message({
+            message: '删除失败',
+            type: 'warning',
+          })
+        }
       },
       addTask() {
         this.add = true
@@ -409,18 +478,21 @@
           sort: data.sort, //排序，数字越大，优先级越高
           missionClassifyName: data.missionClassifyAid, // 任务分类aid
           missionTypeName: data.missionTypeAid, // 任务类型aid
-          missionIcon: data.missionIcon, // 任务图标
           missionDescribe: data.missionDescribe, // 任务描述
           missionReward: data.missionReward, //任务酬金
+          getNumber: data.getNumber, //可领取次数
           missionValidityTime: data.missionValidityTime, //任务有效期
           missionState: data.missionState, //任务状态（0：显示，1：禁止）
         }
         this.Form.date1 = this.Form.missionValidityTime.split(',')[0]
         this.Form.date2 = this.Form.missionValidityTime.split(',')[1]
-        if (data.missionIcon == null) {
-          this.imgUrlList = []
+        if (data.missionIcon.trim()) {
+          let tempList = data.missionIcon.split(',')
+          tempList.forEach((v) => {
+            this.imgUrlList.push({ imgUrl: v })
+          })
         } else {
-          this.imgUrlList = Array({ imgUrl: row.missionIcon })
+          this.imgUrlList = []
         }
       },
       closeShowModal() {
@@ -429,11 +501,12 @@
           aid: '',
           name: '', //任务名称
           sort: '', //排序，数字越大，优先级越高
-          missionClassifyName: '', // 任务分类aid
+          missionClassifyName: 1, // 任务分类aid
           missionTypeName: '', // 任务类型aid
           missionIcon: '', // 任务图标
           missionDescribe: '', // 任务描述
           missionReward: '', //任务酬金
+          getNumber: '', //可领取次数
           missionValidityTime: '', //任务有效期
           missionState: '', //任务状态（0：显示，1：禁止）
         }
@@ -451,14 +524,9 @@
       },
       uploadFileList(fileList) {
         let formData = new FormData()
-        let list = []
         fileList.forEach((v) => {
-          list.push(v.raw)
-          // formData.append('fileList', v.raw)
+          formData.append('fileList', v.raw)
         })
-        console.log(list, 'val')
-
-        formData.append('fileList', list)
         formData.append('module', 'img')
         axios({
           method: 'post',
@@ -467,13 +535,15 @@
           data: formData,
         }).then((res) => {
           console.log(res)
+          this.handleAvatarSuccessOne(res.data.data)
         })
       },
-      handleAvatarSuccessOne(response, file, fileList) {
-        response.data.forEach((val) => {
-          this.imgUrlList.push({ imgUrl: val })
+      handleAvatarSuccessOne(data) {
+        console.log(Object.values(data))
+        let resList = Object.values(data)
+        resList.forEach((v) => {
+          this.imgUrlList.push({ imgUrl: v })
         })
-        console.log(this.imgUrlList)
         this.$refs.uploadFileList.clearFiles()
         this.$notify({
           title: '上传成功',

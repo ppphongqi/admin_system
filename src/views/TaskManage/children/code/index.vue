@@ -18,7 +18,7 @@
       ></el-table-column>
       <el-table-column
         prop="codeName"
-        label="二维码名称"
+        label="二维码状态"
         align="center"
       ></el-table-column>
       <el-table-column prop="imgUrl" label="二维码图片" align="center">

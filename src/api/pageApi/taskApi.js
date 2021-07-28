@@ -81,6 +81,15 @@ class TaskApi {
     })
   }
 
+  //删除任务
+  delTasks = (params = {}) => {
+    return request({
+      url: '/pc/mission/DeleteMission',
+      method: 'get',
+      params,
+    })
+  }
+
   //二维码图片上传
   uploadImg = (data = {}) => {
     return request({

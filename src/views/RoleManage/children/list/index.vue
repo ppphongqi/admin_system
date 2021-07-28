@@ -311,6 +311,10 @@
               type: 'warning',
             })
           } else {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
             this.closeShowModal()
             this.getTableData()
           }
@@ -355,24 +359,28 @@
             type: 'warning',
           })
         } else {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
           console.log(res, 'res')
           this.getTableData()
         }
       },
       handleSizeChange(val) {
         this.PageSize = val
-        this.getList(1, val)
+        this.getTableData(1, val)
         this.currentPage = 1
       },
       handleCurrentChange(val) {
         this.currentPage = val
-        this.getList(val, this.PageSize)
+        this.getTableData(val, this.PageSize)
       },
       deleteRow(row) {
         roleApi.deleteRole({ ids: row.aid }).then((res) => {
           this.$message({
             message: res.message,
-            type: 'warning',
+            type: 'success',
           })
           this.tableData()
         })

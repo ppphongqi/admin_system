@@ -118,13 +118,18 @@
       async modalConfirm() {
         console.log(this.Form)
         const res = await powerApi.addPerType(this.Form)
-        this.getTableData()
-        this.closeShowModal()
         if (!res) {
           this.$message({
             message: '接口未返回数据',
             type: 'warning',
           })
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.getTableData()
+          this.closeShowModal()
         }
       },
       // 获取表格数据
