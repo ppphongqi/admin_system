@@ -93,8 +93,121 @@
             </el-dialog>
           </el-form-item>
         </el-col>
+        <!-- 规格 -->
         <el-col :span="24">
-          <el-form-item label="产品规格" prop="specificationAid">
+          <el-form-item label="商品规格">
+            <el-radio-group v-model="specModel" @change="changeModel">
+              <el-radio :label="0" class="radio">单规格</el-radio>
+              <el-radio :label="1">多规格</el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-col>
+        <!-- 单规格表格 -->
+        <el-col v-if="specModel === 0" :span="24">
+          <el-form-item label="">
+            <el-table :data="specTable" border style="width: 100%">
+              <el-table-column
+                prop="img"
+                label="图片"
+                min-width="60"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-upload
+                    class="table-upload"
+                    action="#"
+                    list-type="picture-card"
+                    :multiple="false"
+                    :auto-upload="false"
+                    :limit="1"
+                    :on-remove="handleRemove(scope.$index)"
+                  >
+                    <i class="el-icon-plus"></i>
+                  </el-upload>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="price"
+                label="售价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.price" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="cost_price"
+                label="成本价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.cost_price"
+                    type="number"
+                  ></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="older_price"
+                label="原价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.older_price"
+                    type="number"
+                  ></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="stock"
+                label="库存"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.stock" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="gdno"
+                label="商品编号"
+                min-width="120"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.gdno" type="text"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="weight"
+                label="重量(KG)"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.weight" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="volume"
+                label="体积(m³)"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.volume" type="number"></el-input>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+        </el-col>
+        <!-- 单规格表格 end -->
+        <el-col v-if="specModel === 1" :span="24">
+          <el-form-item label="选择规格" prop="specificationAid">
             <div class="acea-row">
               <el-select
                 v-model="formValidate.specificationAid"
@@ -112,7 +225,298 @@
               <el-button class="mr15" @click="addTem">添加产品规格</el-button>
             </div>
           </el-form-item>
+          <!-- 单规格表格 -->
+          <!-- 多规格 -->
+          <!-- 规格 -->
+          <el-form-item label="">
+            <div
+              v-for="(item, index) in specForm.spec"
+              :key="index"
+              class="spec"
+            >
+              <div v-if="item.isEmpty" style="display: inline-block">
+                <span class="title">规格名称：</span>
+                <el-input
+                  v-model="item.name"
+                  clearable
+                  placeholder="规格名称"
+                ></el-input>
+                <span class="title">规格值：</span>
+                <el-input
+                  v-for="(val, i) in item.values"
+                  :key="i"
+                  v-model="val.value"
+                  clearable
+                  placeholder="规格值"
+                ></el-input>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="submitSpecVal(index)"
+                >
+                  确 定
+                </el-button>
+                <el-button size="mini" @click="subNewSpec(index)">
+                  取 消
+                </el-button>
+              </div>
+              <div v-if="!item.isEmpty">
+                <div>
+                  <el-tag closable @close="clearSpec(index)">
+                    {{ item.name }}
+                  </el-tag>
+                </div>
+                <el-input
+                  v-for="(val, i) in item.values"
+                  :key="i"
+                  v-model="val.value"
+                  clearable
+                  placeholder="规格值"
+                  @clear="clearInput(index, i)"
+                ></el-input>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="addSpecVal(index)"
+                >
+                  添加
+                </el-button>
+              </div>
+            </div>
+            <el-button type="primary" @click="addNewSpec">
+              +添加新规格
+            </el-button>
+            <el-button type="primary" @click="creatModel">生成</el-button>
+          </el-form-item>
+          <!-- 表格 -->
+          <el-form-item v-if="hasModel" label="">
+            <span>批量设置</span>
+            <el-table :data="specTable" border style="width: 100%">
+              <el-table-column
+                prop="img"
+                label="图片"
+                min-width="60"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-upload
+                    class="table-upload"
+                    action="#"
+                    list-type="picture-card"
+                    :multiple="false"
+                    :auto-upload="false"
+                    :limit="1"
+                    :on-remove="handleRemove(scope.$index)"
+                  >
+                    <i class="el-icon-plus"></i>
+                  </el-upload>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="price"
+                label="售价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.price" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="cost_price"
+                label="成本价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.cost_price"
+                    type="number"
+                  ></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="older_price"
+                label="原价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.older_price"
+                    type="number"
+                  ></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="stock"
+                label="库存"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.stock" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="gdno"
+                label="商品编号"
+                min-width="120"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.gdno" type="text"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="weight"
+                label="重量(KG)"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.weight" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="volume"
+                label="体积(m³)"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.volume" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" min-width="100" align="center">
+                <template slot-scope="scope">
+                  <el-button type="text" @click="add(scope.$index)">
+                    批量添加
+                  </el-button>
+                  <span style="margin: 0 5px">|</span>
+                  <el-button type="text">清空</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <span>商品属性</span>
+            <el-table :data="specTable" border style="width: 100%">
+              <el-table-column
+                v-for="(item, i) in specForm.spec"
+                :key="i"
+                :label="item.name"
+                min-width="60"
+                align="center"
+              ></el-table-column>
+
+              <el-table-column
+                prop="img"
+                label="图片"
+                min-width="60"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-upload
+                    class="table-upload"
+                    action="#"
+                    list-type="picture-card"
+                    :multiple="false"
+                    :auto-upload="false"
+                    :limit="1"
+                    :on-remove="handleRemove(scope.$index)"
+                  >
+                    <i class="el-icon-plus"></i>
+                  </el-upload>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="price"
+                label="售价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.price" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="cost_price"
+                label="成本价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.cost_price"
+                    type="number"
+                  ></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="older_price"
+                label="原价"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input
+                    v-model="scope.row.older_price"
+                    type="number"
+                  ></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="stock"
+                label="库存"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.stock" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="gdno"
+                label="商品编号"
+                min-width="120"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.gdno" type="text"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="weight"
+                label="重量(KG)"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.weight" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column
+                prop="volume"
+                label="体积(m³)"
+                min-width="80"
+                align="center"
+              >
+                <template slot-scope="scope">
+                  <el-input v-model="scope.row.volume" type="number"></el-input>
+                </template>
+              </el-table-column>
+              <el-table-column label="操作" min-width="100" align="center">
+                <template slot-scope="scope">
+                  <el-button type="text" @click="deleteRow(scope.row)">
+                    删除
+                  </el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-form-item>
+          <!-- 多规格 end -->
         </el-col>
+        <!-- 规格 end -->
+
         <el-col :span="24">
           <el-form-item label="商品状态" prop="state">
             <el-radio-group v-model="formValidate.state">
@@ -163,15 +567,17 @@
         </el-col>
       </el-row>
     </div>
+    <spec-dialog ref="specDialog" />
   </div>
 </template>
 
 <script>
   import { physicalProductApi } from '@/api/index'
+  import SpecDialog from '../setting/dialog'
   import vabQuill from '@/plugins/vabQuill'
   export default {
     name: 'PhySicalProductsAdd',
-    components: { vabQuill },
+    components: { vabQuill, SpecDialog },
     data() {
       return {
         content: '',
@@ -222,6 +628,45 @@
         dialogProdImageUrl: '',
         dialogProdImgVisible: false,
         addProdItem: null,
+        // 规格
+        specModel: 0,
+        specTable: [
+          {
+            img: '',
+            price: 0,
+            cost_price: 0,
+            older_price: 0,
+            stock: 999,
+            gdno: '1234567891234',
+            weight: 2.4,
+            volume: 0.65,
+          },
+        ],
+        specForm: {
+          name: '123123',
+          spec: [
+            {
+              name: '22',
+              values: [
+                {
+                  value: '3232',
+                },
+                {
+                  value: '323',
+                },
+              ],
+            },
+            {
+              name: '333',
+              values: [
+                {
+                  value: '3333',
+                },
+              ],
+            },
+          ],
+        },
+        hasModel: false,
       }
     },
     created() {
@@ -265,8 +710,89 @@
         this.dialogProdImageUrl = file.url
         this.dialogProdImgVisible = true
       },
+      // 更改模板
+      changeModel() {
+        this.hasModel = false
+      },
       // 添加产品规格
-      addTem() {},
+      addTem() {
+        this.$refs.specDialog.showModalBox()
+      },
+      // 添加新规格
+      addNewSpec() {
+        let noAdd = false
+        if (this.specForm.spec.length > 0) {
+          this.specForm.spec.forEach((v) => {
+            if (v.name === '') noAdd = true
+            v.values.forEach((val) => {
+              if (val.value === '') noAdd = true
+            })
+          })
+        }
+        let item = {
+          name: '',
+          values: [{ value: '' }],
+          isEmpty: true,
+        }
+        if (noAdd) {
+          this.$message({
+            message: '警告哦，先填写完成当前属性',
+            type: 'warning',
+          })
+          return false
+        }
+        if (!noAdd) this.specForm.spec.push(item)
+      },
+      // 取消
+      subNewSpec(index) {
+        this.specForm.spec.splice(index, 1)
+      },
+      // 确定添加
+      submitSpecVal(index) {
+        if (this.specForm.spec[index].name === '') {
+          this.$message({
+            message: '警告哦，先填写完成当前属性名称',
+            type: 'warning',
+          })
+          return false
+        }
+        let len = this.specForm.spec[index].values.length
+        if (this.specForm.spec[index].values[len - 1].value === '') {
+          this.$message({
+            message: '警告哦，先填写完成当前属性值',
+            type: 'warning',
+          })
+          return false
+        }
+        this.specForm.spec[index].isEmpty = false
+      },
+      // 添加规格属性值
+      addSpecVal(index, i) {
+        let len = this.specForm.spec[index].values.length
+        if (this.specForm.spec[index].values[len - 1].value === '') {
+          this.$message({
+            message: '警告哦，先填写完成当前属性值',
+            type: 'warning',
+          })
+          return false
+        }
+        this.specForm.spec[index].values.push({ value: '' })
+      },
+      // 清除整体属性
+      clearSpec(index) {
+        this.specForm.spec.splice(index, 1)
+      },
+      // 清除值
+      clearInput(index, i) {
+        if (this.specForm.spec[index].values.length > 1) {
+          this.specForm.spec[index].values.splice(i, 1)
+        }
+      },
+      // 生成模板
+      creatModel() {
+        this.hasModel = true
+      },
+      // *********提交
       onSubmit() {
         if (this.activeName === '1') {
           this.$refs['formOne'].validate((valid) => {
@@ -346,6 +872,9 @@
           const num = Number(this.activeName) - 1
           this.activeName = `${num}`
         }
+      },
+      deleteRow(item) {
+        console.log(item)
       },
     },
   }
@@ -518,5 +1047,19 @@
   }
   .mr5 {
     margin-right: 5px !important;
+  }
+</style>
+<style lang="scss">
+  .table-upload {
+    width: 60px;
+    height: 60px;
+    .el-upload--picture-card {
+      width: 60px !important;
+      height: 60px !important;
+      line-height: 60px !important;
+      i {
+        line-height: normal !important;
+      }
+    }
   }
 </style>

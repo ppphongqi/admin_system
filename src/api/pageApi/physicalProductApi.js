@@ -74,9 +74,9 @@ class PhysicalProductApi {
     })
   }
   // 获取实物产品规格属性列表
-  getEntitySpecificationList = (params = {}) => {
+  getEntitySpecification = (params = {}) => {
     return request({
-      url: '/pc/goodsEntity/getGoodsSpecificationList',
+      url: '/pc/goodsEntity/getSpecification',
       method: 'get',
       params,
     })
@@ -87,6 +87,14 @@ class PhysicalProductApi {
       url: '/pc/goodsEntity/goodsSpecification',
       method: 'post',
       data,
+    })
+  }
+  //获取规格详细
+  getEntitySpecificationInfo = (params = {}) => {
+    return request({
+      url: '/pc/goodsEntity/getGoodsSpecificationList',
+      method: 'get',
+      params,
     })
   }
   // 删除实物产品规格属性
