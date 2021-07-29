@@ -23,12 +23,7 @@
       ></el-table-column>
       <el-table-column prop="missionIcon" label="任务图标" align="center">
         <template slot-scope="scope">
-          <img
-            v-for="(item, index) in scope.row.missionIcon.split(',')"
-            :key="index"
-            :src="item"
-            style="max-height: 70px; max-width: 70px; padding: 5px"
-          />
+          <el-image :src="scope.row.missionIcon" fit="fill"></el-image>
         </template>
       </el-table-column>
       <el-table-column
@@ -105,6 +100,36 @@
         <el-form-item label="排序:" prop="sort" required>
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
+        <el-form-item label="任务图标:" prop="missionIcon" required>
+          <div class="upload_wrapper">
+            <el-upload
+              ref="uploadIcon"
+              class="avatar-uploader"
+              action="http://localhost/api/pc/oss/upload"
+              :limit="1"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccessIcon"
+              :before-upload="beforeAvatarUpload"
+              :data="{ module: 'img' }"
+            >
+              <img v-if="iconUrl" :src="iconUrl" class="avatar" />
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+            <div class="upload_tips">
+              （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item label="任务分类:" required>
+          <el-select v-model="Form.missionTypeName" size="medium">
+            <el-option
+              v-for="(item, index) in kindsOption"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="任务类型:" required>
           <el-select
             v-model="Form.missionClassifyName"
@@ -121,8 +146,8 @@
         </el-form-item>
         <el-form-item
           v-if="add && Form.missionClassifyName == '1'"
-          label="任务图标:"
-          prop="missionIcon"
+          label="二维码图片:"
+          prop="missionCode"
           required
         >
           <div class="upload_wrapper">
@@ -150,8 +175,8 @@
         </el-form-item>
         <el-form-item
           v-if="!add && Form.missionClassifyName == '1'"
-          label="任务图标:"
-          prop="missionIcon"
+          label="二维码图片:"
+          prop="missionCode"
           required
         >
           <div class="upload_wrapper">
@@ -182,16 +207,6 @@
           required
         >
           <el-input v-model="Form.url"></el-input>
-        </el-form-item>
-        <el-form-item label="任务分类:" required>
-          <el-select v-model="Form.missionTypeName" size="medium">
-            <el-option
-              v-for="(item, index) in kindsOption"
-              :key="index"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
         </el-form-item>
         <el-form-item label="任务佣金:" prop="missionReward" required>
           <el-input v-model="Form.missionReward"></el-input>
@@ -253,6 +268,7 @@
         dialogVisible: false,
         disabled: false,
         imgUrlList: [],
+        iconUrl: '',
         currentPage: 1,
         total: 1,
         PageSize: 7,
@@ -355,25 +371,20 @@
             sort: this.Form.sort, //任务排序
             missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
             missionTypeAid: this.Form.missionTypeName, // 任务类型Name
+            missionIcon: this.iconUrl, //任务图标
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
             getNumber: this.Form.getNumber, //可领取次数
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
-          let temp = []
-          this.imgUrlList.forEach((v) => {
-            temp.push(v.imgUrl)
-          })
-          form.missionIcon = String(temp)
-          // 任务图标
+          // 二维码图标/路径
           if (this.Form.missionClassifyName == '1') {
             form.imgUrlList = this.imgUrlList
             form.url = ' '
           } else if (this.Form.missionClassifyName == '2') {
             form.imgUrlList = []
             form.url = this.Form.url
-            form.missionIcon = ' '
           }
           console.log(form, 'form')
           const res = await taskApi.addTasks(form)
@@ -395,6 +406,7 @@
             aid: this.Form.aid, //任务id
             name: this.Form.name, //任务名称
             sort: this.Form.sort, //任务排序
+            missionIcon: this.iconUrl, //任务图标
             missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
             missionTypeAid: this.Form.missionTypeName, // 任务类型Name
             missionDescribe: this.Form.missionDescribe, // 任务描述
@@ -403,19 +415,13 @@
             missionValidityTime: this.Form.date1 + ',' + this.Form.date2, //任务有效期
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
-          let temp = []
-          this.imgUrlList.forEach((v) => {
-            temp.push(v.imgUrl)
-          })
-          form.missionIcon = String(temp)
-          // 任务图标
+          // 二维码图标/路径
           if (this.Form.missionClassifyName == '1') {
             form.imgUrlList = this.imgUrlList
             form.url = ' '
           } else if (this.Form.missionClassifyName == '2') {
             form.imgUrlList = []
             form.url = this.Form.url
-            form.missionIcon = ' '
           }
           console.log(form, 'form')
           const res = await taskApi.editTasks(form)
@@ -486,14 +492,17 @@
         }
         this.Form.date1 = this.Form.missionValidityTime.split(',')[0]
         this.Form.date2 = this.Form.missionValidityTime.split(',')[1]
-        if (data.missionIcon.trim()) {
-          let tempList = data.missionIcon.split(',')
-          tempList.forEach((v) => {
-            this.imgUrlList.push({ imgUrl: v })
-          })
+        if (data.missionIcon) {
+          this.iconUrl = data.missionIcon
+        } else {
+          this.iconUrl = ''
+        }
+        if (data.imgUrlList) {
+          this.imgUrlList = data.imgUrlList
         } else {
           this.imgUrlList = []
         }
+        console.log(this.Form)
       },
       closeShowModal() {
         this.showModal = false
@@ -510,7 +519,18 @@
           missionValidityTime: '', //任务有效期
           missionState: '', //任务状态（0：显示，1：禁止）
         }
+        this.iconUrl = ''
         this.imgUrlList = []
+      },
+      handleAvatarSuccessIcon(response, file, fileList) {
+        this.iconUrl = response.message
+        console.log(this.iconUrl)
+        this.$refs.uploadIcon.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
       },
       changeUpload(file, fileList) {
         console.log(file, fileList, '1')
