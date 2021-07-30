@@ -133,6 +133,7 @@
         <el-form-item label="任务类型:" required>
           <el-select
             v-model="Form.missionClassifyName"
+            :disabled="!add"
             size="medium"
             @change="$forceUpdate()"
           >
@@ -469,6 +470,7 @@
       addTask() {
         this.add = true
         this.showModal = true
+        this.Form.missionState = 0
       },
       async editTask(row) {
         this.add = false
@@ -482,8 +484,8 @@
           aid: data.aid,
           name: data.name, //任务名称
           sort: data.sort, //排序，数字越大，优先级越高
-          missionClassifyName: data.missionClassifyAid, // 任务分类aid
-          missionTypeName: data.missionTypeAid, // 任务类型aid
+          missionClassifyName: data.missionTypeAid, // 任务分类aid
+          missionTypeName: data.missionClassifyAid, // 任务类型aid
           missionDescribe: data.missionDescribe, // 任务描述
           missionReward: data.missionReward, //任务酬金
           getNumber: data.getNumber, //可领取次数
