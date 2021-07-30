@@ -370,8 +370,8 @@
             aid: -1,
             name: this.Form.name, //任务名称
             sort: this.Form.sort, //任务排序
-            missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
-            missionTypeAid: this.Form.missionTypeName, // 任务类型Name
+            missionClassifyAid: this.Form.missionTypeName, // 任务分类Name
+            missionTypeAid: this.Form.missionClassifyName, // 任务类型Name
             missionIcon: this.iconUrl, //任务图标
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
@@ -408,8 +408,8 @@
             name: this.Form.name, //任务名称
             sort: this.Form.sort, //任务排序
             missionIcon: this.iconUrl, //任务图标
-            missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
-            missionTypeAid: this.Form.missionTypeName, // 任务类型Name
+            missionClassifyAid: this.Form.missionTypeName, // 任务分类Name
+            missionTypeAid: this.Form.missionClassifyName, // 任务类型Name
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
             getNumber: this.Form.getNumber, //可领取次数
