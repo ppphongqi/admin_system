@@ -121,7 +121,7 @@
           </div>
         </el-form-item>
         <el-form-item label="任务分类:" required>
-          <el-select v-model="Form.missionTypeName" size="medium">
+          <el-select v-model="Form.missionClassifyName" size="medium">
             <el-option
               v-for="(item, index) in kindsOption"
               :key="index"
@@ -132,7 +132,7 @@
         </el-form-item>
         <el-form-item label="任务类型:" required>
           <el-select
-            v-model="Form.missionClassifyName"
+            v-model="Form.missionTypeName"
             :disabled="!add"
             size="medium"
             @change="$forceUpdate()"
@@ -146,7 +146,7 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-if="add && Form.missionClassifyName == '1'"
+          v-if="add && Form.missionTypeName == '1'"
           label="二维码图片:"
           prop="missionCode"
           required
@@ -175,7 +175,7 @@
           </div>
         </el-form-item>
         <el-form-item
-          v-if="!add && Form.missionClassifyName == '1'"
+          v-if="!add && Form.missionTypeName == '1'"
           label="二维码图片:"
           prop="missionCode"
           required
@@ -202,7 +202,7 @@
           </div>
         </el-form-item>
         <el-form-item
-          v-if="Form.missionClassifyName == '2'"
+          v-if="Form.missionTypeName == '2'"
           label="二维码地址:"
           prop="url"
           required
@@ -281,8 +281,8 @@
           aid: '', //任务id
           name: '', //任务名称
           sort: '', //排序，数字越大，优先级越高
-          missionTypeName: '', // 任务分类Name
-          missionClassifyName: 1, // 任务类型Name
+          missionTypeName: 1, // 任务分类Name
+          missionClassifyName: '', // 任务类型Name
           missionIcon: '', // 任务图标
           missionDescribe: '', // 任务描述
           getNumber: '',
@@ -370,8 +370,8 @@
             aid: -1,
             name: this.Form.name, //任务名称
             sort: this.Form.sort, //任务排序
-            missionClassifyAid: this.Form.missionTypeName, // 任务分类Name
-            missionTypeAid: this.Form.missionClassifyName, // 任务类型Name
+            missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
+            missionTypeAid: this.Form.missionTypeName, // 任务类型Name
             missionIcon: this.iconUrl, //任务图标
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
@@ -380,10 +380,10 @@
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
           // 二维码图标/路径
-          if (this.Form.missionClassifyName == '1') {
+          if (this.Form.missionTypeName == '1') {
             form.imgUrlList = this.imgUrlList
             form.url = ' '
-          } else if (this.Form.missionClassifyName == '2') {
+          } else if (this.Form.missionTypeName == '2') {
             form.imgUrlList = []
             form.url = this.Form.url
           }
@@ -408,8 +408,8 @@
             name: this.Form.name, //任务名称
             sort: this.Form.sort, //任务排序
             missionIcon: this.iconUrl, //任务图标
-            missionClassifyAid: this.Form.missionTypeName, // 任务分类Name
-            missionTypeAid: this.Form.missionClassifyName, // 任务类型Name
+            missionClassifyAid: this.Form.missionClassifyName, // 任务分类Name
+            missionTypeAid: this.Form.missionTypeName, // 任务类型Name
             missionDescribe: this.Form.missionDescribe, // 任务描述
             missionReward: this.Form.missionReward, //任务酬金
             getNumber: this.Form.getNumber, //可领取次数
@@ -417,10 +417,10 @@
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
           // 二维码图标/路径
-          if (this.Form.missionClassifyName == '1') {
+          if (this.Form.missionTypeName == '1') {
             form.imgUrlList = this.imgUrlList
             form.url = ' '
-          } else if (this.Form.missionClassifyName == '2') {
+          } else if (this.Form.missionTypeName == '2') {
             form.imgUrlList = []
             form.url = this.Form.url
           }
@@ -484,8 +484,8 @@
           aid: data.aid,
           name: data.name, //任务名称
           sort: data.sort, //排序，数字越大，优先级越高
-          missionClassifyName: data.missionTypeAid, // 任务分类aid
-          missionTypeName: data.missionClassifyAid, // 任务类型aid
+          missionClassifyName: data.missionClassifyAid, // 任务分类aid
+          missionTypeName: data.missionTypeAid, // 任务类型aid
           missionDescribe: data.missionDescribe, // 任务描述
           missionReward: data.missionReward, //任务酬金
           getNumber: data.getNumber, //可领取次数
@@ -512,8 +512,8 @@
           aid: '',
           name: '', //任务名称
           sort: '', //排序，数字越大，优先级越高
-          missionClassifyName: 1, // 任务分类aid
-          missionTypeName: '', // 任务类型aid
+          missionClassifyName: '', // 任务分类aid
+          missionTypeName: 1, // 任务类型aid
           missionIcon: '', // 任务图标
           missionDescribe: '', // 任务描述
           missionReward: '', //任务酬金
