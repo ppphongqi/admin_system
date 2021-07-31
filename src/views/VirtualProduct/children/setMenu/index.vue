@@ -223,15 +223,13 @@
             </el-button>
           </el-row>
         </el-form-item>
-        <el-form-item label="备注:" prop="remarks">
-          <el-input
-            v-model="Form.remarks"
-            type="textarea"
-            :rows="2"
-            placeholder="请输入内容"
-          >
-            >
-          </el-input>
+        <el-form-item label="流量有效期:" prop="expiration">
+          <el-select v-model="Form.expiration" placeholder="请选择">
+            <el-option label="一个月" :value="1"></el-option>
+            <el-option label="季包" :value="3"></el-option>
+            <el-option label="半年包" :value="6"></el-option>
+            <el-option label="年包" :value="12"></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -290,7 +288,7 @@
           discountPrice: 0,
           state: 0,
           classChildAid: 1,
-          remarks: '',
+          expiration: 1,
         },
         setForm: {},
       }
@@ -330,7 +328,7 @@
           discountPrice: row.discount_price,
           state: row.state,
           classChildAid: row.class_child_aid,
-          remarks: row.remarks,
+          expiration: row.expiration,
         }
       },
       showDialog() {
@@ -349,7 +347,7 @@
           discountPrice: 0,
           state: 0,
           classChildAid: 1,
-          remarks: '',
+          expiration: 1,
         }
       },
       showDialog2() {
