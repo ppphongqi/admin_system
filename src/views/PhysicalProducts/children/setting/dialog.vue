@@ -12,7 +12,7 @@
           placeholder="输入规格模板名称"
         ></el-input>
       </el-form-item>
-      <el-form-item label="" prop="spec">
+      <el-form-item label="规格内容" prop="spec">
         <div v-for="(item, index) in specForm.spec" :key="index" class="spec">
           <div v-if="item.isEmpty" style="display: inline-block">
             <span class="title">规格名称：</span>
@@ -46,6 +46,7 @@
               v-model="val.value"
               clearable
               placeholder="规格值"
+              @blur="setValue(index, $event)"
               @clear="clearInput(index, i)"
             ></el-input>
             <el-button size="mini" type="primary" @click="addSpecVal(index)">
@@ -69,7 +70,7 @@
 
 <script>
   import './index.scss'
-
+  import { physicalProductApi } from '@/api/index'
   export default {
     data() {
       return {
@@ -127,10 +128,30 @@
           })
           return false
         }
-        this.specForm.spec[index].isEmpty = false
+        let form = {
+          aid: -1,
+          name: this.specForm.name,
+          key: this.specForm.spec[index].name,
+          value: this.specForm.spec[index].values[len - 1].value,
+        }
+        physicalProductApi.setEntitySpecificationKey(form).then((res) => {
+          if (res) {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.specForm.spec[index].isEmpty = false
+            console.log(this.specForm.spec)
+          } else {
+            this.$message({
+              message: '设置失败',
+              type: 'warning',
+            })
+          }
+        })
       },
       // 添加规格属性值
-      addSpecVal(index, i) {
+      addSpecVal(index) {
         let len = this.specForm.spec[index].values.length
         if (this.specForm.spec[index].values[len - 1].value === '') {
           this.$message({
@@ -139,29 +160,93 @@
           })
           return false
         }
-        this.specForm.spec[index].values.push({ value: '' })
+        this.specForm.spec[index].values.push({ gsvAid: '', value: '' })
+      },
+      //更新属性值
+      setValue(index, e) {
+        let form = {
+          keyAid: this.specForm.spec[index].gskAid,
+          value: e.target.value,
+        }
+        physicalProductApi.setEntitySpecificationValue(form).then((res) => {
+          if (res) {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            console.log(this.specForm.spec)
+          } else {
+            this.$message({
+              message: '设置失败',
+              type: 'warning',
+            })
+          }
+        })
       },
       // 清除整体属性
       clearSpec(index) {
-        this.specForm.spec.splice(index, 1)
+        physicalProductApi
+          .delEntitySpecificationValue({
+            aid: this.specForm.spec[index].gskAid,
+          })
+          .then((res) => {
+            if (res) {
+              this.$message({
+                message: res.message,
+                type: 'success',
+              })
+              this.specForm.spec.splice(index, 1)
+            } else {
+              this.$message({
+                message: '删除失败',
+                type: 'warning',
+              })
+            }
+          })
       },
       // 清除值
       clearInput(index, i) {
-        if (this.specForm.spec[index].values.length > 1) {
-          this.specForm.spec[index].values.splice(i, 1)
+        if (this.specForm.spec[index].values.length === 1) {
+          this.$message({
+            message: '最少需要一个属性值,只可更新，不可删除！',
+            type: 'warning',
+          })
+          return
         }
+        let len = this.specForm.spec[index].values.length
+        physicalProductApi
+          .delEntitySpecificationValue({
+            aid: this.specForm.spec[index].values[len - 1].gsvAid,
+          })
+          .then((res) => {
+            if (res) {
+              this.$message({
+                message: res.message,
+                type: 'success',
+              })
+              if (this.specForm.spec[index].values.length > 1) {
+                this.specForm.spec[index].values.splice(i, 1)
+              }
+            } else {
+              this.$message({
+                message: '删除失败',
+                type: 'warning',
+              })
+            }
+          })
       },
       showModalBox(specForm) {
         this.showModal = true
         if (specForm) this.specForm = specForm
         else {
           this.specForm = {
+            gsAid: '',
             name: '',
             spec: [],
           }
         }
       },
-      // 提交规格
+      // 提交规格(用不上？)
       submitSpec() {
         if (this.specForm.name === '') {
           this.$message({
@@ -197,6 +282,7 @@
         })
         console.log('提交')
         console.log(specForm)
+        this.showModal = false
       },
     },
   }

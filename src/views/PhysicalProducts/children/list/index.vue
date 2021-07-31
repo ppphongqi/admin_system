@@ -277,9 +277,9 @@
             >
               <el-option
                 v-for="item in specificationList"
-                :key="item.id"
+                :key="item.aid"
                 :label="item.name"
-                :value="item.id"
+                :value="item.aid"
               />
             </el-select>
             <el-button class="mr15" @click="addTem">添加产品规格</el-button>
@@ -407,6 +407,8 @@
 
       // 获取分类列表
       this.getTypeList()
+      // 获取规格列表
+      this.getSpecificationList()
     },
     methods: {
       closeDialog() {
@@ -421,6 +423,11 @@
           if (v.aid === classAid) className = v.name
         })
         return className
+      },
+      // 获取规格列表
+      async getSpecificationList() {
+        const { data } = await physicalProductApi.getEntitySpecification()
+        this.specificationList = data
       },
       // 分页
       handleSizeChange(val) {

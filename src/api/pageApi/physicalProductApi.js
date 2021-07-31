@@ -73,7 +73,8 @@ class PhysicalProductApi {
       data,
     })
   }
-  // 获取实物产品规格属性列表
+
+  //获取规格模板
   getEntitySpecification = (params = {}) => {
     return request({
       url: '/pc/goodsEntity/getSpecification',
@@ -81,7 +82,8 @@ class PhysicalProductApi {
       params,
     })
   }
-  // 设置实物产品规格属性
+
+  //添加/编辑规格模板
   setEntitySpecification = (data = {}) => {
     return request({
       url: '/pc/goodsEntity/goodsSpecification',
@@ -89,15 +91,8 @@ class PhysicalProductApi {
       data,
     })
   }
-  //获取规格详细
-  getEntitySpecificationInfo = (params = {}) => {
-    return request({
-      url: '/pc/goodsEntity/getGoodsSpecificationList',
-      method: 'get',
-      params,
-    })
-  }
-  // 删除实物产品规格属性
+
+  //删除规格模板
   delEntitySpecification = (data = {}) => {
     return request({
       url: '/pc/goodsEntity/deleteGoodsSpecification',
@@ -105,15 +100,35 @@ class PhysicalProductApi {
       data,
     })
   }
-  // 获取实物产品规格属性值列表
-  getEntitySpecificationValueList = (params = {}) => {
+
+  //获取规格明细
+  getEntitySpecificationInfo = (params = {}) => {
     return request({
-      url: '/pc/goodsEntity/getGoodsSpecificationValueList',
+      url: '/pc/goodsEntity/getGoodsSpecificationList',
       method: 'get',
       params,
     })
   }
-  // 设置实物产品规格属性值
+
+  //设置规格
+  setEntitySpecificationKey = (data = {}) => {
+    return request({
+      url: '/pc/goodsEntity/goodsSpecificationKey',
+      method: 'post',
+      data,
+    })
+  }
+
+  //删除规格
+  delEntitySpecificationKey = (data = {}) => {
+    return request({
+      url: '  /pc/goodsEntity/deleteGoodsSpecificationKey',
+      method: 'post',
+      data,
+    })
+  }
+
+  //设置规格属性
   setEntitySpecificationValue = (data = {}) => {
     return request({
       url: '/pc/goodsEntity/goodsSpecificationValue',
@@ -121,7 +136,8 @@ class PhysicalProductApi {
       data,
     })
   }
-  // 删除实物产品规格属性值
+
+  //删除规格属性
   delEntitySpecificationValue = (data = {}) => {
     return request({
       url: '/pc/goodsEntity/deleteGoodsSpecificationValue',
@@ -129,6 +145,25 @@ class PhysicalProductApi {
       data,
     })
   }
+
+  //获取单一商品属性
+  getEntityProperty = (params = {}) => {
+    return request({
+      url: '/pc/goodsEntity/getGoodsEntityProperty',
+      method: 'get',
+      params,
+    })
+  }
+
+  //设置单一商品属性
+  setEntityProperty = (data = {}) => {
+    return request({
+      url: '/pc/goodsEntity/goodsEntityProperty',
+      method: 'post',
+      data,
+    })
+  }
+
   // 获取实物商品订单
   getEntityOrderList = (params = {}) => {
     return request({

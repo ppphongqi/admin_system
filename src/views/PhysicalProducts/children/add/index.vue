@@ -217,75 +217,13 @@
               >
                 <el-option
                   v-for="item in specificationList"
-                  :key="item.id"
+                  :key="item.aid"
                   :label="item.name"
-                  :value="item.id"
+                  :value="item.aid"
                 />
               </el-select>
               <el-button class="mr15" @click="addTem">添加产品规格</el-button>
             </div>
-          </el-form-item>
-          <!-- 单规格表格 -->
-          <!-- 多规格 -->
-          <!-- 规格 -->
-          <el-form-item label="">
-            <div
-              v-for="(item, index) in specForm.spec"
-              :key="index"
-              class="spec"
-            >
-              <div v-if="item.isEmpty" style="display: inline-block">
-                <span class="title">规格名称：</span>
-                <el-input
-                  v-model="item.name"
-                  clearable
-                  placeholder="规格名称"
-                ></el-input>
-                <span class="title">规格值：</span>
-                <el-input
-                  v-for="(val, i) in item.values"
-                  :key="i"
-                  v-model="val.value"
-                  clearable
-                  placeholder="规格值"
-                ></el-input>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  @click="submitSpecVal(index)"
-                >
-                  确 定
-                </el-button>
-                <el-button size="mini" @click="subNewSpec(index)">
-                  取 消
-                </el-button>
-              </div>
-              <div v-if="!item.isEmpty">
-                <div>
-                  <el-tag closable @close="clearSpec(index)">
-                    {{ item.name }}
-                  </el-tag>
-                </div>
-                <el-input
-                  v-for="(val, i) in item.values"
-                  :key="i"
-                  v-model="val.value"
-                  clearable
-                  placeholder="规格值"
-                  @clear="clearInput(index, i)"
-                ></el-input>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  @click="addSpecVal(index)"
-                >
-                  添加
-                </el-button>
-              </div>
-            </div>
-            <el-button type="primary" @click="addNewSpec">
-              +添加新规格
-            </el-button>
             <el-button type="primary" @click="creatModel">生成</el-button>
           </el-form-item>
           <!-- 表格 -->
@@ -673,7 +611,7 @@
       // 获取分类列表
       this.getTypeList()
       // 获取规格列表
-      // this.getSpecificationList()
+      this.getSpecificationList()
     },
     methods: {
       // 获取分类列表
@@ -688,14 +626,9 @@
         console.log(this.typeList, 'typeList')
       },
       // 获取规格列表
-      async getSpecificationList(page = '1', pageRows = '100', name = '') {
-        const params = {
-          page,
-          pageRows,
-          name,
-        }
-        const { data } = await physicalProductApi.getEntityClassList(params)
-        this.specificationList = data.records
+      async getSpecificationList() {
+        const { data } = await physicalProductApi.getEntitySpecification()
+        this.specificationList = data
       },
       validate(prop, status, error) {
         if (status === false) {

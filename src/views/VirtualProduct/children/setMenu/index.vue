@@ -105,7 +105,7 @@
       >
         <template slot-scope="scope">
           <div>
-            {{ moment(scope.row.timeAdd).format('YYYY-MM-DD HH:mm:ss') }}
+            {{ moment(scope.row.timeLastUpdate).format('YYYY-MM-DD HH:mm:ss') }}
           </div>
         </template>
       </el-table-column>

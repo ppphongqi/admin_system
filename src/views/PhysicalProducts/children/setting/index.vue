@@ -35,7 +35,21 @@
         label="规格模板名称"
         align="center"
       ></el-table-column>
-      <el-table-column
+      <el-table-column prop="timeAdd" label="创建时间" align="center">
+        <template slot-scope="scope">
+          <div>
+            {{ moment(scope.row.timeAdd).format('YYYY-MM-DD HH:mm:ss') }}
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="time_last_update" label="更新时间" align="center">
+        <template slot-scope="scope">
+          <div>
+            {{ moment(scope.row.timeLastUpdate).format('YYYY-MM-DD HH:mm:ss') }}
+          </div>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
         prop="productSize"
         label="商品规格"
         align="center"
@@ -44,7 +58,7 @@
         prop="productAttr"
         label="商品属性"
         align="center"
-      ></el-table-column>
+      ></el-table-column> -->
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
@@ -88,78 +102,6 @@
         <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 设置模板 -->
-    <el-dialog
-      title="模板设置"
-      :visible.sync="showSetModal"
-      width="60%"
-      top="15vh"
-      :before-close="closeShowSetModal"
-    >
-      <el-button type="primary" size="small" @click="addModalInfo">
-        添加
-      </el-button>
-      <el-table border :data="setTableData" stripe style="width: 100%">
-        <el-table-column
-          prop="gskAid"
-          label="规格id"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="gskName"
-          label="规格名称"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="gsvAid"
-          label="规格值id"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="gsvName"
-          label="规格值"
-          align="center"
-        ></el-table-column>
-        <el-table-column label="操作" align="center">
-          <template slot-scope="scope">
-            <el-button
-              type="text"
-              size="small"
-              @click.native.prevent="editRow(scope.row)"
-            >
-              编辑
-            </el-button>
-            <el-button
-              type="text"
-              size="small"
-              @click.native.prevent="deleteRow(scope.row)"
-            >
-              删除
-            </el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-    </el-dialog>
-    <!-- 添加编辑规格 -->
-    <el-dialog
-      :title="addModal ? '添加规格' : '修改规格'"
-      :visible.sync="setMoalInfo"
-      width="30%"
-      top="15vh"
-      :before-close="closeSetMoalInfo"
-    >
-      <el-form :model="setForm" label-width="120px" label-position="right">
-        <el-form-item label="规格名称:" prop="name" required>
-          <el-input v-model="setForm.name"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="closeSetMoalInfo">取 消</el-button>
-        <el-button type="primary" @click="modalSetConfirm(addModal)">
-          确 定
-        </el-button>
-      </span>
-    </el-dialog>
     <spec-dialog ref="specDialog" />
   </div>
 </template>
@@ -168,12 +110,14 @@
   import './index.scss'
   import SpecDialog from './dialog'
   import { physicalProductApi } from '@/api/index'
+  import moment from 'moment'
   export default {
     components: {
       SpecDialog,
     },
     data() {
       return {
+        moment,
         tableData: [],
         setTableData: [],
         searchValue: '',
@@ -185,6 +129,11 @@
         add: false,
         addModal: false,
       }
+    },
+    computed: {
+      getTime(date) {
+        return moment(date).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
     mounted() {
       this.getEntitySpecificationList()
@@ -203,12 +152,25 @@
         }
       },
       //删除
-      deleteRow(item) {
-        console.log(item)
+      async deleteRow(item) {
+        const res = await physicalProductApi.delEntitySpecification({
+          aid: item.aid,
+        })
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.getEntitySpecificationList()
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
       },
       //添加
       showDialog() {
-        // this.$refs.specDialog.showModalBox()
         this.showModal = true
         this.add = true
       },
@@ -252,9 +214,38 @@
           aid: row.aid,
         })
         if (data) {
-          this.setTableData = data
-          console.log(this.setTableData, 'data')
-          this.showSetModal = true
+          let List = []
+          data.forEach((v) => {
+            if (v.gskName === null) {
+              List = []
+            } else {
+              List.push({
+                gskAid: v.gskAid,
+                name: v.gskName,
+                gsvAid: v.gsvAid,
+                value: v.gsvName,
+              })
+            }
+          })
+          let obj = {}
+          List.forEach((v) => {
+            let { gskAid, name } = v
+            if (!obj[name]) {
+              obj[name] = {
+                gskAid,
+                name,
+                values: [],
+              }
+            }
+            obj[name].values.push({ gsvAid: v.gsvAid, value: v.value })
+          })
+          let info = Object.values(obj) //转换成功的数据
+          let specForm = {
+            gsAid: row.aid,
+            name: row.name,
+            spec: info,
+          }
+          this.$refs.specDialog.showModalBox(specForm)
         } else {
           this.$message({
             message: '接口未返回数据',
@@ -262,44 +253,6 @@
           })
           return
         }
-        // let specForm = {
-        //   name: '123123',
-        //   spec: [
-        //     {
-        //       name: '22',
-        //       values: [
-        //         {
-        //           value: '3232',
-        //         },
-        //         {
-        //           value: '323',
-        //         },
-        //       ],
-        //     },
-        //     {
-        //       name: '333',
-        //       values: [
-        //         {
-        //           value: '3333',
-        //         },
-        //       ],
-        //     },
-        //   ],
-        // }
-        // this.$refs.specDialog.showModalBox(specForm)
-      },
-      //添加规格
-      addModalInfo() {
-        this.setMoalInfo = true
-        this.addModal = true
-      },
-      //详细关闭
-      closeSetMoalInfo() {
-        this.setMoalInfo = false
-      },
-      //设置关闭
-      closeShowSetModal() {
-        this.showSetModal = false
       },
     },
   }
