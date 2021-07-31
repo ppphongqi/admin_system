@@ -410,15 +410,25 @@ export const asyncRoutes = [
   {
     path: '/SystemManage',
     component: Layout,
-    redirect: 'SystemManage',
+    redirect: 'noredirect',
     meta: { title: '系统设置', icon: 'box-open' },
     children: [
       {
-        path: 'SystemManage',
-        name: 'SystemManage',
-        component: () => import('@/views/SystemManage/index'),
+        path: 'sysDomainName',
+        name: 'sysDomainName',
+        component: () => import('@/views/SystemManage/DomainName/index'),
         meta: {
-          title: '系统设置',
+          title: '域名设置',
+          icon: 'tools',
+          // affix: true,
+        },
+      },
+      {
+        path: 'sysSmsModal',
+        name: 'sysSmsModal',
+        component: () => import('@/views/SystemManage/SmsModal/index'),
+        meta: {
+          title: '短信设置',
           icon: 'tools',
           // affix: true,
         },
