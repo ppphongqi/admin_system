@@ -423,11 +423,13 @@
         const params = {
           aid: row.aid,
         }
-        if (row.isUsed) {
+        console.log(row.isUsed, '当前')
+        if (row.isUsed === '1') {
           params.state = '1'
         } else {
           params.state = '0'
         }
+        console.log(params.state, '传递')
         console.log(params, 'params')
         const res = await userApi.editUserState(params)
         if (!res) {

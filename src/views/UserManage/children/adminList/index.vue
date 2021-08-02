@@ -50,8 +50,8 @@
         <template slot-scope="scope">
           <el-switch
             v-model="scope.row.isUsed"
-            :active-value="0"
-            :inactive-value="1"
+            active-value="0"
+            inactive-value="1"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
             active-text="启用"
@@ -104,16 +104,12 @@
         </el-form-item>
         <el-form-item label="状态:" prop="isUsed" required>
           <el-radio-group v-model="Form.isUsed">
-            <el-radio :label="0" value="0">开启</el-radio>
-            <el-radio :label="1" value="1">关闭</el-radio>
+            <el-radio label="0" value="0">开启</el-radio>
+            <el-radio label="1" value="1">关闭</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="管理员权限:" prop="roleAid">
-          <el-select
-            v-model="Form.roleAid"
-            size="medium"
-            @change="$forceUpdate()"
-          >
+          <el-select v-model="Form.roleAid" placeholder="请选择">
             <el-option
               v-for="item in roleList"
               :key="item.value"
@@ -147,14 +143,14 @@
         showModal: false,
         add: false,
         Form: {
-          aid: '',
+          aid: -1,
           userName: '',
           loginKey: '',
           reloginKey: '',
           phone: '',
           nickName: '',
           roleAid: '',
-          isUsed: 0,
+          isUsed: '0',
         },
       }
     },
@@ -176,7 +172,6 @@
             label: item.name,
           })
         })
-        console.log(data, 'Role')
       },
       //添加/修改管理员
       async modalConfirm(flag) {
@@ -187,49 +182,21 @@
           })
           return
         }
-        // flag确定是新增还是修改
-        const preList = this.getCheckedNodes()
-        const list = []
-        preList.forEach((item) => {
-          list.push(item.id)
-        })
-        if (flag) {
-          let form = {
-            aid: -1,
-            userName: this.Form.userName,
-            loginKey: this.Form.loginKey,
-            phone: this.Form.phone,
-            nickName: this.Form.nickName,
-            isUsed: this.Form.isUsed,
-            roleAid: list,
-          }
-          const res = await roleApi.updateAdmin(form)
-          if (!res) {
-            this.$message({
-              message: '接口未返回数据',
-              type: 'warning',
-            })
-          }
+        console.log(this.Form)
+        const res = await roleApi.updateAdmin(this.Form)
+        if (!res) {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
         } else {
-          let form = {
-            aid: this.Form.aid,
-            userName: this.Form.userName,
-            loginKey: this.Form.loginKey,
-            phone: this.Form.phone,
-            nickName: this.Form.nickName,
-            isUsed: this.Form.isUsed,
-            roleAid: list,
-          }
-          const res = await roleApi.updateAdmin(form)
-          if (!res) {
-            this.$message({
-              message: '接口未返回数据',
-              type: 'warning',
-            })
-          }
+          this.$message({
+            message: res.message,
+            type: 'warning',
+          })
+          this.getTableData()
+          this.closeShowModal()
         }
-        // this.showModal = false
-        // this.getCheckedNodes()
       },
       // 获取表格数据
       async getTableData(page = 1, pageRows = 7) {
@@ -254,7 +221,7 @@
         const params = {
           aid: row.aid,
         }
-        if (row.isUsed) {
+        if (row.isUsed === '1') {
           params.state = '1'
         } else {
           params.state = '0'
@@ -302,8 +269,8 @@
           phone: '',
           nickName: '',
           loginKey: '',
-          roleAid: [],
-          isUsed: 0,
+          roleAid: '',
+          isUsed: '0',
         }
       },
     },

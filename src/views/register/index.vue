@@ -65,7 +65,7 @@
               <vab-icon slot="prefix" :icon="['fas', 'unlock']"></vab-icon>
             </el-input>
           </el-form-item>
-          <el-form-item prop="smsCode" style="position: relative">
+          <!-- <el-form-item prop="smsCode" style="position: relative">
             <el-input
               v-model.trim="form.smsCode"
               type="text"
@@ -81,7 +81,7 @@
             >
               {{ phoneCode }}
             </el-button>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item>
             <el-button
               class="register-btn"
@@ -135,17 +135,22 @@
         }
       }
       return {
-        isGetphone: false,
-        getPhoneIntval: null,
-        phoneCode: '获取验证码',
+        // isGetphone: false,
+        // getPhoneIntval: null,
+        // phoneCode: '获取验证码',
         showRegister: false,
         nodeEnv: process.env.NODE_ENV,
         title: this.$baseTitle,
+        // form: {
+        //   phone: '',
+        //   loginKey: '',
+        //   confirmPwd: '',
+        //   smsCode: '',
+        // },
         form: {
           phone: '',
           loginKey: '',
           confirmPwd: '',
-          smsCode: '',
         },
         registerRules: {
           // username: [
@@ -165,9 +170,9 @@
             { required: true, trigger: 'blur', message: '请再次输入密码' },
             { validator: validatePassword, trigger: 'blur' },
           ],
-          smsCode: [
-            { required: true, trigger: 'blur', message: '请输入手机验证码' },
-          ],
+          // smsCode: [
+          //   { required: true, trigger: 'blur', message: '请输入手机验证码' },
+          // ],
         },
         loading: false,
         passwordType: 'password',
@@ -178,31 +183,31 @@
     },
     beforeDestroy() {
       document.body.style.overflow = 'auto'
-      this.getPhoneIntval = null
-      clearInterval(this.getPhoneIntval)
+      // this.getPhoneIntval = null
+      // clearInterval(this.getPhoneIntval)
     },
     methods: {
-      getPhoneCode() {
-        if (!isPhone(this.form.phone)) {
-          //this.$baseMessage('请输入手机号', 'error')
-          this.$refs['registerForm'].validateField('phone')
-          return
-        }
-        loginApi.getMessageAuthenticationCode(this.form.phone)
-        this.isGetphone = true
-        let n = 60
-        this.getPhoneIntval = setInterval(() => {
-          if (n > 0) {
-            n--
-            this.phoneCode = '重新获取(' + n + 's)'
-          } else {
-            this.getPhoneIntval = null
-            clearInterval(this.getPhoneIntval)
-            this.phoneCode = '获取验证码'
-            this.isGetphone = false
-          }
-        }, 1000)
-      },
+      // getPhoneCode() {
+      //   if (!isPhone(this.form.phone)) {
+      //     //this.$baseMessage('请输入手机号', 'error')
+      //     this.$refs['registerForm'].validateField('phone')
+      //     return
+      //   }
+      //   loginApi.getMessageAuthenticationCode(this.form.phone)
+      //   this.isGetphone = true
+      //   let n = 60
+      //   this.getPhoneIntval = setInterval(() => {
+      //     if (n > 0) {
+      //       n--
+      //       this.phoneCode = '重新获取(' + n + 's)'
+      //     } else {
+      //       this.getPhoneIntval = null
+      //       clearInterval(this.getPhoneIntval)
+      //       this.phoneCode = '获取验证码'
+      //       this.isGetphone = false
+      //     }
+      //   }, 1000)
+      // },
       handleReister() {
         this.$refs['registerForm'].validate(async (valid) => {
           if (valid) {
