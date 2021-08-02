@@ -209,6 +209,18 @@
         >
           <el-input v-model="Form.url"></el-input>
         </el-form-item>
+        <el-form-item label="添加富文本:" prop="html" required>
+          <el-button
+            v-if="content.length === 0"
+            type="primary"
+            @click="showDialogAddDetail"
+          >
+            添加内容
+          </el-button>
+          <el-button v-else type="primary" @click="showDialogEditDetail">
+            修改内容
+          </el-button>
+        </el-form-item>
         <el-form-item label="任务佣金:" prop="missionReward" required>
           <el-input v-model="Form.missionReward"></el-input>
         </el-form-item>
@@ -254,15 +266,31 @@
         <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 详情查看编辑 -->
+    <el-dialog
+      title="编辑任务详情"
+      :visible.sync="showModalEditDetail"
+      style="margin-top: 20px"
+      :before-close="closeDialog"
+      top
+    >
+      <vab-quill v-model="content" :min-height="400"></vab-quill>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showModalEditDetail = false">取 消</el-button>
+        <el-button type="primary" @click="editorDetailConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import './index.scss'
   import { taskApi } from '@/api/index'
+  import vabQuill from '@/plugins/vabQuill'
   import axios from 'axios'
   export default {
     name: 'TaskManage',
+    components: { vabQuill },
     data() {
       return {
         dialogImageUrl: '',
@@ -296,6 +324,10 @@
         typeOption: [],
         kindsOption: [],
         maxFileLen: 0,
+        // 详情
+        showModalEditDetail: false,
+        content: '',
+        isAddDetail: false,
       }
     },
     mounted() {
@@ -387,6 +419,7 @@
             form.imgUrlList = []
             form.url = this.Form.url
           }
+          form.html = this.content
           console.log(form, 'form')
           const res = await taskApi.addTasks(form)
           if (!res) {
@@ -424,6 +457,7 @@
             form.imgUrlList = []
             form.url = this.Form.url
           }
+          form.html = this.content
           console.log(form, 'form')
           const res = await taskApi.editTasks(form)
           console.log(res, 'form')
@@ -504,6 +538,9 @@
         } else {
           this.imgUrlList = []
         }
+        if (data.html) {
+          this.content = data.html
+        }
         console.log(this.Form)
       },
       closeShowModal() {
@@ -523,6 +560,22 @@
         }
         this.iconUrl = ''
         this.imgUrlList = []
+        this.content = ''
+      },
+      showDialogAddDetail() {
+        this.showModalEditDetail = true
+      },
+      showDialogEditDetail(item) {
+        this.showModalEditDetail = true
+      },
+      editorDetailConfirm() {
+        this.showModalEditDetail = false
+        if (this.content === '<p><br></p>') {
+          this.content = ''
+        }
+      },
+      closeDialog() {
+        this.showModalEditDetail = false
       },
       handleAvatarSuccessIcon(response, file, fileList) {
         this.iconUrl = response.message
