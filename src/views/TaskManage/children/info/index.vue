@@ -3,7 +3,7 @@
     <div class="page_title">
       <div class="ti_title">
         <div class="ti_title_wrapper">
-          <div>任务审核</div>
+          <div>任务情况</div>
           <div class="ti_buttons">
             <el-button type="success" @click="Download">导出报表</el-button>
           </div>
@@ -119,17 +119,20 @@
       <el-table-column
         prop="imgUrlList"
         label="任务图片"
-        width="300"
+        width="500"
         align="center"
       >
         <template slot-scope="scope">
           <!-- <el-image :src="scope.row.missionIcon" fit="fill"></el-image> -->
-          <div
+          <span
             v-for="(index, url) in scope.row.imgUrlList.split(',')"
             :key="index"
           >
-            <img :src="url" width="70" height="70" />
-          </div>
+            <img
+              :src="url"
+              style="max-height: 70px; max-width: 70px; padding: 5px"
+            />
+          </span>
         </template>
       </el-table-column>
       <el-table-column
@@ -156,19 +159,7 @@
         align="center"
         width="150"
       ></el-table-column>
-      <el-table-column
-        prop="missionQrCodeMissionAid"
-        label="中间表ID"
-        align="center"
-        width="150"
-      ></el-table-column>
-      <el-table-column
-        prop="timeAdd"
-        label="添加时间"
-        align="center"
-        width="200"
-      ></el-table-column>
-      <el-table-column label="操作" align="center" fixed="right" width="150">
+      <el-table-column label="操作" align="center">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -316,7 +307,7 @@
       },
       //获取审核状态
       async getState() {
-        const data = await taskApi.getTaskAuditState()
+        const { data } = await taskApi.getTaskAuditState()
         if (data) {
           data.forEach((v) => {
             this.stateOptions.push({
