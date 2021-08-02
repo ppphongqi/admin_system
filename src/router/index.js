@@ -429,7 +429,7 @@ export const asyncRoutes = [
         name: 'TaskInfo',
         component: () => import('@/views/TaskManage/children/info/index'),
         meta: {
-          title: '任务情况',
+          title: '任务审核',
           icon: 'tasks',
           // affix: true,
         },

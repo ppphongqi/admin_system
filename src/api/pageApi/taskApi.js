@@ -169,6 +169,15 @@ class TaskApi {
       data,
     })
   }
+
+  //获取任务状态
+  getTaskAuditState = (params = {}) => {
+    return request({
+      url: '/pc/mission/GetMissionStateList',
+      method: 'get',
+      params,
+    })
+  }
 }
 
 const taskApi = new TaskApi()

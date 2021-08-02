@@ -159,7 +159,7 @@
           //   { validator: validateusername, trigger: 'blur' },
           // ],
           phone: [
-            { required: true, trigger: 'blur', message: '请输入手机号码' },
+            { required: true, trigger: 'blur', message: '请输入账号' },
             { validator: validatePhone, trigger: 'blur' },
           ],
           loginKey: [

@@ -3,13 +3,13 @@
     <div class="page_title">
       <div class="ti_title">
         <div class="ti_title_wrapper">
-          <div>任务情况</div>
+          <div>任务审核</div>
           <div class="ti_buttons">
             <el-button type="success" @click="Download">导出报表</el-button>
           </div>
         </div>
 
-        <div class="taskTime">
+        <!-- <div class="taskTime">
           <el-row>
             <el-col :span="2" class="ti_label" style="padding-top: 5px">
               任务时间：
@@ -34,6 +34,34 @@
               <el-button icon="el-icon-search" type="primary"></el-button>
             </el-col>
           </el-row>
+        </div> -->
+        <div class="taskStatus">
+          <el-row>
+            <el-col :span="2" class="ti_label" style="padding-top: 5px">
+              任务名称：
+            </el-col>
+            <el-col :span="3">
+              <el-input
+                v-model="searchForm.name"
+                placeholder="请输入内容"
+                class="input-with-select"
+              />
+            </el-col>
+          </el-row>
+        </div>
+        <div class="taskStatus">
+          <el-row>
+            <el-col :span="2" class="ti_label" style="padding-top: 5px">
+              用户手机号：
+            </el-col>
+            <el-col :span="3">
+              <el-input
+                v-model="searchForm.userPhone"
+                placeholder="请输入内容"
+                class="input-with-select"
+              />
+            </el-col>
+          </el-row>
         </div>
         <div class="taskStatus">
           <el-row>
@@ -41,10 +69,13 @@
               任务状态：
             </el-col>
             <el-col :span="3">
-              <el-select v-model="value" placeholder="请选择">
-                <el-option label="1" value="1"></el-option>
-                <el-option label="2" value="2"></el-option>
-                <el-option label="3" value="3"></el-option>
+              <el-select v-model="searchForm.stateAid" placeholder="请选择">
+                <el-option
+                  v-for="item in stateOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                ></el-option>
               </el-select>
             </el-col>
           </el-row>
@@ -52,20 +83,9 @@
         <div class="taskSearch">
           <el-row>
             <el-col :span="2" class="ti_label" style="padding-top: 5px">
-              搜索：
-            </el-col>
-            <el-col :span="3">
-              <el-input
-                v-model="input3"
-                placeholder="请输入内容"
-                class="input-with-select"
-              >
-                <el-button
-                  slot="append"
-                  icon="el-icon-search"
-                  type="primary"
-                ></el-button>
-              </el-input>
+              <el-button icon="el-icon-search" type="primary" @click="getList">
+                搜索
+              </el-button>
             </el-col>
           </el-row>
         </div>
@@ -79,21 +99,76 @@
         align="center"
       ></el-table-column>
       <el-table-column
+        prop="aid"
+        label="ID"
+        width="55"
+        align="center"
+      ></el-table-column>
+      <el-table-column
+        prop="userName"
+        label="账号"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column
         prop="missionName"
         label="任务名称"
         align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="imgUrlList"
+        label="任务图片"
+        width="300"
+        align="center"
+      >
+        <template slot-scope="scope">
+          <!-- <el-image :src="scope.row.missionIcon" fit="fill"></el-image> -->
+          <div
+            v-for="(index, url) in scope.row.imgUrlList.split(',')"
+            :key="index"
+          >
+            <img :src="url" width="70" height="70" />
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column
+        prop="stateName"
+        label="任务状态"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="missionClassifyName"
+        label="任务分类"
+        align="center"
+        width="150"
+      ></el-table-column>
+      <el-table-column
+        prop="missionTypeName"
+        label="任务类型"
+        align="center"
+        width="150"
       ></el-table-column>
       <el-table-column
         prop="missionReward"
         label="任务酬金"
         align="center"
+        width="150"
       ></el-table-column>
       <el-table-column
-        prop="stateName"
-        label="任务状态"
+        prop="missionQrCodeMissionAid"
+        label="中间表ID"
         align="center"
+        width="150"
       ></el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column
+        prop="timeAdd"
+        label="添加时间"
+        align="center"
+        width="200"
+      ></el-table-column>
+      <el-table-column label="操作" align="center" fixed="right" width="150">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -145,13 +220,26 @@
         <el-form-item label="任务状态:" prop="stateName">
           <el-input v-model="Form.stateName"></el-input>
         </el-form-item>
+        <el-form-item label="任务描述:" prop="missionDescribe">
+          <el-input
+            v-model="Form.missionDescribe"
+            :rows="2"
+            type="textarea"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="任务分类:" prop="missionReward">
+          <el-input v-model="Form.missionClassifyName"></el-input>
+        </el-form-item>
+        <el-form-item label="任务类型:" prop="missionReward">
+          <el-input v-model="Form.missionTypeName"></el-input>
+        </el-form-item>
         <el-form-item label="任务酬金:" prop="missionReward">
           <el-input v-model="Form.missionReward"></el-input>
         </el-form-item>
         <el-form-item label="任务时间:" prop="timeAdd">
           <el-input v-model="Form.timeAdd"></el-input>
         </el-form-item>
-        <el-form-item label="提交人:" prop="stateName">
+        <el-form-item label="提交人:" prop="stateUserName">
           <el-input v-model="Form.stateName"></el-input>
         </el-form-item>
         <el-form-item label="提交时间:" prop="stateTime">
@@ -160,8 +248,7 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+        <el-button type="primary" @click="showModal = false">关闭</el-button>
       </span>
     </el-dialog>
   </div>
@@ -179,33 +266,45 @@
         PageSize: 7,
         tabPosition: 'top',
         date: '',
-        value: '',
-        input3: '',
         tableData: [],
+        stateOptions: [],
         showModal: false,
+        searchForm: {
+          name: '',
+          page: 1,
+          pageRows: 10,
+          userPhone: '',
+          stateAid: '',
+        },
         Form: {
-          missionName: '',
-          stateName: '',
-          missionReward: '',
-          timeAdd: '',
+          aid: '',
+          imgUrlList: [],
+          stateAid: '',
           stateName: '',
           stateTime: '',
+          stateUserName: '',
+          timeAdd: '',
+          userName: '',
+          userPhone: '',
+          missionName: '',
+          missionDescribe: '',
+          missionClassifyName: '',
+          missionTypeName: '',
+          missionReward: '',
+          missionQrCodeMissionAid: '',
         },
       }
     },
     mounted() {
       this.getList()
+      this.getState()
     },
     methods: {
       //获取列表
-      async getList(page = 1, pageRows = 7) {
-        const params = {
-          page,
-          pageRows,
-        }
+      async getList() {
+        const params = this.searchForm
         const data = await taskApi.getTaskAudit(params)
         if (data) {
-          console.log(data, 'data')
           this.tableData = data.data
           this.total = data.totalRecord
         } else {
@@ -215,41 +314,71 @@
           })
         }
       },
+      //获取审核状态
+      async getState() {
+        const data = await taskApi.getTaskAuditState()
+        if (data) {
+          data.forEach((v) => {
+            this.stateOptions.push({
+              label: v.name,
+              value: v.aid,
+            })
+          })
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+
       //审核
       async audit(row, flag) {
-        console.log(row, flag, 'audit')
         if (flag) {
           console.log('通过')
-          let form = {}
+          let form = {
+            aid: row.aid,
+            stateAid: 2,
+            missionQrCodeMissionAid: row.missionQrCodeMissionAid,
+          }
           const res = await taskApi.audit(form)
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning',
+            })
+            this.getList()
           }
         } else {
           console.log('不通过')
-          let form = {}
+          let form = {
+            aid: row.aid,
+            stateAid: 3,
+            missionQrCodeMissionAid: row.missionQrCodeMissionAid,
+          }
           const res = await taskApi.audit(form)
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning',
+            })
+            this.getList()
           }
         }
       },
       open(row) {
         this.showModal = true
-        this.Form = {
-          missionName: row.missionName,
-          stateName: row.stateName,
-          missionReward: row.missionReward,
-          timeAdd: row.timeAdd,
-          stateName: row.stateName,
-          stateTime: row.stateTime,
-        }
+        this.Form = row
       },
       Download() {
         console.log('导出报表')
