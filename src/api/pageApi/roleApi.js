@@ -117,6 +117,15 @@ class RoleApi {
       data,
     })
   }
+
+  //删除管理员
+  delAdmin = (params = {}) => {
+    return request({
+      url: '/pc/user/administratorDelete',
+      method: 'get',
+      params,
+    })
+  }
 }
 
 const roleApi = new RoleApi()

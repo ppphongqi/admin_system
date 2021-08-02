@@ -16,14 +16,10 @@
         width="55"
         align="center"
       ></el-table-column>
+      <el-table-column prop="aid" label="ID" align="center"></el-table-column>
       <el-table-column
         prop="userName"
-        label="ID"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="phone"
-        label="用户手机号"
+        label="账号"
         align="center"
       ></el-table-column>
       <el-table-column
@@ -234,7 +230,10 @@
             type: 'warning',
           })
         } else {
-          console.log(res, 'res')
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
           this.getTableData()
         }
       },
@@ -248,7 +247,20 @@
         this.getList(val, this.PageSize)
       },
       deleteRow(item) {
-        console.log(item)
+        roleApi.delAdmin({ aid: item.aid }).then((res) => {
+          if (res) {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.getTableData()
+          } else {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        })
       },
       // 添加
       showDialog() {
