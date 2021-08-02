@@ -59,6 +59,39 @@ class UserApi {
       data,
     })
   }
+
+  //获取用户详情
+  getUserDetails = (params = {}) => {
+    return request({
+      url: '/pc/user/details',
+      method: 'get',
+      params,
+    })
+  }
+  //设置用户折扣
+  setUserDiscount = (data = {}) => {
+    return request({
+      url: '/pc/user/userDiscount',
+      method: 'post',
+      data,
+    })
+  }
+  //获取用户折扣
+  getUserDiscount = (params = {}) => {
+    return request({
+      url: '/pc/user/getUserDiscount',
+      method: 'get',
+      params,
+    })
+  }
+  //删除用户折扣
+  delUserDiscount = (data = {}) => {
+    return request({
+      url: '/pc/user/deleteUserDiscount',
+      method: 'post',
+      data,
+    })
+  }
 }
 
 const userApi = new UserApi()

@@ -86,14 +86,24 @@
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown" @click="detail">
-              <el-dropdown-item command="用户详情">用户详情</el-dropdown-item>
+              <el-dropdown-item
+                command="用户详情"
+                @click.native="getAid(scope.row)"
+              >
+                用户详情
+              </el-dropdown-item>
               <el-dropdown-item
                 command="余额充值"
                 @click.native="showChargeModal(scope.row)"
               >
                 余额充值
               </el-dropdown-item>
-              <el-dropdown-item command="指定折扣">指定折扣</el-dropdown-item>
+              <el-dropdown-item
+                command="指定折扣"
+                @click.native="getDiscountAid(scope.row)"
+              >
+                指定折扣
+              </el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </template>
@@ -195,43 +205,82 @@
       width="30%"
       top="25vh"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="商品分类:" required>
-          <el-tree
-            ref="tree"
-            :data="data"
-            show-checkbox
-            default-expand-all
-            node-key="id"
-            highlight-current
-            :props="defaultProps"
-          ></el-tree>
-        </el-form-item>
-        <el-form-item label="具体折扣:" required>
-          <el-select v-model="value" placeholder="请选择">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            ></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
+      <el-table border :data="discountData" stripe style="width: 100%">
+        <el-table-column
+          prop="entityAid"
+          label="商品ID"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="targetUserAid"
+          label="用户ID"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="exclusiveDiscount"
+          label="折扣"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="timeLastUpdate" label="更新时间" align="center">
+          <template slot-scope="scope">
+            <div>
+              {{
+                moment(scope.row.timeLastUpdate).format('YYYY-MM-DD HH:mm:ss')
+              }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="setDiscount(scope.row)">
+              编辑
+            </el-button>
+            <el-button type="text" size="small" @click="delDiscount(scope.row)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
 
       <span slot="footer" class="dialog-footer" required>
-        <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+        <el-button @click="showDiscount = false">取 消</el-button>
+        <el-button type="primary" @click="showDiscount = false">
+          确 定
+        </el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="充值"
+      :visible.sync="showSetDiscount"
+      width="30%"
+      top="15vh"
+      :before-close="closeSetDiscount"
+    >
+      <el-form :model="setDiscountForm" label-width="80px">
+        <el-form-item label="用户id" required>
+          <el-input v-model="setDiscountForm.userAid"></el-input>
+        </el-form-item>
+        <el-form-item label="商品id" required>
+          <el-input v-model="setDiscountForm.goodsAid"></el-input>
+        </el-form-item>
+        <el-form-item label="折扣" required>
+          <el-input v-model="setDiscountForm.discount"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeSetDiscount">取 消</el-button>
+        <el-button type="primary" @click="setDiscountSubmit">确 定</el-button>
       </span>
     </el-dialog>
     <!-- 用户详情 -->
     <el-dialog
+      v-if="showDetail"
       title="用户详情"
       :visible.sync="showDetail"
       width="60%"
       top="10vh"
     >
-      <user-detail></user-detail>
+      <user-detail :user-aid="Number(userAid)"></user-detail>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showDetail = false">取 消</el-button>
         <el-button type="primary" @click="showDetail = false">确 定</el-button>
@@ -266,6 +315,7 @@
 
 <script>
   import './index.scss'
+  import moment from 'moment'
   import { userApi } from '@/api/index'
   import UserDetail from '../../components/userDetail.vue'
   export default {
@@ -273,11 +323,13 @@
     components: { UserDetail },
     data() {
       return {
+        moment,
         tableData: [],
         roleAidList: [],
         roleList: [],
         typeOption: [],
         roleOption: [],
+        discountData: [],
         currentPage: 1,
         total: 1,
         PageSize: 7,
@@ -298,91 +350,27 @@
           state: 0,
           balance: '',
         },
+        setDiscountForm: {
+          aid: -1,
+          userAid: '',
+          goodsAid: '',
+          discount: '',
+        },
+        userAid: '',
         add: false,
         showModal: false,
         showRole: false,
         showDiscount: false,
         showDetail: false,
         showCharge: false,
+        showSetDiscount: false,
         value: '',
-        options: [
-          {
-            value: '选项1',
-            label: '黄金糕',
-          },
-          {
-            value: '选项2',
-            label: '双皮奶',
-            disabled: true,
-          },
-          {
-            value: '选项3',
-            label: '蚵仔煎',
-          },
-          {
-            value: '选项4',
-            label: '龙须面',
-          },
-          {
-            value: '选项5',
-            label: '北京烤鸭',
-          },
-        ],
-        data: [
-          {
-            id: 1,
-            label: '一级 1',
-            children: [
-              {
-                id: 4,
-                label: '二级 1-1',
-                children: [
-                  {
-                    id: 9,
-                    label: '三级 1-1-1',
-                  },
-                  {
-                    id: 10,
-                    label: '三级 1-1-2',
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            id: 2,
-            label: '一级 2',
-            children: [
-              {
-                id: 5,
-                label: '二级 2-1',
-              },
-              {
-                id: 6,
-                label: '二级 2-2',
-              },
-            ],
-          },
-          {
-            id: 3,
-            label: '一级 3',
-            children: [
-              {
-                id: 7,
-                label: '二级 3-1',
-              },
-              {
-                id: 8,
-                label: '二级 3-2',
-              },
-            ],
-          },
-        ],
-        defaultProps: {
-          children: 'children',
-          label: 'label',
-        },
       }
+    },
+    computed: {
+      getTime(date) {
+        return moment(date).format('YYYY-MM-DD HH:mm:ss')
+      },
     },
     mounted() {
       this.getList()
@@ -548,13 +536,9 @@
       open() {
         this.showModal = true
       },
-      discount() {
-        this.showDiscount = true
-      },
       detail(detail) {
         switch (detail) {
           case '用户详情':
-            this.showDetail = true
             break
           case '余额充值':
             this.showCharge = true
@@ -563,6 +547,11 @@
             this.showDiscount = true
             break
         }
+      },
+      //获取用户aid
+      getAid(row) {
+        this.userAid = row.aid
+        this.showDetail = true
       },
       //余额充值
       showChargeModal(row) {
@@ -590,6 +579,69 @@
           aid: -1,
           state: 0,
           balance: '',
+        }
+      },
+      //获取用户折扣
+      async getDiscountAid(row) {
+        const { data } = await userApi.getUserDiscount({ aid: row.aid })
+        if (data) {
+          this.discountData = data
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+        this.showDiscount = true
+      },
+      //设置用户折扣
+      setDiscount(row) {
+        this.showSetDiscount = true
+        this.setDiscountForm = {
+          aid: row.aid,
+          userAid: row.targetUserAid,
+          goodsAid: row.entityAid,
+          discount: row.entityAid,
+        }
+      },
+      async setDiscountSubmit() {
+        const res = await userApi.setUserDiscount(this.setDiscountForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.closeSetDiscount()
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      closeSetDiscount() {
+        this.showSetDiscount = false
+        this.setDiscountForm = {
+          aid: -1,
+          userAid: '',
+          goodsAid: '',
+          discount: '',
+        }
+      },
+      //删除用户折扣
+      async delDiscount(row) {
+        const res = await userApi.delUserDiscount({ aid: row.aid })
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.showDiscount = false
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
         }
       },
       handleSizeChange(val) {
