@@ -7,6 +7,7 @@ import channelApi from './pageApi/channelApi'
 import physicalProductApi from './pageApi/physicalProductApi'
 import virtualProductApi from './pageApi/virtualProductApi'
 import sysApi from './pageApi/sysApi'
+import operatorApi from './pageApi/operatorApi'
 
 export {
   loginApi,
@@ -18,4 +19,5 @@ export {
   physicalProductApi,
   virtualProductApi,
   sysApi,
+  operatorApi,
 }

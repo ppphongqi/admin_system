@@ -313,6 +313,35 @@ export const asyncRoutes = [
       // },
     ],
   },
+  //运营商管理src\views\OperatorManage\children\kids\index.vue
+  {
+    path: '/OperatorManage',
+    component: Layout,
+    redirect: 'noRedirect',
+    meta: { title: '运营商管理', icon: 'box-open' },
+    children: [
+      {
+        path: 'OperatorList',
+        name: 'OperatorList',
+        component: () => import('@/views/OperatorManage/children/list/index'),
+        meta: {
+          title: '运营商列表',
+          icon: 'tasks',
+          // affix: true,
+        },
+      },
+      {
+        path: 'OperatorKinds',
+        name: 'OperatorKinds',
+        component: () => import('@/views/OperatorManage/children/kinds/index'),
+        meta: {
+          title: '运营商分类',
+          icon: 'tasks',
+          // affix: true,
+        },
+      },
+    ],
+  },
   {
     path: '/RoleManage',
     component: Layout,
