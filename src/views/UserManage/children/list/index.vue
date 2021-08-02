@@ -60,17 +60,21 @@
           ></el-switch>
         </template>
       </el-table-column>
-      <el-table-column
-        prop="typeAid"
-        label="用户类型"
-        align="center"
-      ></el-table-column>
+      <el-table-column prop="typeAid" label="用户类型" align="center">
+        <template slot-scope="scope">
+          <span>{{ getTypeName(scope.row.typeAid) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         width="100"
         prop="openId"
         label="用户标识"
         align="center"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <span>{{ getClassName(scope.row.openId) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column fixed="right" label="操作" align="center">
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="editUser(scope.row)">
@@ -83,7 +87,12 @@
             </el-button>
             <el-dropdown-menu slot="dropdown" @click="detail">
               <el-dropdown-item command="用户详情">用户详情</el-dropdown-item>
-              <el-dropdown-item command="余额充值">余额充值</el-dropdown-item>
+              <el-dropdown-item
+                command="余额充值"
+                @click.native="showChargeModal(scope.row)"
+              >
+                余额充值
+              </el-dropdown-item>
               <el-dropdown-item command="指定折扣">指定折扣</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
@@ -229,21 +238,27 @@
       </span>
     </el-dialog>
     <!-- 充值 -->
-    <el-dialog title="充值" :visible.sync="showCharge" width="30%" top="15vh">
+    <el-dialog
+      title="充值"
+      :visible.sync="showCharge"
+      width="30%"
+      top="15vh"
+      :before-close="closeShowCharge"
+    >
       <el-form :model="ChargeForm" label-width="80px">
         <el-form-item label="充值" required>
-          <el-radio-group v-model="ChargeForm.add">
-            <el-radio label="增加"></el-radio>
-            <el-radio label="减少"></el-radio>
+          <el-radio-group v-model="ChargeForm.state">
+            <el-radio :label="0" value="0">增加</el-radio>
+            <el-radio :label="1" value="1">减少</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="金额" required>
-          <el-input v-model="ChargeForm.count"></el-input>
+          <el-input v-model="ChargeForm.balance"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showCharge = false">取 消</el-button>
-        <el-button type="primary" @click="showCharge = false">确 定</el-button>
+        <el-button @click="closeShowCharge">取 消</el-button>
+        <el-button type="primary" @click="setCharge">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -253,7 +268,6 @@
   import './index.scss'
   import { userApi } from '@/api/index'
   import UserDetail from '../../components/userDetail.vue'
-  import { List } from 'echarts'
   export default {
     name: 'UserList',
     components: { UserDetail },
@@ -280,8 +294,9 @@
           typeAid: '',
         },
         ChargeForm: {
-          add: false,
-          count: '',
+          aid: -1,
+          state: 0,
+          balance: '',
         },
         add: false,
         showModal: false,
@@ -402,6 +417,25 @@
             label: item.name,
           })
         })
+      },
+      // 所属分类名称获取
+      getTypeName(typeAid) {
+        let typeName = ''
+        this.typeOption.forEach((v) => {
+          if (v.value === typeAid) typeName = v.label
+        })
+        return typeName
+      },
+      // 所属分类名称获取
+      getClassName(classAid) {
+        let className = ''
+        if (classAid === 1) {
+          className = '非微信用户'
+          return className
+        } else if (classAid === 0) {
+          className = '微信用户'
+          return className
+        }
       },
       //获取用户权限
       async getRole(page = 1, pageRows = 100) {
@@ -528,6 +562,34 @@
           case '指定折扣':
             this.showDiscount = true
             break
+        }
+      },
+      //余额充值
+      showChargeModal(row) {
+        this.ChargeForm.aid = row.aid
+      },
+      async setCharge() {
+        this.ChargeForm.state = String(this.ChargeForm.state)
+        const res = await userApi.changeBalance(this.ChargeForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.closeShowCharge()
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      closeShowCharge() {
+        this.showCharge = false
+        this.ChargeForm = {
+          aid: -1,
+          state: 0,
+          balance: '',
         }
       },
       handleSizeChange(val) {

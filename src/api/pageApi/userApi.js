@@ -50,6 +50,15 @@ class UserApi {
       params,
     })
   }
+
+  //用户余额充值
+  changeBalance = (data = {}) => {
+    return request({
+      url: '/pc/user/updateBalance',
+      method: 'post',
+      data,
+    })
+  }
 }
 
 const userApi = new UserApi()
