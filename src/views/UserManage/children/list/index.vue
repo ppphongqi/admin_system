@@ -54,8 +54,8 @@
             v-model="scope.row.isUsed"
             active-color="rgb(28,134,224)"
             inactive-color="#ff4949"
-            :active-value="0"
-            :inactive-value="1"
+            active-value="0"
+            inactive-value="1"
             @change="changeState(scope.row)"
           ></el-switch>
         </template>
@@ -75,9 +75,6 @@
         <template slot-scope="scope">
           <el-button type="text" size="small" @click="editUser(scope.row)">
             编辑
-          </el-button>
-          <el-button type="text" size="small" @click="editUserRole(scope.row)">
-            角色
           </el-button>
           <el-dropdown style="margin-left: 10px" @command="detail">
             <el-button type="text" size="small">
@@ -135,12 +132,29 @@
         </el-form-item>
         <el-form-item label="账户状态:" required>
           <el-radio-group v-model="Form.isUsed">
-            <el-radio :label="0" value="0">启用</el-radio>
-            <el-radio :label="1" value="1">禁用</el-radio>
+            <el-radio label="0" value="0">启用</el-radio>
+            <el-radio label="1" value="1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item label="用户权限:" required>
+          <el-select v-model="Form.roleAid" placeholder="请选择">
+            <el-option
+              v-for="item in roleOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="用户类型:" required>
-          <el-input v-model="Form.typeAid"></el-input>
+          <el-select v-model="Form.typeAid" placeholder="请选择">
+            <el-option
+              v-for="item in typeOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
 
@@ -149,7 +163,7 @@
         <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
     </el-dialog>
-    <!-- 角色 -->
+    <!-- 角色
     <el-dialog title="角色" :visible.sync="showRole" width="30%" top="25vh">
       <el-checkbox-group v-model="roleAidList">
         <el-checkbox
@@ -164,7 +178,7 @@
         <el-button @click="showRole = false">取 消</el-button>
         <el-button type="primary" @click="changeRole">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 指定折扣 -->
     <el-dialog
       title="指定折扣"
@@ -249,19 +263,20 @@
         roleAidList: [],
         roleList: [],
         typeOption: [],
+        roleOption: [],
         currentPage: 1,
         total: 1,
         PageSize: 7,
         Form: {
-          aid: '',
+          aid: -1,
           userName: '',
           phone: '',
           nickName: '',
           images: '',
           email: '',
           qq: '',
-          roleAid: [],
-          isUsed: 0,
+          roleAid: '',
+          isUsed: '0',
           typeAid: '',
         },
         ChargeForm: {
@@ -381,13 +396,12 @@
       //获取用户类型
       async getType() {
         const { data } = await userApi.getUserTypeList()
-        // data.forEach((item) => {
-        //   this.typeOption.push({
-        //     value: item.aid,
-        //     label: item.name,
-        //   })
-        // })
-        console.log(data, 'data')
+        data.forEach((item) => {
+          this.typeOption.push({
+            value: item.aid,
+            label: item.name,
+          })
+        })
       },
       //获取用户权限
       async getRole(page = 1, pageRows = 100) {
@@ -397,40 +411,11 @@
         }
         const { data } = await userApi.getRoleList(params)
         data.forEach((item) => {
-          this.roleList.push({
+          this.roleOption.push({
             value: item.aid,
             label: item.name,
           })
         })
-        console.log(data, 'Role')
-      },
-      //角色权限
-      async changeRole() {
-        console.log(Array.from(this.roleAidList))
-        this.roleAidList = Array.from(this.roleAidList)
-        let form = {
-          aid: this.Form.aid,
-          userName: this.Form.userName,
-          phone: this.Form.phone,
-          nickName: this.Form.nickName,
-          images: this.Form.images,
-          email: this.Form.email,
-          qq: this.Form.qq,
-          roleAid: this.roleAidList,
-          isUsed: this.Form.isUsed,
-          typeAid: this.Form.typeAid,
-        }
-        console.log(form, 'editform')
-        const res = await userApi.editUser(form)
-        this.showRole = false
-        this.roleAidList = []
-        console.log(res, 'res')
-        if (!res) {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
       },
       //修改用户状态
       async changeState(row) {
@@ -451,59 +436,46 @@
             type: 'warning',
           })
         } else {
-          console.log(res, 'res')
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
           this.getList()
         }
       },
       //添加/修改用户信息
       async modalConfirm(flag) {
-        console.log(flag, 'flag')
-        // flag确定是新增还是修改
+        this.Form.typeAid = String(this.Form.typeAid)
+        this.Form.roleAid = String(this.Form.roleAid)
         if (flag) {
-          let form = {
-            aid: -1,
-            userName: this.Form.userName,
-            phone: this.Form.phone,
-            nickName: this.Form.nickName,
-            images: this.Form.images,
-            email: this.Form.email,
-            qq: this.Form.qq,
-            roleAid: this.Form.roleAid,
-            isUsed: this.Form.isUsed,
-            typeAid: this.Form.typeAid,
-          }
-          console.log(form, 'addform')
-          // const res = await userApi.addUser(form)
-          console.log(res, 'res')
-          this.showModal = false
+          const res = await userApi.addUser(this.Form)
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.closeShowModal()
+            this.getList()
           }
         } else {
-          let form = {
-            aid: this.Form.aid,
-            userName: this.Form.userName,
-            phone: this.Form.phone,
-            nickName: this.Form.nickName,
-            images: this.Form.images,
-            email: this.Form.email,
-            qq: this.Form.qq,
-            roleAid: this.Form.roleAid,
-            isUsed: this.Form.isUsed,
-            typeAid: this.Form.typeAid,
-          }
-          console.log(form, 'editform')
-          const res = await userApi.editUser(form)
-          this.showModal = false
-          console.log(res, 'res')
+          const res = await userApi.editUser(this.Form)
           if (!res) {
             this.$message({
               message: '接口未返回数据',
               type: 'warning',
             })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.closeShowModal()
+            this.getList()
           }
         }
       },
@@ -517,25 +489,23 @@
         this.add = false
         this.showModal = true
         this.Form = row
-        console.log(this.Form, 'form')
       },
-      editUserRole(row) {
-        this.showRole = true
-        this.roleAidList = Array.of(row.roleAid)
-        this.Form = row
-      },
+      // editUserRole(row) {
+      //   this.showRole = true
+      //   this.roleAidList = Array.of(row.roleAid)
+      // },
       closeShowModal() {
         this.showModal = false
         this.Form = {
-          aid: '',
+          aid: -1,
           userName: '',
           phone: '',
           nickName: '',
           images: '',
           email: '',
           qq: '',
-          roleAid: [],
-          isUsed: 0,
+          roleAid: '',
+          isUsed: '0',
           typeAid: '',
         }
       },

@@ -26,6 +26,14 @@ class UserApi {
       data,
     })
   }
+  //添加用户信息
+  addUser = (data = {}) => {
+    return request({
+      url: '/pc/user/updateUser',
+      method: 'post',
+      data,
+    })
+  }
   // 修改用户账号信息
   editUser = (data = {}) => {
     return request({

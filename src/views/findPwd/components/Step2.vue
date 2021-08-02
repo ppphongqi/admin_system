@@ -4,8 +4,8 @@
       <el-form-item label="手机号：">
         {{ infoData.phone }}
       </el-form-item>
-      <el-form-item label="新密码：" prop="NewPassword">
-        <el-input v-model="form.NewPassword" type="password" />
+      <el-form-item label="新密码：" prop="newPassword">
+        <el-input v-model="form.newPassword" type="password" />
       </el-form-item>
       <el-form-item label="确认密码：" prop="confirmPwd">
         <el-input v-model="form.confirmPwd" type="password" />
@@ -37,12 +37,12 @@
       return {
         form: {
           phone: '',
-          NewPassword: '123456',
+          newPassword: '123456',
           confirmPwd: '123456',
           code: '',
         },
         rules: {
-          NewPassword: [
+          newPassword: [
             { required: true, message: '请输入密码', trigger: 'blur' },
           ],
           confirmPwd: [
@@ -62,7 +62,10 @@
               this.form.phone = this.infoData.phone
               const res = loginApi.findUpdatePwd(this.form)
               if (res) {
-                console.log(res, 'res')
+                this.$message({
+                  message: res.message,
+                  type: 'warning',
+                })
                 this.$emit('change-step', 3)
               } else {
                 this.$message({
