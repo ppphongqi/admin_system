@@ -175,34 +175,7 @@
           </div>
         </el-form-item>
         <el-form-item
-          v-if="!add && Form.missionTypeName == '1'"
-          label="二维码图片:"
-          prop="missionCode"
-          required
-        >
-          <div class="upload_wrapper">
-            <el-upload
-              ref="upload"
-              class="avatar-uploader"
-              action="http://localhost/api/pc/oss/upload"
-              :limit="1"
-              :show-file-list="false"
-              :on-success="handleAvatarSuccessTwo"
-              :before-upload="beforeAvatarUpload"
-              :data="{ module: 'img' }"
-            >
-              <div v-for="url in imgUrlList" :key="url.index">
-                <img :src="url.imgUrl" class="avatar" />
-              </div>
-              <i class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-            <div class="upload_tips">
-              （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
-            </div>
-          </div>
-        </el-form-item>
-        <el-form-item
-          v-if="Form.missionTypeName == '2'"
+          v-if="add && Form.missionTypeName == '2'"
           label="二维码地址:"
           prop="url"
           required
@@ -450,13 +423,13 @@
             missionState: String(this.Form.missionState), //任务状态（0：显示，1：禁止）
           }
           // 二维码图标/路径
-          if (this.Form.missionTypeName == '1') {
-            form.imgUrlList = this.imgUrlList
-            form.url = ' '
-          } else if (this.Form.missionTypeName == '2') {
-            form.imgUrlList = []
-            form.url = this.Form.url
-          }
+          // if (this.Form.missionTypeName == '1') {
+          //   form.imgUrlList = this.imgUrlList
+          //   form.url = ' '
+          // } else if (this.Form.missionTypeName == '2') {
+          //   form.imgUrlList = []
+          //   form.url = this.Form.url
+          // }
           form.html = this.content
           console.log(form, 'form')
           const res = await taskApi.editTasks(form)

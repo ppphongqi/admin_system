@@ -200,20 +200,20 @@
     </el-dialog> -->
     <!-- 指定折扣 -->
     <el-dialog
-      title="指定折扣"
+      title="折扣详情"
       :visible.sync="showDiscount"
       width="30%"
       top="25vh"
     >
       <el-table border :data="discountData" stripe style="width: 100%">
         <el-table-column
-          prop="entityAid"
-          label="商品ID"
+          prop="goodsName"
+          label="商品名称"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="targetUserAid"
-          label="用户ID"
+          prop="userName"
+          label="用户名"
           align="center"
         ></el-table-column>
         <el-table-column
@@ -250,19 +250,13 @@
       </span>
     </el-dialog>
     <el-dialog
-      title="充值"
+      title="设置折扣"
       :visible.sync="showSetDiscount"
       width="30%"
       top="15vh"
       :before-close="closeSetDiscount"
     >
       <el-form :model="setDiscountForm" label-width="80px">
-        <el-form-item label="用户id" required>
-          <el-input v-model="setDiscountForm.userAid"></el-input>
-        </el-form-item>
-        <el-form-item label="商品id" required>
-          <el-input v-model="setDiscountForm.goodsAid"></el-input>
-        </el-form-item>
         <el-form-item label="折扣" required>
           <el-input v-model="setDiscountForm.discount"></el-input>
         </el-form-item>

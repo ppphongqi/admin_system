@@ -123,20 +123,15 @@
         align="center"
       >
         <template slot-scope="scope">
-          <span
+          <el-image
             v-for="(url, index) in scope.row.imgUrlList.split(',')"
             :key="index"
-          >
-            <el-popover placement="left" trigger="click" width="1600">
-              <img :src="url" width="100%" />
-              <img
-                slot="reference"
-                :src="url"
-                :alt="url"
-                style="max-height: 70px; max-width: 70px; padding: 5px"
-              />
-            </el-popover>
-          </span>
+            style="width: 70px; height: 70px; padding: 5px"
+            :src="url"
+            :preview-src-list="
+              getPreviewImgList(scope.row.imgUrlList.split(','), index)
+            "
+          ></el-image>
         </template>
       </el-table-column>
       <el-table-column
@@ -172,7 +167,10 @@
           >
             详情
           </el-button>
-          <el-dropdown style="margin-left: 10px">
+          <el-dropdown
+            v-if="scope.row.stateAid === 1"
+            style="margin-left: 10px"
+          >
             <el-button type="text">
               审核
               <i class="el-icon-arrow-down el-icon--right"></i>
@@ -326,7 +324,13 @@
           })
         }
       },
-
+      getPreviewImgList: function (item, index) {
+        let arr = []
+        for (let i = 0; i < item.length; i++) {
+          arr.push(item[index])
+        }
+        return arr
+      },
       //审核
       async audit(row, flag) {
         if (flag) {
