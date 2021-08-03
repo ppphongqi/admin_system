@@ -202,7 +202,7 @@
     <el-dialog
       title="折扣详情"
       :visible.sync="showDiscount"
-      width="30%"
+      width="60%"
       top="25vh"
     >
       <el-table border :data="discountData" stripe style="width: 100%">
@@ -217,7 +217,7 @@
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="exclusiveDiscount"
+          prop="discount"
           label="折扣"
           align="center"
         ></el-table-column>
@@ -593,9 +593,9 @@
         this.showSetDiscount = true
         this.setDiscountForm = {
           aid: row.aid,
-          userAid: row.targetUserAid,
-          goodsAid: row.entityAid,
-          discount: row.entityAid,
+          userAid: row.userAid,
+          goodsAid: row.goodsAid,
+          discount: row.discount,
         }
       },
       async setDiscountSubmit() {

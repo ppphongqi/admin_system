@@ -216,7 +216,7 @@
         let len = this.specForm.spec[index].values.length
         physicalProductApi
           .delEntitySpecificationValue({
-            aid: this.specForm.spec[index].values[len - 1].gsvAid,
+            aid: this.specForm.spec[index].values[i].gsvAid,
           })
           .then((res) => {
             if (res) {

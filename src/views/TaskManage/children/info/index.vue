@@ -311,6 +311,10 @@
       async getState() {
         const { data } = await taskApi.getTaskAuditState()
         if (data) {
+          this.stateOptions.push({
+            label: '全部',
+            value: '',
+          })
           data.forEach((v) => {
             this.stateOptions.push({
               label: v.name,
