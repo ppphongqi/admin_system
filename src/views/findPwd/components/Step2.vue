@@ -58,23 +58,17 @@
         this.$refs.form.validate((valid) => {
           if (valid) {
             this.loading = true
-            setTimeout(() => {
-              this.form.phone = this.infoData.phone
-              const res = loginApi.findUpdatePwd(this.form)
-              if (res) {
+            this.form.phone = this.infoData.phone
+            loginApi.findUpdatePwd(this.form).then((res) => {
+              if (res.code === 200) {
                 this.$message({
                   message: res.message,
-                  type: 'warning',
+                  type: 'success',
                 })
                 this.$emit('change-step', 3)
-              } else {
-                this.$message({
-                  message: '接口未返回数据',
-                  type: 'warning',
-                })
               }
-              this.loading = false
-            }, 2000)
+            })
+            this.loading = false
           } else {
             this.loading = false
           }

@@ -1,12 +1,5 @@
 <template>
   <div class="register-container">
-    <el-alert
-      v-if="nodeEnv !== 'development'"
-      title="beautiful boys and girls欢迎加入vue-admin-beautifulQQ群：972435319"
-      type="success"
-      :closable="false"
-      style="position: fixed"
-    ></el-alert>
     <el-row>
       <el-col :xs="24" :sm="24" :md="12" :lg="16" :xl="16">
         <div style="color: transparent">占位符</div>
@@ -37,7 +30,7 @@
             <el-input
               v-model.trim="form.phone"
               type="text"
-              placeholder="请输入手机号"
+              placeholder="请输入账号"
               maxlength="11"
               show-word-limit
               autocomplete="off"
@@ -129,7 +122,7 @@
       }
       const validatePhone = (rule, value, callback) => {
         if (!isPhone(value)) {
-          callback(new Error('请输入正确的手机号'))
+          callback(new Error('请输入正确的账号'))
         } else {
           callback()
         }
@@ -226,7 +219,21 @@
             // }
             // const { msg } = await register(param)
             // this.$baseMessage(msg, 'success')
-            const data = await loginApi.register(this.form)
+            const res = await loginApi.register(this.form)
+            if (res.code === 200) {
+              this.$message({
+                message: res.message,
+                type: 'success',
+              })
+              setTimeout(() => {
+                this.$router.push('/login')
+              }, 2000)
+            } else {
+              this.$message({
+                message: '接口未返回数据',
+                type: 'warning',
+              })
+            }
           }
         })
       },

@@ -27,16 +27,20 @@
       handleSubmit() {
         this.$refs.form.validate((valid) => {
           if (valid) {
-            const res = loginApi.findPwdPhone(this.form)
-            if (res) {
-              console.log(res, 'res')
-              this.$emit('change-step', 2, this.form)
-            } else {
-              this.$message({
-                message: '接口未返回数据',
-                type: 'warning',
-              })
-            }
+            loginApi.findPwdPhone(this.form).then((res) => {
+              if (res.code === 200) {
+                this.$message({
+                  message: res.data,
+                  type: 'success',
+                })
+                this.$emit('change-step', 2, this.form)
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
           }
         })
       },
