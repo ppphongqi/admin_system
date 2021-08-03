@@ -342,18 +342,19 @@
                 v-for="(item, i) in specForm.spec"
                 :key="i"
                 :label="item.name"
+                prop="specification"
                 min-width="60"
                 align="center"
               ></el-table-column>
-
               <el-table-column
-                prop="img"
+                prop="image"
                 label="图片"
                 min-width="60"
                 align="center"
               >
                 <template slot-scope="scope">
                   <el-upload
+                    v-if="scope.row.image"
                     class="table-upload"
                     action="#"
                     list-type="picture-card"
@@ -364,52 +365,59 @@
                   >
                     <i class="el-icon-plus"></i>
                   </el-upload>
+                  <el-image v-else :src="scope.row.image" fit="fill"></el-image>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="price"
-                label="售价"
+                prop="sellingPrice"
+                label="销售价"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.price" type="number"></el-input>
+                  <el-input
+                    v-model="scope.row.sellingPrice"
+                    type="number"
+                  ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="cost_price"
+                prop="costPrice"
                 label="成本价"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
                   <el-input
-                    v-model="scope.row.cost_price"
+                    v-model="scope.row.costPrice"
                     type="number"
                   ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="older_price"
+                prop="originalPrice"
                 label="原价"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
                   <el-input
-                    v-model="scope.row.older_price"
+                    v-model="scope.row.originalPrice"
                     type="number"
                   ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="stock"
+                prop="inventory"
                 label="库存"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.stock" type="number"></el-input>
+                  <el-input
+                    v-model="scope.row.inventory"
+                    type="number"
+                  ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
@@ -724,7 +732,6 @@
       },
       // 生成模板
       async creatModel() {
-        this.hasModel = true
         const { data } = await physicalProductApi.getEntitySpecificationInfo({
           aid: this.formValidate.specificationAid,
         })
@@ -748,9 +755,48 @@
             }
             obj[name].push(v.value)
           })
-          let a = Object.values(obj) //转换成功的数据
-          console.log(a)
+          let arr = Object.values(obj) //转换成功的数据
+          var sarr = [[]]
+          for (var i = 0; i < arr.length; i++) {
+            var tarr = []
+            for (var j = 0; j < sarr.length; j++)
+              for (var k = 0; k < arr[i].length; k++)
+                tarr.push(sarr[j].concat(arr[i][k]))
+            sarr = tarr
+          }
+          let form = {
+            aid: -1,
+          }
+          sarr.forEach((v) => {
+            form.specification = v.toString()
+            console.log(form)
+            physicalProductApi.setEntityProperty(form).then((res) => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+              } else {
+                this.$message({
+                  message: '请求失败',
+                  type: 'warning',
+                })
+              }
+            })
+          })
         }
+        this.hasModel = true
+        physicalProductApi.getEntityProperty({ aid: 5 }).then((res) => {
+          if (res) {
+            console.log(res.data)
+            this.specTable = res.data
+          } else {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        })
       },
       // *********提交
       onSubmit() {

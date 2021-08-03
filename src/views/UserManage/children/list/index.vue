@@ -205,6 +205,13 @@
       width="60%"
       top="25vh"
     >
+      <el-button
+        type="primary"
+        style="margin-bottom: 10px"
+        @click="addDiscount"
+      >
+        添加折扣
+      </el-button>
       <el-table border :data="discountData" stripe style="width: 100%">
         <el-table-column
           prop="goodsName"
@@ -233,7 +240,7 @@
         <el-table-column fixed="right" label="操作" align="center">
           <template slot-scope="scope">
             <el-button type="text" size="small" @click="setDiscount(scope.row)">
-              编辑
+              修改折扣
             </el-button>
             <el-button type="text" size="small" @click="delDiscount(scope.row)">
               删除
@@ -241,7 +248,6 @@
           </template>
         </el-table-column>
       </el-table>
-
       <span slot="footer" class="dialog-footer" required>
         <el-button @click="showDiscount = false">取 消</el-button>
         <el-button type="primary" @click="showDiscount = false">
@@ -257,6 +263,16 @@
       :before-close="closeSetDiscount"
     >
       <el-form :model="setDiscountForm" label-width="80px">
+        <el-form-item v-if="showSetDiscountAdd" label="商品列表" required>
+          <el-select v-model="setDiscountForm.goodsAid" placeholder="请选择">
+            <el-option
+              v-for="item in goodsOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="折扣" required>
           <el-input v-model="setDiscountForm.discount"></el-input>
         </el-form-item>
@@ -311,6 +327,7 @@
   import './index.scss'
   import moment from 'moment'
   import { userApi } from '@/api/index'
+  import { physicalProductApi } from '@/api/index'
   import UserDetail from '../../components/userDetail.vue'
   export default {
     name: 'UserList',
@@ -324,6 +341,7 @@
         typeOption: [],
         roleOption: [],
         discountData: [],
+        goodsOptions: [],
         currentPage: 1,
         total: 1,
         PageSize: 7,
@@ -358,7 +376,9 @@
         showDetail: false,
         showCharge: false,
         showSetDiscount: false,
+        showSetDiscountAdd: false,
         value: '',
+        tempUserAid: 0,
       }
     },
     computed: {
@@ -370,6 +390,7 @@
       this.getList()
       this.getType()
       this.getRole()
+      this.getGoods()
     },
     methods: {
       //获取用户列表
@@ -559,6 +580,7 @@
             message: res.message,
             type: 'success',
           })
+          this.getList()
           this.closeShowCharge()
         } else {
           this.$message({
@@ -587,16 +609,36 @@
           })
         }
         this.showDiscount = true
+        this.tempUserAid = row.aid
       },
       //设置用户折扣
       setDiscount(row) {
         this.showSetDiscount = true
+        this.showSetDiscountAdd = false
         this.setDiscountForm = {
           aid: row.aid,
           userAid: row.userAid,
           goodsAid: row.goodsAid,
           discount: row.discount,
         }
+      },
+      addDiscount() {
+        this.showSetDiscount = true
+        this.showSetDiscountAdd = true
+        this.setDiscountForm.userAid = this.tempUserAid
+      },
+      async getGoods() {
+        const params = {
+          page: 1,
+          pageRows: 100,
+        }
+        const { data } = await physicalProductApi.getEntityList(params)
+        data.records.forEach((v) => {
+          this.goodsOptions.push({
+            label: v.name,
+            value: v.aid,
+          })
+        })
       },
       async setDiscountSubmit() {
         const res = await userApi.setUserDiscount(this.setDiscountForm)
@@ -605,6 +647,7 @@
             message: res.message,
             type: 'success',
           })
+          this.getDiscountAid({ aid: this.tempUserAid })
           this.closeSetDiscount()
         } else {
           this.$message({
@@ -621,6 +664,7 @@
           goodsAid: '',
           discount: '',
         }
+        this.tempUserAid = 0
       },
       //删除用户折扣
       async delDiscount(row) {
@@ -630,7 +674,7 @@
             message: res.message,
             type: 'success',
           })
-          this.showDiscount = false
+          this.getDiscountAid({ aid: this.tempUserAid })
         } else {
           this.$message({
             message: '接口未返回数据',
