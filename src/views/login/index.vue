@@ -14,81 +14,82 @@
         <div class="login-form">
           <div class="title">hello !</div>
           <div class="title-tips">欢迎来到{{ title }}！</div>
-          <el-tabs v-model="activeName" stretch>
-            <el-tab-pane label="手机号登录" name="first">
-              <el-form
-                ref="phoneForm"
-                :model="phoneForm"
-                :rules="phoneRules"
-                label-position="left"
+          <el-form
+            ref="phoneForm"
+            :model="phoneForm"
+            :rules="phoneRules"
+            label-position="left"
+          >
+            <el-form-item style="margin-top: 40px" prop="phone">
+              <span class="svg-container svg-container-admin">
+                <vab-icon :icon="['fas', 'user']" />
+              </span>
+              <el-input
+                v-model.trim="phoneForm.phone"
+                v-focus
+                placeholder="请输入账号"
+                tabindex="1"
+                type="text"
+              />
+            </el-form-item>
+            <el-form-item prop="loginKey">
+              <span class="svg-container">
+                <vab-icon :icon="['fas', 'lock']" />
+              </span>
+              <el-input
+                :key="passwordType"
+                ref="password"
+                v-model.trim="phoneForm.loginKey"
+                :type="passwordType"
+                tabindex="2"
+                placeholder="请输入密码"
+                @keyup.enter.native="handleLogin"
+              />
+              <span
+                v-if="passwordType === 'password'"
+                class="show-password"
+                @click="handlePassword"
               >
-                <el-form-item style="margin-top: 40px" prop="phone">
-                  <span class="svg-container svg-container-admin">
-                    <vab-icon :icon="['fas', 'user']" />
-                  </span>
-                  <el-input
-                    v-model.trim="phoneForm.phone"
-                    v-focus
-                    placeholder="请输入用户名"
-                    tabindex="1"
-                    type="text"
-                  />
-                </el-form-item>
-                <el-form-item prop="loginKey">
-                  <span class="svg-container">
-                    <vab-icon :icon="['fas', 'lock']" />
-                  </span>
-                  <el-input
-                    :key="passwordType"
-                    ref="password"
-                    v-model.trim="phoneForm.loginKey"
-                    :type="passwordType"
-                    tabindex="2"
-                    placeholder="请输入密码"
-                    @keyup.enter.native="handleLogin"
-                  />
-                  <span
-                    v-if="passwordType === 'password'"
-                    class="show-password"
-                    @click="handlePassword"
-                  >
-                    <vab-icon :icon="['fas', 'eye-slash']"></vab-icon>
-                  </span>
-                  <span v-else class="show-password" @click="handlePassword">
-                    <vab-icon :icon="['fas', 'eye']"></vab-icon>
-                  </span>
-                </el-form-item>
-                <el-form-item prop="verificationCode">
-                  <el-col :span="10">
-                    <span class="svg-container">
-                      <vab-icon :icon="['fas', 'lock']" />
-                    </span>
-                    <el-input
-                      ref="password"
-                      v-model.trim="phoneForm.verificationCode"
-                      tabindex="2"
-                      placeholder="验证码"
-                      @keyup.enter.native="handleLogin"
-                    />
-                  </el-col>
-                  <el-col :span="5">
-                    <img class="login_code" :src="image" />
-                  </el-col>
-                  <el-col :span="5">
-                    <div class="code_tips" @click.prevent="getCode">换一换</div>
-                  </el-col>
-                </el-form-item>
-                <el-button
-                  :loading="loading"
-                  class="login-btn"
-                  type="primary"
-                  @click="handleLogin"
-                >
-                  登录
-                </el-button>
-              </el-form>
-            </el-tab-pane>
-            <!-- <el-tab-pane label="短信登录" name="second">
+                <vab-icon :icon="['fas', 'eye-slash']"></vab-icon>
+              </span>
+              <span v-else class="show-password" @click="handlePassword">
+                <vab-icon :icon="['fas', 'eye']"></vab-icon>
+              </span>
+            </el-form-item>
+            <el-form-item prop="verificationCode">
+              <el-col :span="10">
+                <span class="svg-container">
+                  <vab-icon :icon="['fas', 'lock']" />
+                </span>
+                <el-input
+                  ref="password"
+                  v-model.trim="phoneForm.verificationCode"
+                  tabindex="2"
+                  placeholder="验证码"
+                  @keyup.enter.native="handleLogin"
+                />
+              </el-col>
+              <el-col :span="5">
+                <img class="login_code" :src="image" />
+              </el-col>
+              <el-col :span="5">
+                <div class="code_tips" @click.prevent="getCode">换一换</div>
+              </el-col>
+            </el-form-item>
+            <el-button
+              :loading="loading"
+              class="login-btn"
+              type="primary"
+              @click="handleLogin"
+            >
+              登录
+            </el-button>
+          </el-form>
+          <!-- <el-tabs v-model="activeName" stretch>
+            <el-tab-pane label="手机号登录" name="first">
+
+            </el-tab-pane> -->
+          <!-- <el-tab-pane label="短信登录" name="second">
               <el-form
                 ref="codeForm"
                 :model="codeForm"
@@ -135,7 +136,7 @@
                 </el-button>
               </el-form>
             </el-tab-pane> -->
-            <el-tab-pane label="账号登录" name="third">
+          <!-- <el-tab-pane label="账号登录" name="third">
               <el-form
                 ref="userNameForm"
                 :model="userNameForm"
@@ -206,8 +207,8 @@
                   登录
                 </el-button>
               </el-form>
-            </el-tab-pane>
-            <!-- <el-tab-pane label="邮箱登录" name="fourth">
+            </el-tab-pane> -->
+          <!-- <el-tab-pane label="邮箱登录" name="fourth">
               <el-form
                 ref="emailForm"
                 :model="emailForm"
@@ -260,12 +261,12 @@
                 </el-button>
               </el-form>
             </el-tab-pane> -->
-          </el-tabs>
+          <!-- </el-tabs> -->
           <el-row>
             <el-col :span="12">
-              <router-link to="/register">
+              <!-- <router-link to="/register">
                 <div style="margin-top: 20px">注册</div>
-              </router-link>
+              </router-link> -->
             </el-col>
             <el-col :span="12">
               <router-link to="/findPwd">
