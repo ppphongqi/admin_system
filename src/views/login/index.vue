@@ -88,7 +88,7 @@
                 </el-button>
               </el-form>
             </el-tab-pane>
-            <el-tab-pane label="短信登录" name="second">
+            <!-- <el-tab-pane label="短信登录" name="second">
               <el-form
                 ref="codeForm"
                 :model="codeForm"
@@ -134,7 +134,7 @@
                   登录
                 </el-button>
               </el-form>
-            </el-tab-pane>
+            </el-tab-pane> -->
             <el-tab-pane label="账号登录" name="third">
               <el-form
                 ref="userNameForm"
@@ -207,7 +207,7 @@
                 </el-button>
               </el-form>
             </el-tab-pane>
-            <el-tab-pane label="邮箱登录" name="fourth">
+            <!-- <el-tab-pane label="邮箱登录" name="fourth">
               <el-form
                 ref="emailForm"
                 :model="emailForm"
@@ -259,7 +259,7 @@
                   登录
                 </el-button>
               </el-form>
-            </el-tab-pane>
+            </el-tab-pane> -->
           </el-tabs>
           <el-row>
             <el-col :span="12">

@@ -118,20 +118,24 @@
       ></el-table-column>
       <el-table-column
         prop="imgUrlList"
-        label="任务图片"
+        label="任务截图"
         width="500"
         align="center"
       >
         <template slot-scope="scope">
-          <!-- <el-image :src="scope.row.missionIcon" fit="fill"></el-image> -->
           <span
-            v-for="(index, url) in scope.row.imgUrlList.split(',')"
+            v-for="(url, index) in scope.row.imgUrlList.split(',')"
             :key="index"
           >
-            <img
-              :src="url"
-              style="max-height: 70px; max-width: 70px; padding: 5px"
-            />
+            <el-popover placement="left" trigger="click" width="1600">
+              <img :src="url" width="100%" />
+              <img
+                slot="reference"
+                :src="url"
+                :alt="url"
+                style="max-height: 70px; max-width: 70px; padding: 5px"
+              />
+            </el-popover>
           </span>
         </template>
       </el-table-column>
@@ -159,7 +163,7 @@
         align="center"
         width="150"
       ></el-table-column>
-      <el-table-column label="操作" align="center">
+      <el-table-column label="操作" align="center" width="150">
         <template slot-scope="scope">
           <el-button
             type="text"
@@ -174,10 +178,10 @@
               <i class="el-icon-arrow-down el-icon--right"></i>
             </el-button>
             <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click="audit(scope.row, 1)">
+              <el-dropdown-item @click.native="audit(scope.row, 1)">
                 通过
               </el-dropdown-item>
-              <el-dropdown-item @click="audit(scope.row, 0)">
+              <el-dropdown-item @click.native="audit(scope.row, 0)">
                 不通过
               </el-dropdown-item>
             </el-dropdown-menu>
