@@ -95,7 +95,6 @@
         <el-form-item label="管理员密码:" prop="loginKey" required>
           <el-input v-model="Form.loginKey"></el-input>
         </el-form-item>
-
         <el-form-item label="确认密码:" prop="reloginKey" required>
           <el-input v-model="Form.reloginKey"></el-input>
         </el-form-item>

@@ -4,12 +4,14 @@
     :visible.sync="showModal"
     top
     style="margin-top: 50px"
+    :before-close="closeShowModal"
   >
     <el-form :model="specForm" label-width="150px" label-position="right">
       <el-form-item label="规格模板名称:" prop="name" required>
         <el-input
           v-model="specForm.name"
           placeholder="输入规格模板名称"
+          @change="addModal"
         ></el-input>
       </el-form-item>
       <el-form-item label="规格内容" prop="spec">
@@ -62,7 +64,7 @@
       </el-form-item>
     </el-form>
     <span slot="footer" class="dialog-footer">
-      <el-button @click="showModal = false">取 消</el-button>
+      <el-button @click="closeShowModal">取 消</el-button>
       <el-button type="primary" @click="submitSpec">确 定</el-button>
     </span>
   </el-dialog>
@@ -74,6 +76,9 @@
   export default {
     data() {
       return {
+        add: false,
+        source: false,
+        oneAddName: false,
         showModal: false,
         specForm: {
           name: '',
@@ -82,6 +87,30 @@
       }
     },
     methods: {
+      //添加模板
+      addModal() {
+        if (this.add) {
+          let item = {
+            aid: -1,
+            name: this.specForm.name,
+          }
+          physicalProductApi.setEntitySpecification(item).then((res) => {
+            if (res) {
+              this.$message({
+                message: res.message,
+                type: 'success',
+              })
+              this.add = false
+              this.oneAddName = true
+            } else {
+              this.$message({
+                message: '接口未返回数据',
+                type: 'warning',
+              })
+            }
+          })
+        }
+      },
       // 添加新规格
       addNewSpec() {
         let noAdd = false
@@ -213,7 +242,6 @@
           })
           return
         }
-        let len = this.specForm.spec[index].values.length
         physicalProductApi
           .delEntitySpecificationValue({
             aid: this.specForm.spec[index].values[i].gsvAid,
@@ -235,8 +263,10 @@
             }
           })
       },
-      showModalBox(specForm) {
+      showModalBox(source, add, specForm) {
         this.showModal = true
+        this.source = source
+        this.add = add
         if (specForm) this.specForm = specForm
         else {
           this.specForm = {
@@ -246,11 +276,18 @@
           }
         }
       },
-      // 提交规格(用不上？)
+      // 提交规格
       submitSpec() {
         if (this.specForm.name === '') {
           this.$message({
             message: '警告哦，填写规格模板名称',
+            type: 'warning',
+          })
+          return false
+        }
+        if (this.specForm.spec.length === 0) {
+          this.$message({
+            message: '警告哦，至少需要一条规格值',
             type: 'warning',
           })
           return false
@@ -263,11 +300,6 @@
               if (val.value === '') noSubmit = true
             })
           })
-        }
-        let item = {
-          name: '',
-          values: [{ value: '' }],
-          isEmpty: true,
         }
         if (noSubmit) {
           this.$message({
@@ -282,7 +314,54 @@
         })
         console.log('提交')
         console.log(specForm)
+        this.oneAddName = false
         this.showModal = false
+        if (this.source) {
+          this.$parent.getEntitySpecificationList()
+        } else {
+          this.$parent.getSpecificationList()
+        }
+      },
+      //关闭模板
+      async closeShowModal() {
+        if (this.oneAddName) {
+          const { data } = await physicalProductApi.getEntitySpecification()
+          if (data) {
+            data.forEach((v) => {
+              if (this.specForm.name === v.name) {
+                physicalProductApi
+                  .delEntitySpecification({
+                    aid: v.aid,
+                  })
+                  .then((res) => {
+                    if (res) {
+                      this.$message({
+                        message: res.message,
+                        type: 'success',
+                      })
+                      this.oneAddName = false
+                    } else {
+                      this.$message({
+                        message: '接口未返回数据',
+                        type: 'warning',
+                      })
+                    }
+                  })
+              }
+            })
+          } else {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        }
+        this.showModal = false
+        if (this.source) {
+          this.$parent.getEntitySpecificationList()
+        } else {
+          this.$parent.getSpecificationList()
+        }
       },
     },
   }

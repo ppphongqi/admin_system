@@ -605,6 +605,8 @@
           ],
         },
         hasModel: false,
+        add: true,
+        source: false,
       }
     },
     created() {
@@ -623,7 +625,6 @@
         }
         const { data } = await physicalProductApi.getEntityClassList(params)
         this.typeList = data.records
-        console.log(this.typeList, 'typeList')
       },
       // 获取规格列表
       async getSpecificationList() {
@@ -649,7 +650,7 @@
       },
       // 添加产品规格
       addTem() {
-        this.$refs.specDialog.showModalBox()
+        this.$refs.specDialog.showModalBox(this.source, this.add)
       },
       // 添加新规格
       addNewSpec() {
@@ -722,8 +723,34 @@
         }
       },
       // 生成模板
-      creatModel() {
+      async creatModel() {
         this.hasModel = true
+        const { data } = await physicalProductApi.getEntitySpecificationInfo({
+          aid: this.formValidate.specificationAid,
+        })
+        if (data) {
+          let List = []
+          data.forEach((v) => {
+            if (v.gskName === null) {
+              List = []
+            } else {
+              List.push({
+                name: v.gskName,
+                value: v.gsvName,
+              })
+            }
+          })
+          let obj = {}
+          List.forEach((v) => {
+            let { name } = v
+            if (!obj[name]) {
+              obj[name] = []
+            }
+            obj[name].push(v.value)
+          })
+          let a = Object.values(obj) //转换成功的数据
+          console.log(a)
+        }
       },
       // *********提交
       onSubmit() {

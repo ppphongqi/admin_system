@@ -13,7 +13,11 @@
             prop="name"
             style="margin-bottom: 0px"
           >
-            <el-input v-model="prodQuery.name" style="width: 200px"></el-input>
+            <el-input
+              v-model="prodQuery.name"
+              clearable
+              style="width: 200px"
+            ></el-input>
           </el-form-item>
           <el-form-item
             label="商品分类:"
@@ -22,6 +26,7 @@
           >
             <el-select
               v-model="prodQuery.classAid"
+              clearable
               style="width: 180px"
               placeholder="请选择"
             >
@@ -36,6 +41,7 @@
           <el-form-item label="状态:" prop="state" style="margin-bottom: 0px">
             <el-select
               v-model="prodQuery.state"
+              clearable
               style="width: 160px"
               placeholder="请选择"
             >
@@ -54,6 +60,7 @@
           >
             <el-select
               v-model="prodQuery.isDistribution"
+              clearable
               style="width: 160px"
               placeholder="请选择"
             >

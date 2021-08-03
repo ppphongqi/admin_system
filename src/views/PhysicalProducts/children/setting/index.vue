@@ -49,29 +49,19 @@
           </div>
         </template>
       </el-table-column>
-      <!-- <el-table-column
-        prop="productSize"
-        label="商品规格"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="productAttr"
-        label="商品属性"
-        align="center"
-      ></el-table-column> -->
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             type="text"
             size="small"
             @click.native.prevent="setRow(scope.row)"
           >
             设置
-          </el-button>
+          </el-button> -->
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="editRow(scope.row)"
+            @click.native.prevent="setRow(scope.row)"
           >
             编辑
           </el-button>
@@ -85,23 +75,6 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-dialog
-      :title="add ? '添加模板' : '修改模板'"
-      :visible.sync="showModal"
-      width="30%"
-      top="15vh"
-      :before-close="closeShowModal"
-    >
-      <el-form :model="Form" label-width="120px" label-position="right">
-        <el-form-item label="规格名称:" prop="name" required>
-          <el-input v-model="Form.name"></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="closeShowModal">取 消</el-button>
-        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
-      </span>
-    </el-dialog>
     <spec-dialog ref="specDialog" />
   </div>
 </template>
@@ -126,7 +99,8 @@
         showModal: false,
         showSetModal: false,
         setMoalInfo: false,
-        add: false,
+        add: true,
+        source: true,
         addModal: false,
       }
     },
@@ -171,39 +145,7 @@
       },
       //添加
       showDialog() {
-        this.showModal = true
-        this.add = true
-      },
-      // 编辑
-      editRow(row) {
-        this.Form = row
-        this.showModal = true
-        this.add = false
-      },
-      //关闭添加编辑
-      closeShowModal() {
-        this.Form = {}
-        this.showModal = false
-      },
-      async modalConfirm(add) {
-        if (add) {
-          this.Form.aid = -1
-        }
-        console.log(this.Form)
-        const res = await physicalProductApi.setEntitySpecification(this.Form)
-        if (res) {
-          this.getEntitySpecificationList()
-          this.closeShowModal()
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
+        this.$refs.specDialog.showModalBox(this.source, this.add)
       },
       search() {
         console.log('检索')
@@ -245,7 +187,7 @@
             name: row.name,
             spec: info,
           }
-          this.$refs.specDialog.showModalBox(specForm)
+          this.$refs.specDialog.showModalBox(this.source, !this.add, specForm)
         } else {
           this.$message({
             message: '接口未返回数据',
