@@ -234,9 +234,9 @@
           <!-- 表格 -->
           <el-form-item v-if="hasModel" label="">
             <span>批量设置</span>
-            <el-table :data="specTable" border style="width: 100%">
+            <el-table :data="specTableForm" border style="width: 100%">
               <el-table-column
-                prop="img"
+                prop="image"
                 label="图片"
                 min-width="60"
                 align="center"
@@ -256,49 +256,55 @@
                 </template>
               </el-table-column>
               <el-table-column
-                prop="price"
-                label="售价"
+                prop="sellingPrice"
+                label="销售价"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.price" type="number"></el-input>
+                  <el-input
+                    v-model="scope.row.sellingPrice"
+                    type="number"
+                  ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="cost_price"
+                prop="costPrice"
                 label="成本价"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
                   <el-input
-                    v-model="scope.row.cost_price"
+                    v-model="scope.row.costPrice"
                     type="number"
                   ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="older_price"
+                prop="originalPrice"
                 label="原价"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
                   <el-input
-                    v-model="scope.row.older_price"
+                    v-model="scope.row.originalPrice"
                     type="number"
                   ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
-                prop="stock"
+                prop="inventory"
                 label="库存"
                 min-width="80"
                 align="center"
               >
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.stock" type="number"></el-input>
+                  <el-input
+                    v-model="scope.row.inventory"
+                    type="number"
+                  ></el-input>
                 </template>
               </el-table-column>
               <el-table-column
@@ -333,7 +339,7 @@
               </el-table-column>
               <el-table-column label="操作" min-width="100" align="center">
                 <template slot-scope="scope">
-                  <el-button type="text" @click="add(scope.$index)">
+                  <el-button type="text" @click="adds(scope.row)">
                     批量添加
                   </el-button>
                   <span style="margin: 0 5px">|</span>
@@ -622,6 +628,20 @@
         add: true,
         source: false,
         specificationValue: [],
+        specTableForm: [
+          {
+            aid: -1,
+            image: '',
+            sellingPrice: '0',
+            costPrice: '0',
+            originalPrice: '0',
+            inventory: '999',
+            gdno: '1234567891234',
+            weight: '2.4',
+            volume: '0.65',
+          },
+        ],
+        tempSepc: [],
         specTableValue: [],
         edit: false,
       }
@@ -778,35 +798,47 @@
                 tarr.push(sarr[j].concat(arr[i][k]))
             sarr = tarr
           }
-          sarr.forEach((v) => {
-            this.specTableValue.push({
-              aid: -1,
-              goodsEntityAid: this.formValidate.aid,
-              specification: v.toString(),
-              image:
-                'http://wanmouyun.oss-cn-shenzhen.aliyuncs.com/img/2021-07-26/22a9a408-a070-4d52-bafc-bfe7ae934ddf.jpg',
-              sellingPrice: '0',
-              costPrice: '0',
-              originalPrice: '0',
-              inventory: '999',
-              gdno: '1234567891234',
-              weight: '2.4',
-              volume: '0.65',
-            })
-          })
+          this.tempSepc = sarr
         }
+        this.getSpecTableValue()
         this.hasModel = true
-        // physicalProductApi.getEntityProperty({ aid: 5 }).then((res) => {
-        //   if (res) {
-        //     console.log(res.data)
-        //     this.specTable = res.data
-        //   } else {
-        //     this.$message({
-        //       message: '接口未返回数据',
-        //       type: 'warning',
-        //     })
-        //   }
-        // })
+      },
+      //获取商品属性详情
+      getSpecTableValue() {
+        physicalProductApi
+          .getEntityProperty({ aid: this.$route.query.data.aid })
+          .then((res) => {
+            if (res) {
+              console.log(res.data)
+              this.specTableValue = res.data
+            } else {
+              this.$message({
+                message: '接口未返回数据',
+                type: 'warning',
+              })
+            }
+          })
+      },
+      adds(row) {
+        let form = row
+        form.goodsEntityAid = this.formValidate.aid
+        this.tempSepc.forEach((v) => {
+          form.specification = v.toString()
+          physicalProductApi.setEntityProperty(form).then((res) => {
+            if (res) {
+              this.$message({
+                message: res.message,
+                type: 'success',
+              })
+            } else {
+              this.$message({
+                message: '请求失败',
+                type: 'warning',
+              })
+            }
+          })
+        })
+        this.getSpecTableValue()
       },
       // *********提交
       onSubmit() {
@@ -890,7 +922,6 @@
         }
       },
       editRow(item) {
-        console.log(item)
         physicalProductApi.setEntityProperty(item).then((res) => {
           if (res) {
             this.$message({
