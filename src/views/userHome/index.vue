@@ -12,20 +12,20 @@
       label-position="right"
       style="width: 70%; margin: 0 auto"
     >
-      <el-form-item label="账号:" prop="phone">
-        <el-input v-model="Form.phone" disabled></el-input>
+      <el-form-item label="账号:" prop="nickName">
+        <el-input v-model="Form.nickName" disabled></el-input>
       </el-form-item>
-      <el-form-item label="姓名:" prop="name" required>
-        <el-input v-model="Form.name"></el-input>
+      <el-form-item label="姓名:" prop="userName" required>
+        <el-input v-model="Form.userName"></el-input>
       </el-form-item>
-      <el-form-item label="原始密码:" prop="password" required>
-        <el-input v-model="Form.password"></el-input>
+      <el-form-item label="原始密码:" prop="originalPwd" required>
+        <el-input v-model="Form.originalPwd"></el-input>
       </el-form-item>
       <el-form-item label="新密码:" prop="newPassword" required>
         <el-input v-model="Form.newPassword"></el-input>
       </el-form-item>
-      <el-form-item label="确认新密码:" prop="reNewPassword" required>
-        <el-input v-model="Form.reNewPassword"></el-input>
+      <el-form-item label="确认新密码:" prop="confirmPwd" required>
+        <el-input v-model="Form.confirmPwd"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submit">确认</el-button>
@@ -36,23 +36,50 @@
 
 <script>
   import './index.scss'
+  import { sysApi } from '@/api/index'
+  import { recordRoute } from '@/config'
   export default {
     name: 'UserHome',
     data() {
       return {
         Form: {
-          phone: 'demo',
-          name: 'demo',
-          password: '',
+          aid: this.$store.state.user.Uid,
+          nickName: this.$store.state.user.nickName,
+          userName: this.$store.state.user.username,
+          originalPwd: '',
           newPassword: '',
-          reNewPassword: '',
+          confirmPwd: '',
         },
       }
     },
     mounted() {},
     methods: {
-      submit() {
-        console.log('提交')
+      async submit() {
+        const res = await sysApi.updatePwd(this.Form)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          setTimeout(() => {
+            this.$router.push('/index')
+            this.loginout()
+          }, 1000)
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      async loginout() {
+        await this.$store.dispatch('user/logout')
+        if (recordRoute) {
+          const fullPath = this.$route.fullPath
+          this.$router.push(`/login?redirect=${fullPath}`)
+        } else {
+          this.$router.push('/login')
+        }
       },
     },
   }

@@ -651,10 +651,10 @@
       this.getTypeList()
       // 获取规格列表
       this.getSpecificationList()
-      if (this.$route.query.data) {
-        this.formValidate = this.$route.query.data
-        this.edit = this.$route.query.edit
-        console.log(this.$route.query, this.formValidate, this.edit)
+      if (this.$store.state.temp.editValue.length > 0) {
+        this.formValidate = this.$store.state.temp.editValue[0].data
+        this.edit = this.$store.state.temp.editValue[0].edit
+        console.log(this.formValidate.specificationAid, this.edit)
       }
     },
     methods: {
@@ -806,7 +806,7 @@
       //获取商品属性详情
       getSpecTableValue() {
         physicalProductApi
-          .getEntityProperty({ aid: this.$route.query.data.aid })
+          .getEntityProperty({ aid: this.formValidate.aid })
           .then((res) => {
             if (res) {
               console.log(res.data)
@@ -838,7 +838,9 @@
             }
           })
         })
-        this.getSpecTableValue()
+        setTimeout(() => {
+          this.getSpecTableValue()
+        }, 1000)
       },
       // *********提交
       onSubmit() {

@@ -15,16 +15,20 @@ import { resetRouter } from '@/router'
 import { title, tokenName } from '@/config'
 
 const state = () => ({
+  Uid: localStorage.getItem('Uid'),
   accessToken: getAccessToken(),
   username: localStorage.getItem('username'),
   avatar: '',
   permissions: [],
+  nickName: localStorage.getItem('nickName'),
 })
 const getters = {
+  Uid: (state) => state.Uid,
   accessToken: (state) => state.accessToken,
   username: (state) => state.username,
   avatar: (state) => state.avatar,
   permissions: (state) => state.permissions,
+  nickName: (state) => state.nickName,
 }
 const mutations = {
   setAccessToken(state, accessToken) {
@@ -35,6 +39,14 @@ const mutations = {
   setUsername(state, username) {
     state.username = username
     localStorage.setItem('username', username)
+  },
+  setNickName(state, nickName) {
+    state.nickName = nickName
+    localStorage.setItem('nickName', nickName)
+  },
+  setUid(state, Uid) {
+    state.Uid = Uid
+    localStorage.setItem('Uid', Uid)
   },
   setAvatar(state, avatar) {
     state.avatar = avatar
@@ -51,11 +63,13 @@ const actions = {
     console.log(userInfo, 'userinfo')
     const { data } = await login(userInfo)
     console.log(data, 'login_data')
-    const accessToken = data[tokenName]
-    console.log(accessToken)
-    if (accessToken) {
-      commit('setAccessToken', accessToken)
-      commit('setUsername', userInfo.phone)
+    if (data) {
+      commit('setUid', data.aid)
+      commit('setUsername', data.userName)
+      commit('setNickName', data.nickName)
+    }
+    if (data.token) {
+      commit('setAccessToken', data.token)
       const hour = new Date().getHours()
       const thisTime =
         hour < 8
@@ -69,10 +83,7 @@ const actions = {
           : '晚上好'
       Vue.prototype.$baseNotify(`欢迎登录${title}`, `${thisTime}！`)
     } else {
-      Vue.prototype.$baseMessage(
-        `登录接口异常，未正确返回${tokenName}...`,
-        'error'
-      )
+      Vue.prototype.$baseMessage(`登录接口异常，未正确返回token...`, 'error')
     }
   },
   async loginCode({ commit }, userInfo) {

@@ -71,6 +71,14 @@ class SysApi {
       data,
     })
   }
+  //修改密码
+  updatePwd = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/UpdatePersonalCenter',
+      method: 'post',
+      data,
+    })
+  }
 }
 
 const sysApi = new SysApi()

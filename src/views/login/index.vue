@@ -441,8 +441,8 @@
       clearInterval(this.getPhoneIntval)
     },
     mounted() {
-      this.phoneForm.phone = '17606995730'
-      this.phoneForm.loginKey = 'admin1234567'
+      this.phoneForm.phone = 'admin'
+      this.phoneForm.loginKey = 'admin123456'
       // setTimeout(() => {
       //   this.handleLogin()
       // }, 3000)

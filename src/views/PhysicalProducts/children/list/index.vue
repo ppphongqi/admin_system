@@ -454,14 +454,15 @@
         })
       },
       showDialogEdit(item) {
-        // this.chooseItem = item
-        // this.showModalEdit = true
-        this.$router.push({
-          name: 'ProductAdd',
-          query: {
-            data: item,
-            edit: true,
-          },
+        let editValue = []
+        editValue.push({
+          data: item,
+          edit: true,
+        })
+        this.$store.dispatch('temp/setEditValue', editValue).then(() => {
+          this.$router.push({
+            name: 'ProductAdd',
+          })
         })
       },
       showDialogEditDetail(item) {

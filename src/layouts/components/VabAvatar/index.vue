@@ -4,7 +4,7 @@
       <!--<el-avatar class="user-avatar" :src="avatar"></el-avatar>-->
       <img class="user-avatar" :src="avatar" alt="" />
       <div class="user-name">
-        {{ username }}
+        {{ nickName }}
         <i class="el-icon-arrow-down el-icon--right"></i>
       </div>
     </span>
@@ -29,7 +29,7 @@
     computed: {
       ...mapGetters({
         avatar: 'user/avatar',
-        username: 'user/username',
+        nickName: 'user/nickName',
       }),
     },
     methods: {
