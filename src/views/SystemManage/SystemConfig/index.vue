@@ -123,18 +123,199 @@
     </div>
     <div v-if="activeName == 2" class="config_main">
       <el-tabs v-model="fileUploadName" type="card">
-        <el-tab-pane label="基础配置" name="1"></el-tab-pane>
-        <el-tab-pane label="阿里云配置" name="2"></el-tab-pane>
-        <el-tab-pane label="七牛云配置" name="3"></el-tab-pane>
-        <el-tab-pane label="腾讯云配置" name="4"></el-tab-pane>
+        <el-tab-pane label="基础配置" name="1">
+          <el-form label-position="right" label-width="300px" :model="Form">
+            <el-form-item label="本地图片域名" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="图片存储路径" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="允许上传图片后缀" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item
+              label="允许上传最大图片(单位 M，最大值50 )"
+              prop=""
+              required
+            >
+              <el-input-number
+                v-model="Form.name"
+                :min="1"
+                :max="10"
+              ></el-input-number>
+            </el-form-item>
+            <el-form-item label="允许上传文件后缀" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item
+              label="允许上传最大文件(单位 M，最大值500 )"
+              prop=""
+              required
+            >
+              <el-input-number
+                v-model="Form.name"
+                :min="1"
+                :max="10"
+              ></el-input-number>
+            </el-form-item>
+            <el-form-item label="文件存储" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="阿里云配置" name="2">
+          <el-form label-position="right" label-width="150px" :model="Form">
+            <el-form-item label="空间域名 Domain" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="accessKey" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="secretKey" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="存储空间名称" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="所属地域" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="七牛云配置" name="3">
+          <el-form label-position="right" label-width="150px" :model="Form">
+            <el-form-item label="空间域名 Domain" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="accessKey" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="qnSecretKey" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="存储空间名称" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="所属地域" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="腾讯云配置" name="4">
+          <el-form label-position="right" label-width="150px" :model="Form">
+            <el-form-item label="空间域名 Domain" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="accessKey" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="secretKey" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="存储空间名称" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="所属地域" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <div v-if="activeName == 3" class="config_main">
       <el-tabs v-model="paysetName" type="card">
-        <el-tab-pane label="微信支付配置" name="1"></el-tab-pane>
-        <el-tab-pane label="线下支付配置" name="2"></el-tab-pane>
-        <el-tab-pane label="余额支付配置" name="3"></el-tab-pane>
-        <el-tab-pane label="支付宝支付配置" name="4"></el-tab-pane>
+        <el-tab-pane label="微信支付配置" name="1">
+          <el-form label-position="right" label-width="150px" :model="Form">
+            <el-form-item label="余额支付状态" prop="" required>
+              <el-radio-group v-model="Form.name">
+                <el-radio :label="0" value="0">开启</el-radio>
+                <el-radio :label="1" value="1">关闭</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="配置目录" prop="" required>
+              <el-input
+                v-model="Form.name"
+                type="textarea"
+                :rows="5"
+                clearable
+              ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="线下支付配置" name="2">
+          <el-form label-position="right" label-width="150px" :model="Form">
+            <el-form-item label="线下支付状态" prop="" required>
+              <el-radio-group v-model="Form.name">
+                <el-radio :label="0" value="0">开启</el-radio>
+                <el-radio :label="1" value="1">关闭</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="余额支付配置" name="3">
+          <el-form label-position="right" label-width="150px" :model="Form">
+            <el-form-item label="余额支付状态" prop="" required>
+              <el-radio-group v-model="Form.name">
+                <el-radio :label="0" value="0">开启</el-radio>
+                <el-radio :label="1" value="1">关闭</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane label="支付宝支付配置" name="4">
+          <el-form label-position="right" label-width="150px" :model="Form">
+            <el-form-item label="余额支付状态" prop="" required>
+              <el-radio-group v-model="Form.name">
+                <el-radio :label="0" value="0">开启</el-radio>
+                <el-radio :label="1" value="1">关闭</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="支付应用Appid" prop="" required>
+              <el-input v-model="Form.name" clearable></el-input>
+            </el-form-item>
+            <el-form-item label="支付私钥" prop="" required>
+              <el-input
+                v-model="Form.name"
+                type="textarea"
+                :rows="5"
+                clearable
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="支付公钥" prop="" required>
+              <el-input
+                v-model="Form.name"
+                type="textarea"
+                :rows="5"
+                clearable
+              ></el-input>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
       </el-tabs>
     </div>
   </div>
