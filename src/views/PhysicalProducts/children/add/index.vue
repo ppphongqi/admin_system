@@ -337,13 +337,11 @@
               </el-table-column>
             </el-table>
             <span>商品属性</span>
-            <el-table :data="specTable" border style="width: 100%">
+            <el-table :data="specTableValue" border style="width: 100%">
               <el-table-column
-                v-for="(item, i) in specForm.spec"
-                :key="i"
-                :label="item.name"
+                label="规格"
                 prop="specification"
-                min-width="60"
+                min-width="150"
                 align="center"
               ></el-table-column>
               <el-table-column
@@ -615,6 +613,8 @@
         hasModel: false,
         add: true,
         source: false,
+        specificationValue: [],
+        specTableValue: [],
       }
     },
     created() {
@@ -769,7 +769,18 @@
           }
           sarr.forEach((v) => {
             form.specification = v.toString()
-            console.log(form)
+            this.specTableValue.push({
+              specification: v.toString(),
+              image:
+                'http://wanmouyun.oss-cn-shenzhen.aliyuncs.com/img/2021-07-26/22a9a408-a070-4d52-bafc-bfe7ae934ddf.jpg',
+              sellingPrice: 0,
+              costPrice: 0,
+              originalPrice: 0,
+              inventory: 999,
+              gdno: '1234567891234',
+              weight: 2.4,
+              volume: 0.65,
+            })
             physicalProductApi.setEntityProperty(form).then((res) => {
               if (res) {
                 this.$message({
@@ -786,17 +797,17 @@
           })
         }
         this.hasModel = true
-        physicalProductApi.getEntityProperty({ aid: 5 }).then((res) => {
-          if (res) {
-            console.log(res.data)
-            this.specTable = res.data
-          } else {
-            this.$message({
-              message: '接口未返回数据',
-              type: 'warning',
-            })
-          }
-        })
+        // physicalProductApi.getEntityProperty({ aid: 5 }).then((res) => {
+        //   if (res) {
+        //     console.log(res.data)
+        //     this.specTable = res.data
+        //   } else {
+        //     this.$message({
+        //       message: '接口未返回数据',
+        //       type: 'warning',
+        //     })
+        //   }
+        // })
       },
       // *********提交
       onSubmit() {

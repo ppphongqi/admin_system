@@ -6,6 +6,7 @@
       </el-form-item>
     </el-form>
     <div class="next-button-group">
+      <el-button @click="goBack">返回</el-button>
       <el-button type="primary" @click="handleSubmit">下一步</el-button>
     </div>
   </div>
@@ -43,6 +44,9 @@
             })
           }
         })
+      },
+      goBack() {
+        this.$router.push({ path: '/login' })
       },
     },
   }

@@ -10,7 +10,7 @@
     </span>
 
     <el-dropdown-menu slot="dropdown">
-      <el-dropdown-item command="66">更多功能</el-dropdown-item>
+      <el-dropdown-item command="updatePw">个人中心</el-dropdown-item>
       <el-dropdown-item command="logout" divided>退出登录</el-dropdown-item>
       <!-- <el-dropdown-item command="gitee" divided>码云地址</el-dropdown-item>
       <el-dropdown-item command="pro" divided>pro付费版地址</el-dropdown-item>
@@ -38,6 +38,9 @@
           case 'logout':
             this.logout()
             break
+          case 'updatePw':
+            this.updatePw()
+            break
           case 'personalCenter':
             this.personalCenter()
             break
@@ -60,6 +63,9 @@
       },
       personalCenter() {
         this.$router.push('/personalCenter/personalCenter')
+      },
+      updatePw() {
+        this.$router.push('/SystemManage/userHome')
       },
       logout() {
         this.$baseConfirm(

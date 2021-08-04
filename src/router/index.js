@@ -453,6 +453,15 @@ export const asyncRoutes = [
         },
       },
       {
+        path: 'userHome',
+        name: 'UserHome',
+        component: () => import('@/views/userHome/index'),
+        meta: {
+          title: '个人中心',
+          icon: 'home',
+        },
+      },
+      {
         path: 'sysSmsModal',
         name: 'sysSmsModal',
         component: () => import('@/views/SystemManage/SmsModal/index'),

@@ -16,7 +16,7 @@ import { title, tokenName } from '@/config'
 
 const state = () => ({
   accessToken: getAccessToken(),
-  username: '',
+  username: localStorage.getItem('username'),
   avatar: '',
   permissions: [],
 })
@@ -34,6 +34,7 @@ const mutations = {
   },
   setUsername(state, username) {
     state.username = username
+    localStorage.setItem('username', username)
   },
   setAvatar(state, avatar) {
     state.avatar = avatar
@@ -54,6 +55,7 @@ const actions = {
     console.log(accessToken)
     if (accessToken) {
       commit('setAccessToken', accessToken)
+      commit('setUsername', userInfo.phone)
       const hour = new Date().getHours()
       const thisTime =
         hour < 8
@@ -162,7 +164,7 @@ const actions = {
     // }
     let data = {}
     data.permissions = ['admin']
-    data.username = 'admin'
+    data.username = state.username
     data.avatar = 'https://i.gtimg.cn/club/item/face/img/2/15922_100.gif'
     console.log(data, 'data')
     let { permissions, username, avatar } = data
