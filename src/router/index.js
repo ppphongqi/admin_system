@@ -471,6 +471,16 @@ export const asyncRoutes = [
           // affix: true,
         },
       },
+      {
+        path: 'config',
+        name: 'SystemConfig',
+        component: () => import('@/views/SystemManage/SystemConfig/index'),
+        meta: {
+          title: '系统配置',
+          icon: 'tools',
+          // affix: true,
+        },
+      },
     ],
   },
   /* {
