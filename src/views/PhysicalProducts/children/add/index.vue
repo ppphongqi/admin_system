@@ -455,6 +455,9 @@
               </el-table-column>
               <el-table-column label="操作" min-width="100" align="center">
                 <template slot-scope="scope">
+                  <el-button type="text" @click="editRow(scope.row)">
+                    修改
+                  </el-button>
                   <el-button type="text" @click="deleteRow(scope.row)">
                     删除
                   </el-button>
@@ -775,36 +778,20 @@
                 tarr.push(sarr[j].concat(arr[i][k]))
             sarr = tarr
           }
-          let form = {
-            aid: -1,
-            goodsEntityAid: this.formValidate.aid,
-          }
           sarr.forEach((v) => {
-            form.specification = v.toString()
             this.specTableValue.push({
+              aid: -1,
+              goodsEntityAid: this.formValidate.aid,
               specification: v.toString(),
               image:
                 'http://wanmouyun.oss-cn-shenzhen.aliyuncs.com/img/2021-07-26/22a9a408-a070-4d52-bafc-bfe7ae934ddf.jpg',
-              sellingPrice: 0,
-              costPrice: 0,
-              originalPrice: 0,
-              inventory: 999,
+              sellingPrice: '0',
+              costPrice: '0',
+              originalPrice: '0',
+              inventory: '999',
               gdno: '1234567891234',
-              weight: 2.4,
-              volume: 0.65,
-            })
-            physicalProductApi.setEntityProperty(form).then((res) => {
-              if (res) {
-                this.$message({
-                  message: res.message,
-                  type: 'success',
-                })
-              } else {
-                this.$message({
-                  message: '请求失败',
-                  type: 'warning',
-                })
-              }
+              weight: '2.4',
+              volume: '0.65',
             })
           })
         }
@@ -901,6 +888,22 @@
           const num = Number(this.activeName) - 1
           this.activeName = `${num}`
         }
+      },
+      editRow(item) {
+        console.log(item)
+        physicalProductApi.setEntityProperty(item).then((res) => {
+          if (res) {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+          } else {
+            this.$message({
+              message: '请求失败',
+              type: 'warning',
+            })
+          }
+        })
       },
       deleteRow(item) {
         console.log(item)
