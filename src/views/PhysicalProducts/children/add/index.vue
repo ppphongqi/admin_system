@@ -86,7 +86,12 @@
               :on-preview="handlePictureCardPreview"
               :on-remove="handleRemove"
             >
-              <i class="el-icon-plus"></i>
+              <img
+                v-if="formValidate.coverPicture"
+                :src="formValidate.coverPicture"
+                style="width: 150px; height: 150px"
+              />
+              <i v-else class="el-icon-plus"></i>
             </el-upload>
             <el-dialog :visible.sync="dialogProdImgVisible">
               <img width="100%" :src="dialogProdImageUrl" alt="" />
@@ -94,7 +99,7 @@
           </el-form-item>
         </el-col>
         <!-- 规格 -->
-        <el-col :span="24">
+        <el-col v-if="edit" :span="24">
           <el-form-item label="商品规格">
             <el-radio-group v-model="specModel" @change="changeModel">
               <el-radio :label="0" class="radio">单规格</el-radio>
@@ -103,7 +108,7 @@
           </el-form-item>
         </el-col>
         <!-- 单规格表格 -->
-        <el-col v-if="specModel === 0" :span="24">
+        <el-col v-if="specModel === 0 && edit" :span="24">
           <el-form-item label="">
             <el-table :data="specTable" border style="width: 100%">
               <el-table-column
@@ -206,7 +211,7 @@
           </el-form-item>
         </el-col>
         <!-- 单规格表格 end -->
-        <el-col v-if="specModel === 1" :span="24">
+        <el-col v-if="specModel === 1 && edit" :span="24">
           <el-form-item label="选择规格" prop="specificationAid">
             <div class="acea-row">
               <el-select
@@ -352,7 +357,7 @@
               >
                 <template slot-scope="scope">
                   <el-upload
-                    v-if="scope.row.image"
+                    v-if="scope.row.image === ''"
                     class="table-upload"
                     action="#"
                     list-type="picture-card"
@@ -615,6 +620,7 @@
         source: false,
         specificationValue: [],
         specTableValue: [],
+        edit: false,
       }
     },
     created() {
@@ -622,6 +628,11 @@
       this.getTypeList()
       // 获取规格列表
       this.getSpecificationList()
+      if (this.$route.query.data) {
+        this.formValidate = this.$route.query.data
+        this.edit = this.$route.query.edit
+        console.log(this.$route.query, this.formValidate, this.edit)
+      }
     },
     methods: {
       // 获取分类列表
@@ -766,6 +777,7 @@
           }
           let form = {
             aid: -1,
+            goodsEntityAid: this.formValidate.aid,
           }
           sarr.forEach((v) => {
             form.specification = v.toString()
