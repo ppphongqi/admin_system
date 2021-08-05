@@ -999,8 +999,8 @@
         })
       },
       handleAvatarSuccesscover(response, file, fileList) {
-        this.formValidate.image = response.message
-        this.$refs.tableUpload.clearFiles()
+        this.formValidate.coverPicture = response.message
+        this.$refs.coverUpload.clearFiles()
         this.$notify({
           title: '上传成功',
           type: 'success',

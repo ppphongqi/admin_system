@@ -41,7 +41,6 @@
           align="center"
         ></el-table-column>
         <el-table-column prop="aid" label="ID" align="center"></el-table-column>
-
         <el-table-column prop="images" label="用户头像" align="center">
           <template slot-scope="scope">
             <el-image :src="scope.row.images" fit="fill"></el-image>
@@ -156,9 +155,372 @@
         ></el-pagination>
       </div>
     </div>
-    <div></div>
-    <div></div>
-    <div></div>
+    <div v-if="second">
+      <el-table border :data="tableData" stripe style="width: 100%">
+        <el-table-column
+          type="selection"
+          width="55"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="aid" label="ID" align="center"></el-table-column>
+        <el-table-column prop="images" label="用户头像" align="center">
+          <template slot-scope="scope">
+            <el-image :src="scope.row.images" fit="fill"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="userName"
+          label="用户名称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="nickName"
+          label="用户昵称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="userLevel"
+          label="用户等级"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="phone"
+          label="手机号"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="email"
+          label="用户邮箱"
+          align="center"
+          width="200"
+        ></el-table-column>
+        <el-table-column
+          prop="balance"
+          label="余额"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="integral"
+          label="积分"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="isUsed" label="用户状态" align="center">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.isUsed"
+              active-color="rgb(28,134,224)"
+              inactive-color="#ff4949"
+              active-value="0"
+              inactive-value="1"
+              @change="changeState(scope.row)"
+            ></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="typeAid" label="用户类型" align="center">
+          <template slot-scope="scope">
+            <span>{{ getTypeName(scope.row.typeAid) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="100"
+          prop="openId"
+          label="用户标识"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span>{{ getClassName(scope.row.openId) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="editUser(scope.row)">
+              编辑
+            </el-button>
+            <el-dropdown style="margin-left: 10px" @command="detail">
+              <el-button type="text" size="small">
+                更多
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown" @click="detail">
+                <el-dropdown-item
+                  command="用户详情"
+                  @click.native="getAid(scope.row)"
+                >
+                  用户详情
+                </el-dropdown-item>
+                <el-dropdown-item
+                  command="余额充值"
+                  @click.native="showChargeModal(scope.row)"
+                >
+                  余额充值
+                </el-dropdown-item>
+                <el-dropdown-item
+                  command="指定折扣"
+                  @click.native="getDiscountAid(scope.row)"
+                >
+                  指定折扣
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination
+          :current-page="currentPage"
+          :page-sizes="[7, 10, 20]"
+          :page-size="PageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        ></el-pagination>
+      </div>
+    </div>
+    <div v-if="third">
+      <el-table border :data="tableData" stripe style="width: 100%">
+        <el-table-column
+          type="selection"
+          width="55"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="aid" label="ID" align="center"></el-table-column>
+        <el-table-column prop="images" label="用户头像" align="center">
+          <template slot-scope="scope">
+            <el-image :src="scope.row.images" fit="fill"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="userName"
+          label="用户名称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="nickName"
+          label="用户昵称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="userLevel"
+          label="用户等级"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="phone"
+          label="手机号"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="email"
+          label="用户邮箱"
+          align="center"
+          width="200"
+        ></el-table-column>
+        <el-table-column
+          prop="balance"
+          label="余额"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="integral"
+          label="积分"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="isUsed" label="用户状态" align="center">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.isUsed"
+              active-color="rgb(28,134,224)"
+              inactive-color="#ff4949"
+              active-value="0"
+              inactive-value="1"
+              @change="changeState(scope.row)"
+            ></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="typeAid" label="用户类型" align="center">
+          <template slot-scope="scope">
+            <span>{{ getTypeName(scope.row.typeAid) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="100"
+          prop="openId"
+          label="用户标识"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span>{{ getClassName(scope.row.openId) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="editUser(scope.row)">
+              编辑
+            </el-button>
+            <el-dropdown style="margin-left: 10px" @command="detail">
+              <el-button type="text" size="small">
+                更多
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown" @click="detail">
+                <el-dropdown-item
+                  command="用户详情"
+                  @click.native="getAid(scope.row)"
+                >
+                  用户详情
+                </el-dropdown-item>
+                <el-dropdown-item
+                  command="余额充值"
+                  @click.native="showChargeModal(scope.row)"
+                >
+                  余额充值
+                </el-dropdown-item>
+                <el-dropdown-item
+                  command="指定折扣"
+                  @click.native="getDiscountAid(scope.row)"
+                >
+                  指定折扣
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination
+          :current-page="currentPage"
+          :page-sizes="[7, 10, 20]"
+          :page-size="PageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        ></el-pagination>
+      </div>
+    </div>
+    <div v-if="fourth">
+      <el-table border :data="tableData" stripe style="width: 100%">
+        <el-table-column
+          type="selection"
+          width="55"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="aid" label="ID" align="center"></el-table-column>
+        <el-table-column prop="images" label="用户头像" align="center">
+          <template slot-scope="scope">
+            <el-image :src="scope.row.images" fit="fill"></el-image>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="userName"
+          label="用户名称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="nickName"
+          label="用户昵称"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="userLevel"
+          label="用户等级"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="phone"
+          label="手机号"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="email"
+          label="用户邮箱"
+          align="center"
+          width="200"
+        ></el-table-column>
+        <el-table-column
+          prop="balance"
+          label="余额"
+          align="center"
+        ></el-table-column>
+        <el-table-column
+          prop="integral"
+          label="积分"
+          align="center"
+        ></el-table-column>
+        <el-table-column prop="isUsed" label="用户状态" align="center">
+          <template slot-scope="scope">
+            <el-switch
+              v-model="scope.row.isUsed"
+              active-color="rgb(28,134,224)"
+              inactive-color="#ff4949"
+              active-value="0"
+              inactive-value="1"
+              @change="changeState(scope.row)"
+            ></el-switch>
+          </template>
+        </el-table-column>
+        <el-table-column prop="typeAid" label="用户类型" align="center">
+          <template slot-scope="scope">
+            <span>{{ getTypeName(scope.row.typeAid) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column
+          width="100"
+          prop="openId"
+          label="用户标识"
+          align="center"
+        >
+          <template slot-scope="scope">
+            <span>{{ getClassName(scope.row.openId) }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column fixed="right" label="操作" align="center">
+          <template slot-scope="scope">
+            <el-button type="text" size="small" @click="editUser(scope.row)">
+              编辑
+            </el-button>
+            <el-dropdown style="margin-left: 10px" @command="detail">
+              <el-button type="text" size="small">
+                更多
+                <i class="el-icon-arrow-down el-icon--right"></i>
+              </el-button>
+              <el-dropdown-menu slot="dropdown" @click="detail">
+                <el-dropdown-item
+                  command="用户详情"
+                  @click.native="getAid(scope.row)"
+                >
+                  用户详情
+                </el-dropdown-item>
+                <el-dropdown-item
+                  command="余额充值"
+                  @click.native="showChargeModal(scope.row)"
+                >
+                  余额充值
+                </el-dropdown-item>
+                <el-dropdown-item
+                  command="指定折扣"
+                  @click.native="getDiscountAid(scope.row)"
+                >
+                  指定折扣
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div class="pagination">
+        <el-pagination
+          :current-page="currentPage"
+          :page-sizes="[7, 10, 20]"
+          :page-size="PageSize"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="total"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        ></el-pagination>
+      </div>
+    </div>
 
     <!-- 编辑用户 -->
     <el-dialog
@@ -710,7 +1072,7 @@
         }
       },
       handleSelect(key, keyPath) {
-        console.log(key, keyPath)
+        console.log(this.activeIndex)
         if (key == 1) {
           this.first = true
           this.second = false

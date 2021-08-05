@@ -1,19 +1,37 @@
 import request from '@/utils/request'
 
 class SysApi {
-  // 获取短信参数列表
+  // 获取短信模板列表
   getSmsList = (params = {}) => {
     return request({
-      url: '/pc/sysSetting/getMasParam',
+      url: '/pc/sysSetting/getSms',
       method: 'get',
       params,
     })
   }
 
-  //编辑短信参数
+  //编辑短信模板
   updateSms = (data = {}) => {
     return request({
-      url: '/pc/sysSetting/editMasParam',
+      url: '/pc/sysSetting/updateSms',
+      method: 'post',
+      data,
+    })
+  }
+
+  // 获取短信配置
+  getSmsConfig = (params = {}) => {
+    return request({
+      url: '/pc/sysSetting/getSystemMas',
+      method: 'get',
+      params,
+    })
+  }
+
+  //编辑短信模板
+  updateSmsConfig = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/updateSystemMas',
       method: 'post',
       data,
     })
@@ -75,6 +93,71 @@ class SysApi {
   updatePwd = (data = {}) => {
     return request({
       url: '/pc/sysSetting/UpdatePersonalCenter',
+      method: 'post',
+      data,
+    })
+  }
+
+  //获取oss配置
+  getOss = (params = {}) => {
+    return request({
+      url: '/pc/sysSetting/getUploading',
+      method: 'get',
+      params,
+    })
+  }
+  //修改oss配置
+  updateOss = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/updateUploading',
+      method: 'post',
+      data,
+    })
+  }
+  //获取支付宝支付配置
+  getAliPay = (params = {}) => {
+    return request({
+      url: '/pc/sysSetting/getAlipayPayment',
+      method: 'get',
+      params,
+    })
+  }
+  //修改支付宝支付配置
+  updateAlipay = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/updateAlipayPayment',
+      method: 'post',
+      data,
+    })
+  }
+  //获取微信支付配置
+  getWechatPay = (params = {}) => {
+    return request({
+      url: '/pc/sysSetting/getWechatPayment',
+      method: 'get',
+      params,
+    })
+  }
+  //修改微信支付配置
+  updateWechatPay = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/updateWechatPayment',
+      method: 'post',
+      data,
+    })
+  }
+  //获取微信登录配置
+  getWechatLogin = (params = {}) => {
+    return request({
+      url: '/pc/sysSetting/getWechatLogin',
+      method: 'get',
+      params,
+    })
+  }
+  //修改微信登录配置
+  updateWechatLogin = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/updateWechatLogin',
       method: 'post',
       data,
     })

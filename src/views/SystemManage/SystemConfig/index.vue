@@ -126,7 +126,36 @@
         </el-tabs>
       </div>
       <div v-if="activeName == 2" class="config_main">
-        <el-tabs v-model="fileUploadName" type="card">
+        <el-form label-position="right" label-width="300px" :model="ossForm">
+          <el-form-item label="储存桶名" prop="bucket" required>
+            <el-input v-model="ossForm.bucket" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="访问域名" prop="endpoint" required>
+            <el-input v-model="ossForm.endpoint" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="访问密钥" prop="accessKeyId" required>
+            <el-input v-model="ossForm.accessKeyId" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="访问密钥Secret" prop="accessKeySecret" required>
+            <el-input v-model="ossForm.accessKeySecret" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="创建时间" prop="timeAdd" required>
+            <el-input v-model="ossForm.timeAdd" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="最后更新时间" prop="timeLastUpdate" required>
+            <el-input v-model="ossForm.timeLastUpdate" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="状态" prop="state" required>
+            <el-radio-group v-model="ossForm.state">
+              <el-radio :label="0" value="0">开启</el-radio>
+              <el-radio :label="1" value="1">禁用</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="ossUpdate">提交</el-button>
+          </el-form-item>
+        </el-form>
+        <!-- <el-tabs v-model="fileUploadName" type="card">
           <el-tab-pane label="基础配置" name="1">
             <el-form label-position="right" label-width="300px" :model="Form">
               <el-form-item label="本地图片域名" prop="" required>
@@ -237,7 +266,7 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-        </el-tabs>
+        </el-tabs> -->
       </div>
       <div v-if="activeName == 3" class="config_main">
         <el-tabs v-model="paysetName" type="card">
@@ -327,6 +356,7 @@
 </template>
 
 <script>
+  import { sysApi } from '@/api/index'
   import './index.scss'
   export default {
     name: 'SystemConfig',
@@ -339,10 +369,46 @@
         Form: {
           name: '',
         },
+        ossForm: {
+          aid: '',
+          bucket: '',
+          endpoint: '',
+          accessKeyId: '',
+          accessKeySecret: '',
+          timeAdd: '',
+          timeLastUpdate: '',
+          state: '',
+        },
       }
     },
     created() {},
-    methods: {},
+    mounted() {
+      this.getOssConfig()
+    },
+    methods: {
+      //上传配置
+      async getOssConfig() {
+        const { data } = await sysApi.getOss()
+        if (data) {
+          console.log(data)
+          this.ossForm = data
+        }
+      },
+      async ossUpdate() {
+        const res = await sysApi.updateOss(this.ossForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+    },
   }
 </script>
 
