@@ -446,11 +446,11 @@
         this.getData()
       },
       showDialogAdd() {
-        this.$router.push({
-          name: 'ProductAdd',
-          query: {
-            // id:this.id
-          },
+        let editValue = []
+        this.$store.dispatch('temp/setEditValue', editValue).then(() => {
+          this.$router.push({
+            name: 'ProductAdd',
+          })
         })
       },
       showDialogEdit(item) {
