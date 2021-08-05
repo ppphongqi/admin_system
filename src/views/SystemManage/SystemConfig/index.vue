@@ -46,8 +46,7 @@
               <el-form-item label="微信分享图片" prop="" required>
                 <div class="upload_wrapper">
                   <el-upload
-                    class="avatar-uploader"
-                    style="border: 1px dashed #d9d9d9; border-radius: 6px"
+                    class="avatar-uploader-system"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
                   >
@@ -59,8 +58,7 @@
               <el-form-item label="公众号关联二维码" prop="" required>
                 <div class="upload_wrapper">
                   <el-upload
-                    class="avatar-uploader"
-                    style="border: 1px dashed #d9d9d9; border-radius: 6px"
+                    class="avatar-uploader-system"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
                   >
@@ -82,8 +80,7 @@
               <el-form-item label="用户默认头像" prop="" required>
                 <div class="upload_wrapper">
                   <el-upload
-                    class="avatar-uploader"
-                    style="border: 1px dashed #d9d9d9; border-radius: 6px"
+                    class="avatar-uploader-system"
                     action="https://jsonplaceholder.typicode.com/posts/"
                     :show-file-list="false"
                   >
@@ -349,4 +346,30 @@
   }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss">
+  .avatar-uploader-system {
+    .el-upload {
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 18px;
+      color: #8c939d;
+      width: 80px;
+      height: 80px;
+      line-height: 80px;
+      text-align: center;
+    }
+    .avatar {
+      width: 80px;
+      height: 80px;
+      display: block;
+    }
+  }
+</style>

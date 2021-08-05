@@ -820,27 +820,44 @@
           })
       },
       adds(row) {
-        let form = row
-        form.goodsEntityAid = this.formValidate.aid
-        this.tempSepc.forEach((v) => {
-          form.specification = v.toString()
-          physicalProductApi.setEntityProperty(form).then((res) => {
-            if (res) {
-              this.$message({
-                message: res.message,
-                type: 'success',
-              })
-            } else {
-              this.$message({
-                message: '请求失败',
-                type: 'warning',
-              })
-            }
-          })
+        let aids = []
+        this.specTableValue.forEach((v) => {
+          aids.push(v.aid)
         })
-        setTimeout(() => {
-          this.getSpecTableValue()
-        }, 1000)
+        physicalProductApi.delEntityProperty({ aid: aids }).then((res) => {
+          if (res) {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            let form = row
+            form.goodsEntityAid = this.formValidate.aid
+            this.tempSepc.forEach((v) => {
+              form.specification = v.toString()
+              physicalProductApi.setEntityProperty(form).then((res) => {
+                if (res) {
+                  this.$message({
+                    message: res.message,
+                    type: 'success',
+                  })
+                } else {
+                  this.$message({
+                    message: '请求失败',
+                    type: 'warning',
+                  })
+                }
+              })
+            })
+            setTimeout(() => {
+              this.getSpecTableValue()
+            }, 1000)
+          } else {
+            this.$message({
+              message: '接口未返回数据',
+              type: 'warning',
+            })
+          }
+        })
       },
       // *********提交
       onSubmit() {

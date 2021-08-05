@@ -164,6 +164,15 @@ class PhysicalProductApi {
     })
   }
 
+  //删除商品属性
+  delEntityProperty = (data = {}) => {
+    return request({
+      url: '/pc/goodsEntity/goodsSpecificationdeleteGoodsEntityProperty',
+      method: 'post',
+      data,
+    })
+  }
+
   // 获取实物商品订单
   getEntityOrderList = (params = {}) => {
     return request({

@@ -264,6 +264,16 @@ export const asyncRoutes = [
         },
       },
       {
+        path: 'LevelList',
+        name: 'LevelList',
+        component: () => import('@/views/UserManage/children/userLevel/index'),
+        meta: {
+          title: '等级管理',
+          icon: 'user-plus',
+          // affix: true,
+        },
+      },
+      {
         path: 'AdminList',
         name: 'AdminList',
         component: () => import('@/views/UserManage/children/adminList/index'),
