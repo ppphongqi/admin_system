@@ -9,3 +9,31 @@
   justify-content: space-between;
   align-items: center;
 }
+.page_userTitle{
+  width: 100%;
+  min-height: 70px;
+  background: #FFF;
+  display: flex;
+  flex-direction: row;
+}
+.page_content{
+  width: 100%;
+  background: #FFF;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  font-size: 18px;
+}
+.search{
+  width: 100%;
+  background: #FFF;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  .value{
+    width: 10%;
+  }
+  .submit{
+    margin-left: 20px;
+  }
+}

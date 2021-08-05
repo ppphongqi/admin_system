@@ -78,20 +78,21 @@
         <el-col>
           <el-form-item label="商品封面图：" prop="coverPicture">
             <el-upload
-              action="#"
-              list-type="picture-card"
-              :multiple="false"
-              :auto-upload="false"
+              ref="coverUpload"
+              class="cover-uploader"
+              action="http://localhost/api/pc/oss/upload"
               :limit="1"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
+              :show-file-list="false"
+              :on-success="handleAvatarSuccesscover"
+              :before-upload="beforeAvatarUpload"
+              :data="{ module: 'img' }"
             >
               <img
                 v-if="formValidate.coverPicture"
                 :src="formValidate.coverPicture"
-                style="width: 150px; height: 150px"
+                class="avatar"
               />
-              <i v-else class="el-icon-plus"></i>
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
             <el-dialog :visible.sync="dialogProdImgVisible">
               <img width="100%" :src="dialogProdImageUrl" alt="" />
@@ -232,28 +233,32 @@
             <el-button type="primary" @click="creatModel">生成</el-button>
           </el-form-item>
           <!-- 表格 -->
-          <el-form-item v-if="hasModel" label="">
+          <el-form-item label="">
             <span>批量设置</span>
             <el-table :data="specTableForm" border style="width: 100%">
               <el-table-column
                 prop="image"
                 label="图片"
-                min-width="60"
+                min-width="40"
                 align="center"
               >
-                <template slot-scope="scope">
-                  <el-upload
-                    class="table-upload"
-                    action="#"
-                    list-type="picture-card"
-                    :multiple="false"
-                    :auto-upload="false"
-                    :limit="1"
-                    :on-remove="handleRemove(scope.$index)"
-                  >
-                    <i class="el-icon-plus"></i>
-                  </el-upload>
-                </template>
+                <el-upload
+                  ref="tableUpload"
+                  class="table-uploader"
+                  action="http://localhost/api/pc/oss/upload"
+                  :limit="1"
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccessImage"
+                  :before-upload="beforeAvatarUpload"
+                  :data="{ module: 'img' }"
+                >
+                  <img
+                    v-if="specTableForm.image"
+                    :src="specTableForm.image"
+                    class="avatar"
+                  />
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
               </el-table-column>
               <el-table-column
                 prop="sellingPrice"
@@ -358,23 +363,36 @@
               <el-table-column
                 prop="image"
                 label="图片"
-                min-width="60"
+                min-width="50"
                 align="center"
               >
                 <template slot-scope="scope">
                   <el-upload
-                    v-if="scope.row.image === ''"
-                    class="table-upload"
-                    action="#"
-                    list-type="picture-card"
-                    :multiple="false"
-                    :auto-upload="false"
+                    ref="tableUpload"
+                    class="table-uploader"
+                    action="http://localhost/api/pc/oss/upload"
                     :limit="1"
-                    :on-remove="handleRemove(scope.$index)"
+                    :show-file-list="false"
+                    :on-success="
+                      (response, file, fileList) => {
+                        return handleAvatarSuccessListImage(
+                          response,
+                          file,
+                          fileList,
+                          scope.$index
+                        )
+                      }
+                    "
+                    :before-upload="beforeAvatarUpload"
+                    :data="{ module: 'img' }"
                   >
-                    <i class="el-icon-plus"></i>
+                    <img
+                      v-if="scope.row.image"
+                      :src="scope.row.image"
+                      class="avatar"
+                    />
+                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                   </el-upload>
-                  <el-image v-else :src="scope.row.image" fit="fill"></el-image>
                 </template>
               </el-table-column>
               <el-table-column
@@ -689,6 +707,9 @@
       // 更改模板
       changeModel() {
         this.hasModel = false
+        if (this.specModel === 1) {
+          this.getSpecTableValue()
+        }
       },
       // 添加产品规格
       addTem() {
@@ -958,9 +979,107 @@
       deleteRow(item) {
         console.log(item)
       },
+      //上传
+      handleAvatarSuccessImage(response, file, fileList) {
+        this.specTableForm.image = response.message
+        this.$refs.tableUpload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      handleAvatarSuccessListImage(response, file, fileList, index) {
+        this.specTableValue[index].image = response.message
+        this.$refs.tableUpload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      handleAvatarSuccesscover(response, file, fileList) {
+        this.formValidate.image = response.message
+        this.$refs.tableUpload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      beforeAvatarUpload(file) {
+        let isLt2M = true
+        isLt2M = file.size / 1024 / 1024 < 100
+        if (!isLt2M) {
+          this.loading = false
+          this.$message.error('上传文件大小不能超过 100MB!')
+        }
+        this.filename = file.name
+        return isLt2M
+      },
     },
   }
 </script>
+<style lang="scss">
+  .table-uploader {
+    .el-upload {
+      width: 60px;
+      height: 60px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 10px;
+      color: #8c939d;
+      width: 60px;
+      height: 60px;
+      line-height: 60px;
+      text-align: center;
+    }
+    .avatar {
+      width: 60px;
+      height: 60px;
+      display: block;
+    }
+  }
+  .cover-uploader {
+    .el-upload {
+      width: 150px;
+      height: 150px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 10px;
+      color: #8c939d;
+      width: 150px;
+      height: 150px;
+      line-height: 150px;
+      text-align: center;
+    }
+    .avatar {
+      width: 150px;
+      height: 150px;
+      display: block;
+    }
+  }
+</style>
 
 <style lang="scss" scoped>
   .add_wrapper {

@@ -481,12 +481,6 @@
           this.third = true
         }
       },
-      three() {
-        console.log(3)
-        this.first = false
-        this.second = false
-        this.third = true
-      },
     },
   }
 </script>
