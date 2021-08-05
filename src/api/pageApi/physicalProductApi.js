@@ -167,7 +167,7 @@ class PhysicalProductApi {
   //删除商品属性
   delEntityProperty = (data = {}) => {
     return request({
-      url: '/pc/goodsEntity/goodsSpecificationdeleteGoodsEntityProperty',
+      url: '/pc/goodsEntity/deleteGoodsEntityProperty',
       method: 'post',
       data,
     })
