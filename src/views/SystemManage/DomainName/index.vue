@@ -2,11 +2,7 @@
   <div class="page_wrapper">
     <div class="page_title">
       <div class="ck_title">
-        <el-form
-          :inline="true"
-          label-width="100px"
-          label-position="right"
-        ></el-form>
+        <div class="ck_title">域名设置</div>
         <div class="ck_buttons">
           <el-button type="success" icon="el-icon-plus" @click="showAdd">
             添加域名

@@ -140,6 +140,50 @@
       subNewSpec(index) {
         this.specForm.spec.splice(index, 1)
       },
+      async getSpec() {
+        const { data } = await physicalProductApi.getEntitySpecificationInfo({
+          aid: this.specForm.gsAid,
+        })
+        if (data) {
+          let List = []
+          data.forEach((v) => {
+            if (v.gskName === null) {
+              List = []
+            } else {
+              List.push({
+                gskAid: v.gskAid,
+                name: v.gskName,
+                gsvAid: v.gsvAid,
+                value: v.gsvName,
+              })
+            }
+          })
+          let obj = {}
+          List.forEach((v) => {
+            let { gskAid, name } = v
+            if (!obj[name]) {
+              obj[name] = {
+                gskAid,
+                name,
+                values: [],
+              }
+            }
+            obj[name].values.push({ gsvAid: v.gsvAid, value: v.value })
+          })
+          let info = Object.values(obj) //转换成功的数据
+          this.specForm = {
+            gsAid: data[0].gsAid,
+            name: data[0].gsName,
+            spec: info,
+          }
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+          return
+        }
+      },
       // 确定添加
       submitSpecVal(index) {
         if (this.specForm.spec[index].name === '') {
@@ -170,7 +214,7 @@
               type: 'success',
             })
             this.specForm.spec[index].isEmpty = false
-            console.log(this.specForm.spec)
+            this.getSpec()
           } else {
             this.$message({
               message: '设置失败',
@@ -215,7 +259,7 @@
       // 清除整体属性
       clearSpec(index) {
         physicalProductApi
-          .delEntitySpecificationValue({
+          .delEntitySpecificationKey({
             aid: this.specForm.spec[index].gskAid,
           })
           .then((res) => {

@@ -20,7 +20,7 @@ class SysApi {
   }
 
   // 获取短信配置
-  getSmsConfig = (params = {}) => {
+  getSms = (params = {}) => {
     return request({
       url: '/pc/sysSetting/getSystemMas',
       method: 'get',
@@ -29,7 +29,7 @@ class SysApi {
   }
 
   //编辑短信模板
-  updateSmsConfig = (data = {}) => {
+  updateSms = (data = {}) => {
     return request({
       url: '/pc/sysSetting/updateSystemMas',
       method: 'post',
@@ -123,7 +123,7 @@ class SysApi {
     })
   }
   //修改支付宝支付配置
-  updateAlipay = (data = {}) => {
+  updateAliPay = (data = {}) => {
     return request({
       url: '/pc/sysSetting/updateAlipayPayment',
       method: 'post',

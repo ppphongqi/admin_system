@@ -122,7 +122,7 @@ class PhysicalProductApi {
   //删除规格
   delEntitySpecificationKey = (data = {}) => {
     return request({
-      url: '  /pc/goodsEntity/deleteGoodsSpecificationKey',
+      url: '/pc/goodsEntity/deleteGoodsSpecificationKey',
       method: 'post',
       data,
     })
