@@ -102,6 +102,7 @@
               })
               this.add = false
               this.oneAddName = true
+              this.specForm.gsAid = res.data.aid
             } else {
               this.$message({
                 message: '接口未返回数据',

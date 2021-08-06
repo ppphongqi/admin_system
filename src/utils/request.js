@@ -83,11 +83,6 @@ instance.interceptors.response.use(
     if (loadingInstance) loadingInstance.close()
     const { data, config } = response
     const { code, msg, message } = data
-    if (code === 10010 || code === 10011) {
-      router.replace({
-        path: '/login', // 到登录页重新获取token
-      })
-    }
     // 操作正常Code数组
     const codeVerificationArray = isArray(successCode)
       ? [...successCode]

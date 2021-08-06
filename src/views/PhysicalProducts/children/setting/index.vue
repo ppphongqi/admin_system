@@ -25,7 +25,7 @@
     </div>
     <el-table border :data="tableData" stripe style="width: 100%">
       <el-table-column
-        prop="aid"
+        type="index"
         label="序号"
         width="55"
         align="center"

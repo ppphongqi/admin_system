@@ -230,12 +230,7 @@
               </el-select>
               <el-button class="mr15" @click="addTem">添加产品规格</el-button>
             </div>
-            <div style="margin-top: 10px">
-              <el-button type="primary" @click="editSpecification">
-                编辑
-              </el-button>
-              <el-button type="primary" @click="creatModel">生成</el-button>
-            </div>
+            <el-button type="primary" @click="creatModel">生成</el-button>
           </el-form-item>
           <!-- 表格 -->
           <el-form-item label="">
@@ -667,6 +662,11 @@
         tempSepc: [],
         specTableValue: [],
         edit: false,
+        goodDetail: {
+          aid: -1,
+          entityAid: '',
+          content: '',
+        },
       }
     },
     created() {
@@ -677,6 +677,7 @@
       if (this.$store.state.temp.editValue.length > 0) {
         this.formValidate = this.$store.state.temp.editValue[0].data
         this.edit = this.$store.state.temp.editValue[0].edit
+        console.log(this.formValidate.specificationAid, this.edit)
       }
     },
     methods: {
@@ -712,18 +713,6 @@
       changeModel() {
         this.hasModel = false
         if (this.specModel === 1) {
-          let item = JSON.parse(
-            JSON.stringify(this.formValidate.goodsEntityProperty)
-          )
-          if (item.length > 0) {
-            this.specTableForm.sellingPrice = item[0].sellingPrice
-            this.specTableForm.costPrice = item[0].costPrice
-            this.specTableForm.originalPrice = item[0].originalPrice
-            this.specTableForm.inventory = item[0].inventory
-            this.specTableForm.gdno = ''
-            this.specTableForm.weight = item[0].weight
-            this.specTableForm.volume = item[0].volume
-          }
           this.getSpecTableValue()
         }
       },
@@ -799,52 +788,6 @@
       clearInput(index, i) {
         if (this.specForm.spec[index].values.length > 1) {
           this.specForm.spec[index].values.splice(i, 1)
-        }
-      },
-      async editSpecification() {
-        const { data } = await physicalProductApi.getEntitySpecificationInfo({
-          aid: this.formValidate.specificationAid,
-        })
-        if (data) {
-          let List = []
-          data.forEach((v) => {
-            if (v.gskName === null) {
-              List = []
-            } else {
-              List.push({
-                gskAid: v.gskAid,
-                name: v.gskName,
-                gsvAid: v.gsvAid,
-                value: v.gsvName,
-              })
-            }
-          })
-          let obj = {}
-          List.forEach((v) => {
-            let { gskAid, name } = v
-            if (!obj[name]) {
-              obj[name] = {
-                gskAid,
-                name,
-                values: [],
-              }
-            }
-            obj[name].values.push({ gsvAid: v.gsvAid, value: v.value })
-          })
-          let info = Object.values(obj) //转换成功的数据
-          let specForm = {
-            gsAid: data[0].gsAid,
-            name: data[0].gsName,
-            spec: info,
-          }
-          console.log(specForm)
-          this.$refs.specDialog.showModalBox(this.source, !this.add, specForm)
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-          return
         }
       },
       // 生成模板
@@ -968,7 +911,9 @@
       async addProd() {
         this.addProdItem = null
         const params = this.formValidate
-        params.aid = -1
+        if (!this.edit) {
+          params.aid = -1
+        }
         const res = await physicalProductApi.addEntity(params)
         if (res.code === 200) {
           this.$message({
@@ -978,6 +923,18 @@
           const num = Number(this.activeName) + 1
           this.activeName = `${num}`
           this.addProdItem = res.data
+          if (this.edit) {
+            const { data } = await physicalProductApi.getEntityDetail({
+              entityAid: res.data.aid,
+            })
+            if (!data) {
+              this.content = ''
+            } else {
+              this.goodDetail.aid = data.aid
+              this.goodDetail.entityAid = data.entityAid
+              this.content = data.content
+            }
+          }
         } else {
           this.$message({
             message: res.message,
@@ -989,32 +946,51 @@
       async addProdDetail() {
         if (!this.addProdItem) {
           this.$message({
-            message: '未识别到需要添加详情的商品，请重新添加或者去编辑！',
+            message: '未识别到商品，请重新编辑！',
             type: 'warning',
           })
           const num = Number(this.activeName) - 1
           this.activeName = `${num}`
           return false
         }
-        const params = {
-          aid: -1,
-          entityAid: this.addProdItem.aid,
-          content: this.content,
-        }
-        const res = await physicalProductApi.addEntityDetail(params)
-        if (res.code === 200) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.$router.push({
-            name: 'ProductList',
-          })
+        if (!this.edit) {
+          const params = {
+            aid: -1,
+            entityAid: this.addProdItem.aid,
+            content: this.content,
+          }
+          const res = await physicalProductApi.addEntityDetail(params)
+          if (res.code === 200) {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.$router.push({
+              name: 'ProductList',
+            })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning',
+            })
+          }
         } else {
-          this.$message({
-            message: res.message,
-            type: 'warning',
-          })
+          this.goodDetail.content = this.content
+          const res = await physicalProductApi.addEntityDetail(this.goodDetail)
+          if (res.code === 200) {
+            this.$message({
+              message: res.message,
+              type: 'success',
+            })
+            this.$router.push({
+              name: 'ProductList',
+            })
+          } else {
+            this.$message({
+              message: res.message,
+              type: 'warning',
+            })
+          }
         }
       },
       sendBack() {
