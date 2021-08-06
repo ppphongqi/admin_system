@@ -183,6 +183,17 @@ export const asyncRoutes = [
         },
       },
       {
+        path: 'OrderLend',
+        name: 'OrderLend',
+        component: () =>
+          import('@/views/OrderManagement/children/lend/index.vue'),
+        meta: {
+          title: '借货单列表',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
         path: 'OrderRefund',
         name: 'OrderRefund',
         component: () =>

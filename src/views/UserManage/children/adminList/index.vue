@@ -242,12 +242,12 @@
       },
       handleSizeChange(val) {
         this.PageSize = val
-        this.getList(1, val)
+        this.getTableData(1, val)
         this.currentPage = 1
       },
       handleCurrentChange(val) {
         this.currentPage = val
-        this.getList(val, this.PageSize)
+        this.getTableData(val, this.PageSize)
       },
       deleteRow(item) {
         roleApi.delAdmin({ aid: item.aid }).then((res) => {

@@ -12,9 +12,11 @@
         mode="horizontal"
         @select="handleSelect"
       >
-        <el-menu-item index="1">全部订单(1205)</el-menu-item>
-        <el-menu-item index="2">实物产品(1205)</el-menu-item>
-        <el-menu-item index="3">虚拟产品(1205)</el-menu-item>
+        <el-menu-item index="1">
+          全部订单({{ entityNum + virtualNum }})
+        </el-menu-item>
+        <el-menu-item index="2">实物产品({{ entityNum }})</el-menu-item>
+        <el-menu-item index="3">虚拟产品({{ virtualNum }})</el-menu-item>
       </el-menu>
     </div>
     <!-- 金额信息块 -->
@@ -165,75 +167,155 @@
       <el-table
         v-if="second"
         border
-        :data="tableData"
+        :data="entityTableData"
         stripe
         style="width: 100%; margin-top: 10px; margin-bottom: 100px"
       >
         <el-table-column
-          type="selection"
+          type="index"
+          label="序号"
           width="55"
           align="center"
         ></el-table-column>
         <el-table-column
-          prop="number"
+          prop="code"
           label="订单号"
           align="center"
+          width="150"
         ></el-table-column>
         <el-table-column
-          prop="name"
-          label="用户信息"
+          prop="userName"
+          label="下单用户名称"
           align="center"
+          width="150"
         ></el-table-column>
         <el-table-column
-          prop="info"
+          prop="toUserAid"
+          label="商品卖家"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="entityName"
           label="商品信息"
           align="center"
+          width="150"
         ></el-table-column>
         <el-table-column
-          prop="ifBorrow"
-          label="是否是借货单"
+          prop="specification"
+          label="规格属性"
           align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="from"
-          label="渠道来源"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="pay"
-          label="支付方式"
-          align="center"
-        ></el-table-column>
-        <el-table-column
-          prop="price"
-          label="原价"
-          align="center"
+          width="150"
         ></el-table-column>
         <el-table-column
           prop="discountPrice"
-          label="折扣价"
+          label="折扣价格"
           align="center"
+          width="150"
         ></el-table-column>
         <el-table-column
-          prop="payNumber"
-          label="实付"
+          prop="quantity"
+          label="购买商品数量"
           align="center"
+          width="150"
         ></el-table-column>
         <el-table-column
-          prop="status"
+          prop="prices"
+          label="总金额"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="isDelete"
+          label="是否为删除状态"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="paymentName"
+          label="支付类型"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="stateName"
           label="订单状态"
           align="center"
+          width="150"
         ></el-table-column>
-        <el-table-column label="操作" align="center">
+        <el-table-column
+          prop="trackingNumber"
+          label="快递单号"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="personalDeliveryClassAid"
+          label="发货类型"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="courierCompany"
+          label="快递公司"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="addressAid"
+          label="用户收货地址"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="area"
+          label="省市县"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="address"
+          label="街道"
+          align="center"
+          width="150"
+        ></el-table-column>
+        <el-table-column
+          prop="timeAdd"
+          label="创建时间"
+          align="center"
+          width="200"
+        >
+          <template slot-scope="scope">
+            <div>
+              {{ moment(scope.row.timeAdd).format('YYYY-MM-DD HH:mm:ss') }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column
+          prop="time_last_update"
+          label="更新时间"
+          align="center"
+          width="200"
+        >
+          <template slot-scope="scope">
+            <div>
+              {{
+                moment(scope.row.timeLastUpdate).format('YYYY-MM-DD HH:mm:ss')
+              }}
+            </div>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" align="center" fixed="right" width="200">
           <template slot-scope="scope">
             <el-button
-              v-show="scope.row.ifBorrow == '是'"
+              v-show="scope.row.paymentClassAid === 4"
               type="text"
               size="small"
+              @click="audit(scope.row)"
             >
               审核
             </el-button>
-            <el-button type="text" size="small" @click="showDialog(scope.row)">
+            <el-button type="text" size="small" @click="sendEdit(scope.row)">
               发货
             </el-button>
             <el-dropdown style="margin-left: 10px">
@@ -348,40 +430,66 @@
     </div>
     <el-dialog
       title="订单发货"
-      :visible.sync="showModal"
+      :visible.sync="sendFormModal"
       width="30%"
       top="25vh"
+      :before-close="closeSendFormModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="选择类型:" prop="selectType" required>
-          <el-select v-model="Form.selectType">
+      <el-form :model="sendForm" label-width="100px" label-position="right">
+        <el-form-item label="快递单号:" prop="trackingNumber">
+          <el-input
+            v-model="sendForm.trackingNumber"
+            required
+            clearable
+          ></el-input>
+        </el-form-item>
+        <el-form-item
+          label="发货类型:"
+          prop="personalDeliveryClassAid"
+          required
+        >
+          <el-select v-model="sendForm.personalDeliveryClassAid">
             <el-option label="1" value="1"></el-option>
             <el-option label="2" value="2"></el-option>
             <el-option label="3" value="3"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="发货类型:" prop="deliveryType" required>
-          <el-select v-model="Form.deliveryType">
-            <el-option label="1" value="1"></el-option>
-            <el-option label="2" value="2"></el-option>
-            <el-option label="3" value="3"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="快递公司:" prop="express" required>
-          <el-select v-model="Form.express">
-            <el-option label="1" value="1"></el-option>
-            <el-option label="2" value="2"></el-option>
-            <el-option label="3" value="3"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="快递单号:" prop="number">
-          <el-input v-model="Form.number"></el-input>
+        <el-form-item label="快递公司:" prop="courierCompany">
+          <el-input
+            v-model="sendForm.courierCompany"
+            required
+            clearable
+          ></el-input>
         </el-form-item>
       </el-form>
-
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showModal = false">取 消</el-button>
-        <el-button type="primary" @click="showModal = false">确 定</el-button>
+        <el-button @click="sendFormModal = false">取 消</el-button>
+        <el-button type="primary" @click="sendProduct">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="订单审核"
+      :visible.sync="auditModal"
+      width="30%"
+      top="25vh"
+      :before-close="closeAuditModal"
+    >
+      <el-form :model="auditForm" label-width="100px" label-position="right">
+        <el-form-item label="订单编号:" prop="code">
+          <el-input v-model="auditForm.code" required clearable></el-input>
+        </el-form-item>
+        <el-form-item label="审核状态:" prop="checkState" required>
+          <el-select v-model="auditForm.checkState">
+            <el-option label="待审核" value="0">待审核</el-option>
+            <el-option label="通过" value="1">通过</el-option>
+            <el-option label="不通过" value="2">不通过</el-option>
+            <el-option label="订单完成" value="3">订单完成</el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="auditModal = false">取 消</el-button>
+        <el-button type="primary" @click="auditOrder">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -389,6 +497,8 @@
 
 <script>
   import './index.scss'
+  import moment from 'moment'
+  import { orderApi } from '@/api/index'
   let tableData = []
   for (let i = 0; i < 3; i++) {
     tableData.push({
@@ -405,12 +515,38 @@
       ifBorrow: i < 2 ? '是' : '否',
     })
   }
-  console.log(tableData)
 
   export default {
     name: 'RoleManage',
     data() {
       return {
+        moment,
+        params: {
+          stateAid: '',
+          paymentAid: '',
+          timeAdd: '',
+          keyword: '',
+          page: 1,
+          pageRows: 10,
+        },
+        orderTableData: [],
+        entityTableData: [],
+        virtualTableData: [],
+        entityNum: 0,
+        virtualNum: 0,
+        sendFormModal: false,
+        sendForm: {
+          aid: -1,
+          trackingNumber: '',
+          personalDeliveryClassAid: 1,
+          courierCompany: '',
+        },
+        auditModal: false,
+        auditForm: {
+          code: '',
+          checkState: '0',
+        },
+
         currentPage: 5,
         tableData: tableData,
         activeIndex: '1',
@@ -449,7 +585,83 @@
         ],
       }
     },
+    computed: {
+      getTime(date) {
+        return moment(date).format('YYYY-MM-DD HH:mm:ss')
+      },
+    },
+    mounted() {
+      this.getEntityList()
+    },
     methods: {
+      //获取实体产品订单
+      async getEntityList() {
+        const { data } = await orderApi.getEntityOrder(this.params)
+        this.entityTableData = data
+        this.entityNum = data.length
+      },
+      //编辑发货
+      sendEdit(item) {
+        this.sendFormModal = true
+        this.sendForm.aid = item.aid
+      },
+      //确认发货
+      async sendProduct() {
+        const res = await orderApi.sendEntityOrder(this.sendForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.getEntityList()
+          this.closeSendFormModal()
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      //关闭发货编辑框
+      closeSendFormModal() {
+        this.sendFormModal = false
+        this.sendForm = {
+          aid: -1,
+          trackingNumber: '',
+          personalDeliveryClassAid: 1,
+          courierCompany: '',
+        }
+      },
+      //借记单审核
+      audit(item) {
+        this.auditModal = true
+        this.auditForm.code = item.code
+      },
+      //确认发货
+      async auditOrder() {
+        const res = await orderApi.auditEntityLend(this.auditForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.getEntityList()
+          this.closeAuditModal()
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      //关闭借记单审核框
+      closeAuditModal() {
+        this.auditModal = false
+        this.auditForm = {
+          code: '',
+          checkState: '0',
+        }
+      },
       handleSizeChange(val) {
         console.log(`每页 ${val} 条`)
       },
