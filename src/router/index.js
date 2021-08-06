@@ -125,7 +125,7 @@ export const asyncRoutes = [
         component: () =>
           import('@/views/PhysicalProducts/children/add/index.vue'),
         meta: {
-          title: '添加产品',
+          title: '商品内容',
           // affix: true,
         },
         hidden: true,

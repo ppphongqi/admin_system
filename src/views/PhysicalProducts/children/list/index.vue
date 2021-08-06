@@ -400,6 +400,7 @@
         // 详情
         showModalEditDetail: false,
         content: '',
+        detailAid: '',
         isAddDetail: false,
       }
     },
@@ -479,7 +480,10 @@
         if (!data) {
           this.content = ''
           this.isAddDetail = true
-        } else this.content = data.content
+        } else {
+          this.detailAid = data.aid
+          this.content = data.content
+        }
       },
       handleRemove(file, fileList) {
         this.dialogProdImageUrl = ''
@@ -565,6 +569,7 @@
       // 确认编辑详情
       async editorDetailConfirm() {
         const params = {
+          aid: this.detailAid,
           entityAid: this.chooseItem.aid,
           content: this.content,
         }
