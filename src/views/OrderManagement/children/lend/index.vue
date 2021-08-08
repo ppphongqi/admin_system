@@ -20,8 +20,8 @@
         width="200"
       ></el-table-column>
       <el-table-column
-        prop="userAid"
-        label="用户aid"
+        prop="userName"
+        label="用户名称"
         align="center"
       ></el-table-column>
       <el-table-column

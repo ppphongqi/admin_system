@@ -230,7 +230,12 @@
           label="是否为删除状态"
           align="center"
           width="150"
-        ></el-table-column>
+        >
+          <template slot-scope="scope">
+            <div v-if="scope.row.isDelete === '1'">是</div>
+            <div v-if="scope.row.isDelete === '0'">否</div>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="paymentName"
           label="支付类型"
@@ -265,8 +270,17 @@
           prop="addressAid"
           label="用户收货地址"
           align="center"
-          width="150"
-        ></el-table-column>
+          width="200"
+        >
+          <template slot-scope="scope">
+            <div>
+              {{
+                scope.row.area.replace(/,/g, '') +
+                scope.row.address.replace(/,/g, '')
+              }}
+            </div>
+          </template>
+        </el-table-column>
         <el-table-column
           prop="area"
           label="省市县"

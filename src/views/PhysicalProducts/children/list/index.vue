@@ -123,17 +123,22 @@
           <span>{{ getClassName(scope.row.classAid) }}</span>
         </template>
       </el-table-column>
-      <el-table-column
-        min-width="80"
-        prop="price"
-        label="价格"
-        align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="price"
-        label="规格"
-        align="center"
-      ></el-table-column>
+      <el-table-column min-width="80" prop="price" label="价格" align="center">
+        <template slot-scope="scope">
+          <div v-if="scope.row.goodsEntityProperty.length > 0">
+            {{ scope.row.goodsEntityProperty[0].sellingPrice }}
+          </div>
+          <div v-else>无</div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="price" label="规格" align="center">
+        <template slot-scope="scope">
+          <div v-if="scope.row.goodsEntityProperty.length > 0">
+            {{ scope.row.goodsEntityProperty[0].specification }}
+          </div>
+          <div v-else>无</div>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="state"
         label="商品状态"

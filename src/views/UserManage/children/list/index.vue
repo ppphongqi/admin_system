@@ -24,14 +24,96 @@
       </el-menu>
     </div>
     <el-form label-width="80px" label-position="right">
-      <el-form-item label="搜索:">
-        <div class="search">
-          <el-input v-model="serach" class="value" clearable="" />
-          <el-button type="primary" icon="el-icon-search" class="submit">
+      <el-row>
+        <el-col :span="18">
+          <el-row>
+            <el-col :span="6">
+              <el-form-item label="用户搜索:">
+                <el-input v-model="params.userName" class="value" clearable />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row v-show="showMore">
+            <el-col :span="6">
+              <el-form-item label="昵称:">
+                <el-input v-model="params.nickName" class="value" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="手机号:">
+                <el-input v-model="params.phone" class="value" clearable />
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="邮箱:">
+                <el-input v-model="params.email" class="value" clearable />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row v-show="showMore">
+            <el-col :span="6">
+              <el-form-item label="类型:">
+                <el-select
+                  v-model="params.typeAid"
+                  placeholder="请选择"
+                  clearable
+                >
+                  <el-option
+                    v-for="item in typeOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="角色:">
+                <el-select
+                  v-model="params.roleAid"
+                  placeholder="请选择"
+                  clearable
+                >
+                  <el-option
+                    v-for="item in roleOption"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  ></el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+            <el-col :span="6">
+              <el-form-item label="状态:">
+                <el-select
+                  v-model="params.isUsed"
+                  placeholder="请选择"
+                  clearable
+                >
+                  <el-option label="可用" value="0">可用</el-option>
+                  <el-option label="不可用" value="1">不可用</el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </el-col>
+        <div id="searchBox" class="searchBtn">
+          <el-button
+            type="primary"
+            icon="el-icon-search"
+            class="submit"
+            @click="getList"
+          >
             搜索
           </el-button>
+          <el-button type="text" @click="showMoreSearch">
+            {{ showName }}
+            <i
+              :class="showMore ? 'el-icon-arrow-up ' : 'el-icon-arrow-down'"
+            ></i>
+          </el-button>
         </div>
-      </el-form-item>
+      </el-row>
     </el-form>
     <div v-if="first">
       <el-table border :data="tableData" stripe style="width: 100%">
@@ -717,7 +799,7 @@
     components: { UserDetail },
     data() {
       return {
-        serach: '',
+        search: '',
         activeIndex: '1',
         first: true,
         second: false,
@@ -734,6 +816,18 @@
         currentPage: 1,
         total: 1,
         PageSize: 7,
+        params: {
+          typeAid: '',
+          userName: '',
+          phone: '',
+          nickName: '',
+          roleAid: '',
+          isUsed: '',
+          email: '',
+          openId: '0',
+          page: '1',
+          pageRows: '7',
+        },
         Form: {
           aid: -1,
           userName: '',
@@ -768,11 +862,20 @@
         showSetDiscountAdd: false,
         value: '',
         tempUserAid: 0,
+        showMore: false,
       }
     },
     computed: {
       getTime(date) {
         return moment(date).format('YYYY-MM-DD HH:mm:ss')
+      },
+      showName: function () {
+        if (this.showMore == false) {
+          //对文字进行处理
+          return '展开'
+        } else {
+          return '收起'
+        }
       },
     },
     mounted() {
@@ -783,12 +886,8 @@
     },
     methods: {
       //获取用户列表
-      async getList(page = 1, pageRows = 7) {
-        const params = {
-          page,
-          pageRows,
-        }
-        const data = await userApi.getUserList(params)
+      async getList() {
+        const data = await userApi.getUserList(this.params)
         console.log(data, 'data')
         if (data) {
           this.tableData = data.data
@@ -798,6 +897,16 @@
             message: '接口未返回数据',
             type: 'warning',
           })
+        }
+      },
+      showMoreSearch() {
+        this.showMore = !this.showMore
+        var searchBtnHeght = document.getElementById('searchBox')
+        console.log(searchBtnHeght, '111')
+        if (this.showMore == false) {
+          searchBtnHeght.setAttribute('class', 'searchBtn')
+        } else {
+          searchBtnHeght.setAttribute('class', 'searchBtnMore')
         }
       },
       //获取用户类型
@@ -810,7 +919,7 @@
           })
         })
       },
-      // 所属分类名称获取
+      // 所属类型名称获取
       getTypeName(typeAid) {
         let typeName = ''
         this.typeOption.forEach((v) => {
@@ -1072,37 +1181,48 @@
         }
       },
       handleSelect(key, keyPath) {
-        console.log(this.activeIndex)
         if (key == 1) {
           this.first = true
           this.second = false
           this.third = false
           this.fourth = false
+          this.params.openId = '0'
+          this.getList()
         } else if (key == 2) {
           this.first = false
           this.second = true
           this.third = false
           this.fourth = false
+          this.params.openId = '1'
+          this.getList()
         } else if (key == 3) {
           this.first = false
           this.second = false
           this.third = true
           this.fourth = false
+          this.params.openId = '2'
+          this.getList()
         } else if (key == 4) {
           this.first = false
           this.second = false
           this.third = false
           this.fourth = true
+          this.params.openId = '3'
+          this.getList()
         }
       },
       handleSizeChange(val) {
         this.PageSize = val
-        this.getList(1, val)
+        this.params.page = 1
+        this.params.pageRows = val
+        this.getList()
         this.currentPage = 1
       },
       handleCurrentChange(val) {
         this.currentPage = val
-        this.getList(val, this.PageSize)
+        this.params.page = val
+        this.params.pageRows = this.PageSize
+        this.getList()
       },
     },
   }
