@@ -97,7 +97,7 @@
             </el-col>
           </el-row>
         </el-col>
-        <div id="searchBox" class="searchBtn">
+        <div class="searchBtn">
           <el-button
             type="primary"
             icon="el-icon-search"
@@ -901,13 +901,6 @@
       },
       showMoreSearch() {
         this.showMore = !this.showMore
-        var searchBtnHeght = document.getElementById('searchBox')
-        console.log(searchBtnHeght, '111')
-        if (this.showMore == false) {
-          searchBtnHeght.setAttribute('class', 'searchBtn')
-        } else {
-          searchBtnHeght.setAttribute('class', 'searchBtnMore')
-        }
       },
       //获取用户类型
       async getType() {
