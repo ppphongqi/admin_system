@@ -607,7 +607,18 @@
           resource: '',
           desc: '',
         },
-        formValidate: {},
+        formValidate: {
+          aid: -1,
+          name: '',
+          classAid: '',
+          coverPicture: '',
+          introduction: '',
+          isDistribution: '0',
+          keyword: '',
+          sort: '',
+          state: '0',
+          unit: '',
+        },
         // 分类
         typeList: [],
         specificationList: [],
@@ -1077,6 +1088,7 @@
       },
       handleAvatarSuccesscover(response, file, fileList) {
         this.formValidate.coverPicture = response.message
+        console.log(this.formValidate)
         this.$refs.coverUpload.clearFiles()
         this.$notify({
           title: '上传成功',

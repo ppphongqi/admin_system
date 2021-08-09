@@ -88,9 +88,9 @@
     </div>
     <el-table border :data="tableData" stripe style="width: 100%">
       <el-table-column
-        type="index"
+        prop="aid"
         width="55"
-        label="序号"
+        label="ID"
         align="center"
       ></el-table-column>
       <el-table-column

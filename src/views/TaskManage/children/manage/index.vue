@@ -17,6 +17,12 @@
         align="center"
       ></el-table-column>
       <el-table-column
+        prop="aid"
+        width="55"
+        label="ID"
+        align="center"
+      ></el-table-column>
+      <el-table-column
         prop="name"
         label="任务名称"
         align="center"
