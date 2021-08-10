@@ -142,7 +142,7 @@
       },
       //删除轮播图
       async deleteRotationClass(row) {
-        const res = await rotationApi.delRotationClass({ aid: row.aid })
+        const res = await rotationApi.delRotationClass({ aid: [row.aid] })
         if (!res) {
           this.$message({
             message: '接口未返回数据',

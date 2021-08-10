@@ -106,11 +106,16 @@
         align="center"
         width="150"
       ></el-table-column>
-      <el-table-column prop="icon" label="图标" align="center" width="150">
+      <el-table-column
+        prop="qr_code_aid"
+        label="二维码"
+        align="center"
+        width="150"
+      >
         <template slot-scope="scope">
           <el-image
-            :src="scope.row.icon"
-            :preview-src-list="[scope.row.icon]"
+            :src="scope.row.qr_code_aid"
+            :preview-src-list="[scope.row.qr_code_aid]"
           ></el-image>
         </template>
       </el-table-column>
@@ -147,12 +152,6 @@
         label="路径"
         width="200"
         align="center"
-      ></el-table-column>
-      <el-table-column
-        prop="qr_code"
-        label="二维码路径"
-        align="center"
-        width="150"
       ></el-table-column>
       <el-table-column
         prop="price"
@@ -274,14 +273,82 @@
       :before-close="closeShowModal"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="域名:" prop="domainName" required>
-          <el-input v-model="Form.domainName"></el-input>
+        <el-form-item label="任务名称:" prop="name" required>
+          <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
-          <el-radio-group v-model="Form.state">
-            <el-radio :label="0" value="0">开启</el-radio>
-            <el-radio :label="1" value="1">关闭</el-radio>
+        <el-form-item label="运营商:" prop="operatorsAid" required>
+          <el-select v-model="Form.operatorsAid" placeholder="请选择" clearable>
+            <el-option
+              v-for="item in operatorList"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="业务类型:" prop="missionServiceClassAid" required>
+          <el-select
+            v-model="Form.missionServiceClassAid"
+            placeholder="请选择"
+            clearable
+          >
+            <el-option
+              v-for="item in operatorClass"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="图标aid:" prop="fileToIconAid" required>
+          <el-input v-model="Form.fileToIconAid"></el-input>
+        </el-form-item>
+        <el-form-item label="二维码aid:" prop="QrCodeAid" required>
+          <el-input v-model="Form.QrCodeAid"></el-input>
+        </el-form-item>
+        <el-form-item label="任务链接:" prop="url" required>
+          <el-input v-model="Form.url"></el-input>
+        </el-form-item>
+        <el-form-item label="描述:" prop="info" required>
+          <el-input v-model="Form.info"></el-input>
+        </el-form-item>
+        <el-form-item label="佣金:" prop="price" required>
+          <el-input v-model="Form.price"></el-input>
+        </el-form-item>
+        <el-form-item label="详情:" prop="details" required>
+          <el-input v-model="Form.details"></el-input>
+        </el-form-item>
+        <el-form-item label="开始时间:" prop="effectiveStartTime" required>
+          <el-date-picker
+            v-model="Form.effectiveStartTime"
+            type="datetime"
+            placeholder="选择日期"
+            style="width: 100%"
+            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间:" prop="effectiveEndTime" required>
+          <el-date-picker
+            v-model="Form.effectiveEndTime"
+            type="datetime"
+            placeholder="选择日期"
+            style="width: 100%"
+            format="yyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="任务时长:" prop="missionDuration" required>
+          <el-input v-model="Form.missionDuration"></el-input>
+        </el-form-item>
+        <el-form-item label="是否显示:" prop="isDisplay" required>
+          <el-radio-group v-model="Form.isDisplay">
+            <el-radio :label="0" value="0">显示</el-radio>
+            <el-radio :label="1" value="1">隐藏</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="排序值:" prop="sort" required>
+          <el-input v-model="Form.sort"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -304,7 +371,23 @@
         tableData: [],
         operatorList: [],
         operatorClass: [],
-        Form: {},
+        Form: {
+          aid: -1,
+          name: '',
+          operatorsAid: '',
+          missionServiceClassAid: '',
+          fileToIconAid: '',
+          QrCodeAid: '',
+          url: '',
+          info: '',
+          price: '',
+          details: '',
+          effectiveStartTime: '',
+          effectiveEndTime: '',
+          missionDuration: '',
+          isDisplay: '',
+          sort: '',
+        },
         showModal: false,
         add: false,
         currentPage: 1,
@@ -343,6 +426,8 @@
           this.params.isDisplay !== ''
         ) {
           this.params.isAllArgsSelect = -1
+        } else {
+          this.params.isAllArgsSelect = 1
         }
         const { data } = await operatorApi.getOperatorList(this.params)
         if (data) {
@@ -420,16 +505,53 @@
       showDialogEdit(row) {
         this.showModal = true
         this.add = false
-        this.Form = row
+        this.Form = {
+          aid: row.aid,
+          name: row.name,
+          operatorsAid: row.operators_aid,
+          missionServiceClassAid: row.mission_service_class_aid,
+          fileToIconAid: row.icon_aid,
+          QrCodeAid: row.qr_code_aid,
+          url: row.url,
+          info: row.info,
+          price: row.price,
+          details: row.details,
+          effectiveStartTime: moment(row.effective_start_time).format(
+            'YYYY-MM-DD HH:mm:ss'
+          ),
+          effectiveEndTime: moment(row.effective_end_time).format(
+            'YYYY-MM-DD HH:mm:ss'
+          ),
+          missionDuration: row.mission_duration,
+          isDisplay: row.is_display,
+          sort: row.sort,
+        }
       },
       //关闭弹出
       closeShowModal() {
         this.showModal = false
-        this.Form = {}
+        this.Form = {
+          aid: -1,
+          name: '',
+          operatorsAid: '',
+          missionServiceClassAid: '',
+          fileToIconAid: '',
+          QrCodeAid: '',
+          url: '',
+          info: '',
+          price: '',
+          details: '',
+          effectiveStartTime: '',
+          effectiveEndTime: '',
+          missionDuration: '',
+          isDisplay: '',
+          sort: '',
+        }
       },
       //添加编辑
-      async modalConfirm(flag) {
-        const res = await sysApi.updateDomain(this.Form)
+      async modalConfirm() {
+        this.Form.isDisplay = String(this.Form.isDisplay)
+        const res = await operatorApi.updateOperatorList(this.Form)
         if (res) {
           this.$message({
             message: res.message,
@@ -446,25 +568,26 @@
       },
       //删除
       async deleteRow(row) {
+        console.log(row)
         // const res = await operatorApi.delOperatorList({ aid: row.aid })
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.getList()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
+        // if (res) {
+        //   this.$message({
+        //     message: res.message,
+        //     type: 'success',
+        //   })
+        //   this.getList()
+        // } else {
+        //   this.$message({
+        //     message: '接口未返回数据',
+        //     type: 'warning',
+        //   })
+        // }
       },
       //状态切换
       async changeStep(row) {
         let form = {
-          aid: row.aid,
-          state: String(row.state),
+          aids: [row.aid],
+          state: String(row.is_display),
         }
         const res = await operatorApi.updateOperatorState(form)
         if (res) {
