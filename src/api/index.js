@@ -9,6 +9,7 @@ import virtualProductApi from './pageApi/virtualProductApi'
 import orderApi from './pageApi/orderApi'
 import sysApi from './pageApi/sysApi'
 import operatorApi from './pageApi/operatorApi'
+import rotationApi from './pageApi/rotationApi'
 
 export {
   loginApi,
@@ -22,4 +23,5 @@ export {
   orderApi,
   sysApi,
   operatorApi,
+  rotationApi,
 }

@@ -1,37 +1,16 @@
 <template>
   <div class="page_wrapper">
     <div class="page_title">
-      <div class="op1_title">
-        <div class="op1_title_wrapper">
-          <div>运营商任务分类</div>
-          <div>
-            <el-button
-              type="success"
-              icon="el-icon-plus"
-              @click="addOperatorClass"
-            >
-              添加分类
-            </el-button>
-          </div>
-        </div>
-        <div class="Status">
-          <el-row>
-            <el-col :span="2" class="op1_label" style="padding-top: 5px">
-              运营商：
-            </el-col>
-            <el-col :span="3">
-              <el-select v-model="status" placeholder="请选择">
-                <el-option label="全部" value="2">全部</el-option>
-                <el-option label="启用" value="0">启用</el-option>
-                <el-option label="禁用" value="1">禁用</el-option>
-              </el-select>
-            </el-col>
-            <el-col :span="2">
-              <el-button type="success" icon="el-icon-search" @click="getList">
-                搜索
-              </el-button>
-            </el-col>
-          </el-row>
+      <div class="ck_title">
+        <div class="ck_title">轮播图分类</div>
+        <div class="ck_buttons">
+          <el-button
+            type="success"
+            icon="el-icon-plus"
+            @click="addRotationClass"
+          >
+            添加分类
+          </el-button>
         </div>
       </div>
     </div>
@@ -47,23 +26,6 @@
         label="分类名称"
         align="center"
       ></el-table-column>
-      <el-table-column
-        prop="sort"
-        label="排序值"
-        align="center"
-      ></el-table-column>
-      <el-table-column prop="state" label="状态" align="center">
-        <template slot-scope="scope">
-          <el-switch
-            v-model="scope.row.state"
-            :active-value="0"
-            :inactive-value="1"
-            active-color="rgb(28,134,224)"
-            inactive-color="#ff4949"
-            @change="changeState(scope.row)"
-          ></el-switch>
-        </template>
-      </el-table-column>
       <el-table-column prop="timeAdd" label="创建时间" align="center">
         <template slot-scope="scope">
           <div>
@@ -87,14 +49,14 @@
           <el-button
             type="text"
             size="small"
-            @click="editOperatorClass(scope.row)"
+            @click="editRotationClass(scope.row)"
           >
             编辑
           </el-button>
           <el-button
             type="text"
             size="small"
-            @click.native.prevent="deleteOperatorClass(scope.row)"
+            @click.native.prevent="deleteRotationClass(scope.row)"
           >
             删除
           </el-button>
@@ -103,7 +65,7 @@
     </el-table>
 
     <el-dialog
-      :title="add ? '添加分类' : '编辑分类'"
+      :title="add ? '添加轮播图分类' : '编辑轮播图分类'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
@@ -112,15 +74,6 @@
       <el-form :model="Form" label-width="100px" label-position="right">
         <el-form-item label="分类名称:" prop="name" required>
           <el-input v-model="Form.name"></el-input>
-        </el-form-item>
-        <el-form-item label="排序值:" prop="sort" required>
-          <el-input v-model="Form.sort"></el-input>
-        </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
-          <el-radio-group v-model="Form.state">
-            <el-radio :label="0" value="0">启用</el-radio>
-            <el-radio :label="1" value="1">禁用</el-radio>
-          </el-radio-group>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -133,22 +86,19 @@
 
 <script>
   import './index.scss'
-  import { operatorApi } from '@/api/index'
+  import { rotationApi } from '@/api/index'
   import moment from 'moment'
   export default {
-    name: 'OperatorKinds',
+    name: 'RotationKinds',
     data() {
       return {
         moment,
-        status: '2',
         tableData: [],
         showModal: false,
         add: false,
         Form: {
           aid: -1,
           name: '',
-          sort: '',
-          state: 0,
         },
       }
     },
@@ -161,11 +111,9 @@
       this.getList()
     },
     methods: {
-      // 获取运营商分类列表
+      // 获取轮播图分类列表
       async getList() {
-        const { data } = await operatorApi.getOperatorClass({
-          state: this.status,
-        })
+        const { data } = await rotationApi.getRotationClass()
         if (data) {
           this.tableData = data
         } else {
@@ -175,10 +123,9 @@
           })
         }
       },
-      // 添加/编辑运营商分类
+      // 添加/编辑轮播图分类
       async modalConfirm() {
-        this.Form.state = String(this.Form.state)
-        const res = await operatorApi.updateOperatorClass(this.Form)
+        const res = await rotationApi.updateRotationClass(this.Form)
         if (!res) {
           this.$message({
             message: '接口未返回数据',
@@ -193,13 +140,9 @@
           this.getList()
         }
       },
-      //修改运营商分类状态
-      async changeState(row) {
-        const params = {
-          aid: row.aid,
-          state: String(row.state),
-        }
-        const res = await operatorApi.updateOperatorClassState(params)
+      //删除轮播图
+      async deleteRotationClass(row) {
+        const res = await rotationApi.delRotationClass({ aid: row.aid })
         if (!res) {
           this.$message({
             message: '接口未返回数据',
@@ -213,28 +156,11 @@
           this.getList()
         }
       },
-      //删除轮播图
-      async deleteOperatorClass(row) {
-        console.log(row.aid)
-        // const res = await operatorApi.delOperatorClass({ aid: row.aid })
-        // if (!res) {
-        //   this.$message({
-        //     message: '接口未返回数据',
-        //     type: 'warning',
-        //   })
-        // } else {
-        //   this.$message({
-        //     message: res.message,
-        //     type: 'success',
-        //   })
-        //   this.getList()
-        // }
-      },
-      addOperatorClass() {
+      addRotationClass() {
         this.add = true
         this.showModal = true
       },
-      editOperatorClass(item) {
+      editRotationClass(item) {
         this.add = false
         this.showModal = true
         this.Form = item

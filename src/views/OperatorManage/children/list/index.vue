@@ -1,91 +1,102 @@
 <template>
   <div class="page_wrapper">
     <div class="page_title">
-      <div class="ti_title">
-        <div class="ti_title_wrapper">
-          <div>运营商任务</div>
-          <div class="ti_buttons">
+      <div class="op2_title">
+        <div class="op2_title_wrapper">
+          <div>运营商任务列表</div>
+          <div>
             <el-button type="success" icon="el-icon-plus" @click="showDialog">
-              添加
+              添加任务
             </el-button>
           </div>
         </div>
-        <div class="infoSearch">
+        <div class="op2_search">
           <el-row>
-            <el-col :span="2" class="ti_label" style="padding-top: 5px">
+            <el-col :span="0.5" class="op2_label" style="padding-top: 5px">
+              aid：
+            </el-col>
+            <el-col :span="3">
+              <el-input
+                v-model="params.aid"
+                placeholder="请输入内容"
+                class="input-with-select"
+                clearable
+              ></el-input>
+            </el-col>
+            <el-col :span="1" class="op2_label" style="padding-top: 5px">
               名称：
             </el-col>
             <el-col :span="3">
               <el-input
-                v-model="searchName"
+                v-model="params.name"
                 placeholder="请输入内容"
                 class="input-with-select"
+                clearable
               ></el-input>
             </el-col>
-          </el-row>
-        </div>
-        <div class="infoSearch">
-          <el-row>
-            <el-col :span="2" class="ti_label" style="padding-top: 5px">
+            <el-col :span="1.5" class="op2_label" style="padding-top: 5px">
               运营商：
             </el-col>
             <el-col :span="3">
-              <el-select v-model="searchOperator" placeholder="请选择">
+              <el-select
+                v-model="params.operatorsAid"
+                placeholder="请选择"
+                clearable
+              >
                 <el-option
-                  v-for="item in options"
+                  v-for="item in operatorList"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
               </el-select>
             </el-col>
-          </el-row>
-        </div>
-        <div class="infoSearch">
-          <el-row>
-            <el-col :span="2" class="ti_label" style="padding-top: 5px">
+            <el-col :span="1.5" class="op2_label" style="padding-top: 5px">
               业务分类：
             </el-col>
             <el-col :span="3">
-              <el-select v-model="searchClass" placeholder="请选择">
+              <el-select
+                v-model="params.missionServiceClassAid"
+                placeholder="请选择"
+                clearable
+              >
                 <el-option
-                  v-for="item in options"
+                  v-for="item in operatorClass"
                   :key="item.value"
                   :label="item.label"
                   :value="item.value"
                 ></el-option>
               </el-select>
             </el-col>
-          </el-row>
-        </div>
-        <div class="infoSearch">
-          <el-row>
-            <el-col :span="2" class="ti_label" style="padding-top: 5px">
+            <el-col :span="1.5" class="op2_label" style="padding-top: 5px">
               任务状态：
             </el-col>
             <el-col :span="3">
-              <el-select v-model="searchstate" placeholder="请选择">
-                <el-option
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                ></el-option>
+              <el-select
+                v-model="params.isDisplay"
+                placeholder="请选择"
+                clearable
+              >
+                <el-option label="显示" value="0">显示</el-option>
+                <el-option label="关闭" value="1">关闭</el-option>
               </el-select>
             </el-col>
+            <el-button
+              type="success"
+              icon="el-icon-search"
+              style="margin-left: 20px"
+              @click="getList"
+            >
+              搜索
+            </el-button>
           </el-row>
-        </div>
-        <div class="infoSearch">
-          <div class="ti_label">
-            <el-button type="success" icon="el-icon-search">搜索</el-button>
-          </div>
         </div>
       </div>
     </div>
     <el-table border :data="tableData" stripe style="width: 100%">
       <el-table-column
         label="序号"
-        type="selection"
+        type="index"
         width="55"
         align="center"
       ></el-table-column>
@@ -97,7 +108,10 @@
       ></el-table-column>
       <el-table-column prop="icon" label="图标" align="center" width="150">
         <template slot-scope="scope">
-          <el-image :src="scope.row.icon" fit="fill"></el-image>
+          <el-image
+            :src="scope.row.icon"
+            :preview-src-list="[scope.row.icon]"
+          ></el-image>
         </template>
       </el-table-column>
       <el-table-column
@@ -111,17 +125,27 @@
         label="运营商"
         align="center"
         width="150"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <span>{{ getOperatorName(scope.row.operators_aid) }}</span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="mission_service_class_aid"
         label="业务类型"
         align="center"
         width="150"
-      ></el-table-column>
+      >
+        <template slot-scope="scope">
+          <span>
+            {{ getOperatorClassName(scope.row.mission_service_class_aid) }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="url"
         label="路径"
-        width="150"
+        width="200"
         align="center"
       ></el-table-column>
       <el-table-column
@@ -139,7 +163,7 @@
       <el-table-column
         prop="is_display"
         label="状态"
-        width="100"
+        width="150"
         align="center"
       >
         <template slot-scope="scope">
@@ -165,7 +189,7 @@
         prop="details"
         label="详情"
         align="center"
-        width="150"
+        width="200"
       ></el-table-column>
       <el-table-column
         prop="mission_duration"
@@ -181,7 +205,11 @@
       >
         <template slot-scope="scope">
           <div>
-            {{ moment(scope.row.effective_start_time).format('YYYY-MM-DD') }}
+            {{
+              moment(scope.row.effective_start_time).format(
+                'YYYY-MM-DD HH:mm:ss'
+              )
+            }}
           </div>
         </template>
       </el-table-column>
@@ -193,7 +221,9 @@
       >
         <template slot-scope="scope">
           <div>
-            {{ moment(scope.row.effective_end_time).format('YYYY-MM-DD') }}
+            {{
+              moment(scope.row.effective_end_time).format('YYYY-MM-DD HH:mm:ss')
+            }}
           </div>
         </template>
       </el-table-column>
@@ -205,7 +235,7 @@
       >
         <template slot-scope="scope">
           <div>
-            {{ moment(scope.row.time_add).format('YYYY-MM-DD') }}
+            {{ moment(scope.row.time_add).format('YYYY-MM-DD HH:mm:ss') }}
           </div>
         </template>
       </el-table-column>
@@ -224,9 +254,20 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="pagination">
+      <el-pagination
+        :current-page="currentPage"
+        :page-sizes="[7, 10, 20]"
+        :page-size="PageSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      ></el-pagination>
+    </div>
     <!-- 添加/编辑-->
     <el-dialog
-      :title="add ? '添加域名' : '编辑域名'"
+      :title="add ? '添加运营商任务' : '编辑运营商任务'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
@@ -252,7 +293,7 @@
 </template>
 
 <script>
-  import { operatorApi } from '@/api/index'
+  import { operatorApi, virtualProductApi } from '@/api/index'
   import moment from 'moment'
   import './index.scss'
   export default {
@@ -261,32 +302,117 @@
       return {
         moment,
         tableData: [],
+        operatorList: [],
+        operatorClass: [],
         Form: {},
         showModal: false,
         add: false,
+        currentPage: 1,
+        total: 1,
+        PageSize: 10,
+        params: {
+          aid: '',
+          name: '',
+          operatorsAid: '',
+          missionServiceClassAid: '',
+          isDisplay: '',
+          page: 1,
+          pageRow: 10,
+          isAllArgsSelect: 1,
+        },
       }
     },
     computed: {
       getTime(date) {
-        return moment(date).format('YYYY-MM-DD')
+        return moment(date).format('YYYY-MM-DD HH:mm:ss')
       },
     },
     mounted() {
       this.getList()
+      this.getOperatorList()
+      this.getOperatorClass()
     },
     methods: {
-      // 获取域名列表
-      async getList(page = 1, pageRow = 10, isAllArgsSelect = -1) {
-        const params = {
-          page,
-          pageRow,
-          isAllArgsSelect,
+      // 获取列表
+      async getList() {
+        if (
+          this.params.aid !== '' ||
+          this.params.name !== '' ||
+          this.params.operatorsAid !== '' ||
+          this.params.missionServiceClassAid !== '' ||
+          this.params.isDisplay !== ''
+        ) {
+          this.params.isAllArgsSelect = -1
         }
-        const { data } = await operatorApi.getOperatorList(params)
-        this.tableData = data.records
+        const { data } = await operatorApi.getOperatorList(this.params)
+        if (data) {
+          this.tableData = data.records
+          this.total = data.records.length
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      // 获取运营商列表
+      async getOperatorList() {
+        const { data } = await virtualProductApi.getOperator()
+        if (data) {
+          data.forEach((v) => {
+            this.operatorList.push({
+              label: v.name,
+              value: v.aid,
+            })
+          })
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      //获取运营商名称
+      getOperatorName(item) {
+        let name = []
+        if (this.operatorList.length > 0) {
+          this.operatorList.forEach((v) => {
+            if (item === v.value) name.push(v.label)
+          })
+        }
+        return name.toString()
+      },
+      // 获取业务分类列表
+      async getOperatorClass() {
+        const { data } = await operatorApi.getOperatorClass({
+          state: '0',
+        })
+        if (data) {
+          data.forEach((v) => {
+            this.operatorClass.push({
+              label: v.name,
+              value: v.aid,
+            })
+          })
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      //获取业务分类名称
+      getOperatorClassName(item) {
+        let name = []
+        if (this.operatorClass.length > 0) {
+          this.operatorClass.forEach((v) => {
+            if (item === v.value) name.push(v.label)
+          })
+        }
+        return name.toString()
       },
       //添加弹出
-      showAdd() {
+      showDialog() {
         this.showModal = true
         this.add = true
       },
@@ -294,19 +420,15 @@
       showDialogEdit(row) {
         this.showModal = true
         this.add = false
-        this.Form = {
-          aid: row.aid,
-          domainName: row.domain_name,
-          state: row.state,
-        }
+        this.Form = row
+      },
+      //关闭弹出
+      closeShowModal() {
+        this.showModal = false
+        this.Form = {}
       },
       //添加编辑
       async modalConfirm(flag) {
-        if (this.Form.state === 1) {
-          this.Form.state = '1'
-        } else {
-          this.Form.state = '0'
-        }
         const res = await sysApi.updateDomain(this.Form)
         if (res) {
           this.$message({
@@ -322,18 +444,9 @@
           })
         }
       },
-      //关闭弹出
-      closeShowModal() {
-        this.showModal = false
-        this.Form = {
-          aid: -1,
-          domainName: '',
-          state: 1,
-        }
-      },
       //删除
       async deleteRow(row) {
-        const res = await sysApi.delDomain({ aid: row.aid })
+        // const res = await operatorApi.delOperatorList({ aid: row.aid })
         if (res) {
           this.$message({
             message: res.message,
@@ -349,7 +462,11 @@
       },
       //状态切换
       async changeStep(row) {
-        const res = await sysApi.changeDomainState({ aid: row.aid })
+        let form = {
+          aid: row.aid,
+          state: String(row.state),
+        }
+        const res = await operatorApi.updateOperatorState(form)
         if (res) {
           this.$message({
             message: res.message,
@@ -363,8 +480,18 @@
           })
         }
       },
+      handleSizeChange(val) {
+        this.PageSize = val
+        this.params.pageRow = val
+        this.getList()
+        this.currentPage = 1
+      },
+      handleCurrentChange(val) {
+        this.currentPage = val
+        this.params.page = val
+        this.params.pageRow = this.PageSize
+        this.getList()
+      },
     },
   }
 </script>
-
-<style lang="scss" scoped></style>

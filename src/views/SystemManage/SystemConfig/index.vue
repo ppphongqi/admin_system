@@ -16,118 +16,12 @@
           height: 10%;
         "
       >
-        <el-tab-pane label="应用端配置" name="1"></el-tab-pane>
-        <el-tab-pane label="文件上传配置" name="2"></el-tab-pane>
-        <el-tab-pane label="支付配置" name="3"></el-tab-pane>
-        <el-tab-pane label="短信配置" name="4"></el-tab-pane>
-        <el-tab-pane label="登录配置" name="5"></el-tab-pane>
+        <el-tab-pane label="文件上传配置" name="1"></el-tab-pane>
+        <el-tab-pane label="支付配置" name="2"></el-tab-pane>
+        <el-tab-pane label="短信配置" name="3"></el-tab-pane>
+        <el-tab-pane label="登录配置" name="4"></el-tab-pane>
       </el-tabs>
       <div v-if="activeName == 1" class="config_main">
-        <el-tabs v-model="AppsetName" type="border-card">
-          <el-tab-pane label="公众号配置" name="1">
-            <el-form label-position="right" label-width="150px" :model="Form">
-              <el-form-item label="AppId" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="AppSecret" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="微信验证Token" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="EncodingAESKey" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="消息加密方式" prop="" required>
-                <el-radio-group v-model="Form.name">
-                  <el-radio :label="0" value="0">明文模式</el-radio>
-                  <el-radio :label="1" value="1">兼容模式</el-radio>
-                  <el-radio :label="2" value="2">安全模式</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <el-form-item label="微信分享图片" prop="" required>
-                <div class="upload_wrapper">
-                  <el-upload
-                    class="avatar-uploader-system"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                  >
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
-                </div>
-              </el-form-item>
-              <el-form-item label="公众号关联二维码" prop="" required>
-                <div class="upload_wrapper">
-                  <el-upload
-                    class="avatar-uploader-system"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                  >
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
-                </div>
-              </el-form-item>
-              <el-form-item label="微信分享标题" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="微信分享简介" prop="" required>
-                <el-input
-                  v-model="Form.name"
-                  type="textarea"
-                  :rows="3"
-                ></el-input>
-              </el-form-item>
-              <el-form-item label="用户默认头像" prop="" required>
-                <div class="upload_wrapper">
-                  <el-upload
-                    class="avatar-uploader-system"
-                    action="https://jsonplaceholder.typicode.com/posts/"
-                    :show-file-list="false"
-                  >
-                    <img v-if="imageUrl" :src="imageUrl" class="avatar" />
-                    <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-                  </el-upload>
-                </div>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary">提交</el-button>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-          <el-tab-pane label="小程序配置" name="2">
-            <el-form label-position="right" label-width="150px" :model="Form">
-              <el-form-item label="AppId" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="AppSecret" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="小程序名称" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary">提交</el-button>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-          <el-tab-pane label="APP配置" name="3">
-            <el-form label-position="right" label-width="150px" :model="Form">
-              <el-form-item label="AppId" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="AppSecret" prop="" required>
-                <el-input v-model="Form.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item>
-                <el-button type="primary">提交</el-button>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-        </el-tabs>
-      </div>
-      <div v-if="activeName == 2" class="config_main">
         <el-form label-position="right" label-width="120px" :model="ossForm">
           <el-form-item label="储存桶名" prop="bucket" required>
             <el-input v-model="ossForm.bucket" clearable></el-input>
@@ -158,7 +52,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <div v-if="activeName == 3" class="config_main">
+      <div v-if="activeName == 2" class="config_main">
         <el-tabs v-model="paysetName" type="card">
           <el-tab-pane label="微信支付配置" name="1">
             <el-form
@@ -252,7 +146,7 @@
           </el-tab-pane>
         </el-tabs>
       </div>
-      <div v-if="activeName == 4" class="config_main">
+      <div v-if="activeName == 3" class="config_main">
         <el-form label-position="right" label-width="120px" :model="smsForm">
           <el-form-item label="用户名" prop="apId" required>
             <el-input v-model="smsForm.apId" clearable></el-input>
@@ -305,7 +199,7 @@
           </el-form-item>
         </el-form>
       </div>
-      <div v-if="activeName == 5" class="config_main">
+      <div v-if="activeName == 4" class="config_main">
         <el-tabs v-model="loginName" type="card">
           <el-tab-pane label="微信登录配置" name="1">
             <el-form
@@ -344,16 +238,76 @@
               </el-form-item>
             </el-form>
           </el-tab-pane>
-          <el-tab-pane label="其他登录配置" name="2">
-            <el-form label-position="right" label-width="120px" :model="Form">
-              <el-form-item label="状态" prop="" required>
-                <el-radio-group v-model="Form.name">
-                  <el-radio :label="0" value="0">开启</el-radio>
-                  <el-radio :label="1" value="1">禁用</el-radio>
+          <el-tab-pane label="小程序登录配置" name="2">
+            <el-form
+              label-position="right"
+              label-width="120px"
+              :model="appletLoginForm"
+            >
+              <el-form-item label="小程序ID" prop="appId" required>
+                <el-input v-model="appletLoginForm.appId" clearable></el-input>
+              </el-form-item>
+              <el-form-item label="小程序密钥" prop="appSecret" required>
+                <el-input
+                  v-model="appletLoginForm.appSecret"
+                  clearable
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="小程序名称" prop="name" required>
+                <el-input v-model="appletLoginForm.name" clearable></el-input>
+              </el-form-item>
+              <el-form-item label="创建时间" prop="timeAdd" required>
+                <el-input
+                  v-model="appletLoginForm.timeAdd"
+                  clearable
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="最后更新时间" prop="timeLastUpdate" required>
+                <el-input
+                  v-model="appletLoginForm.timeLastUpdate"
+                  clearable
+                ></el-input>
+              </el-form-item>
+              <el-form-item label="状态" prop="state" required>
+                <el-radio-group v-model="appletLoginForm.state">
+                  <el-radio label="0" value="0">开启</el-radio>
+                  <el-radio label="1" value="1">禁用</el-radio>
                 </el-radio-group>
               </el-form-item>
               <el-form-item>
-                <el-button type="primary" @click="submit">提交</el-button>
+                <el-button type="primary" @click="appletLoginUpdate">
+                  提交
+                </el-button>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+          <el-tab-pane label="LOGO配置" name="3">
+            <el-form
+              label-position="right"
+              label-width="120px"
+              :model="logoForm"
+            >
+              <el-form-item label="LOGO" prop="logo" required>
+                <el-upload
+                  ref="logoUpload"
+                  class="logo-uploader"
+                  action="http://localhost/api/pc/oss/upload"
+                  :limit="1"
+                  :show-file-list="false"
+                  :on-success="handleAvatarSuccessLogo"
+                  :before-upload="beforeAvatarUpload"
+                  :data="{ module: 'img' }"
+                >
+                  <img
+                    v-if="logoForm.logo"
+                    :src="logoForm.logo"
+                    class="avatar"
+                  />
+                  <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+                </el-upload>
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="logoUpdate">提交</el-button>
               </el-form-item>
             </el-form>
           </el-tab-pane>
@@ -373,12 +327,15 @@
       return {
         moment,
         activeName: '1',
-        AppsetName: '1',
         fileUploadName: '1',
         paysetName: '1',
         loginName: '1',
         Form: {
           name: '',
+        },
+        logoForm: {
+          aid: '',
+          logo: '',
         },
         ossForm: {
           aid: '',
@@ -433,6 +390,15 @@
           timeLastUpdate: '',
           state: '',
         },
+        appletLoginForm: {
+          aid: '',
+          appId: '',
+          appSecret: '',
+          name: '',
+          timeAdd: '',
+          timeLastUpdate: '',
+          state: '',
+        },
       }
     },
     computed: {
@@ -442,14 +408,61 @@
     },
     created() {},
     mounted() {
+      this.getLogoConfig()
       this.getOssConfig()
       this.getwechatPayConfig()
       this.getAliPayConfig()
       this.getSmsConfig()
       this.getSmsTemplate()
       this.getwechatLoginConfig()
+      this.getAppletLoginConfig()
     },
     methods: {
+      //LOGO配置
+      async getLogoConfig() {
+        const { data } = await sysApi.getAppLogo()
+        if (data) {
+          this.logoForm = data
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      handleAvatarSuccessLogo(response, file, fileList) {
+        this.logoForm.logo = response.message
+        this.$refs.logoUpload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      beforeAvatarUpload(file) {
+        let isLt2M = true
+        isLt2M = file.size / 1024 / 1024 < 100
+        if (!isLt2M) {
+          this.loading = false
+          this.$message.error('上传文件大小不能超过 100MB!')
+        }
+        this.filename = file.name
+        return isLt2M
+      },
+      async logoUpdate() {
+        const res = await sysApi.updateAppLogo(this.logoForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
       //上传配置
       async getOssConfig() {
         const { data } = await sysApi.getOss()
@@ -637,11 +650,74 @@
           })
         }
       },
+      //小程序登录配置
+      async getAppletLoginConfig() {
+        const { data } = await sysApi.getAppletLogin()
+        if (data) {
+          console.log(data)
+          this.appletLoginForm = data
+          this.appletLoginForm.timeAdd = moment(data.timeAdd).format(
+            'YYYY-MM-DD HH:mm:ss'
+          )
+          this.appletLoginForm.timeLastUpdate = moment(
+            data.timeLastUpdate
+          ).format('YYYY-MM-DD HH:mm:ss')
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
+      async appletLoginUpdate() {
+        this.appletLoginForm.state = String(this.appletLoginForm.state)
+        const res = await sysApi.updateAppletLogin(this.appletLoginForm)
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
+      },
     },
   }
 </script>
 
 <style lang="scss">
+  .logo-uploader {
+    .el-upload {
+      width: 150px;
+      height: 150px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 10px;
+      color: #8c939d;
+      width: 150px;
+      height: 150px;
+      line-height: 150px;
+      text-align: center;
+    }
+    .avatar {
+      width: 150px;
+      height: 150px;
+      display: block;
+    }
+  }
   .avatar-uploader-system {
     .el-upload {
       border: 1px dashed #d9d9d9;

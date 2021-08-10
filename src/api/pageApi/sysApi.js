@@ -162,6 +162,38 @@ class SysApi {
       data,
     })
   }
+  //获取小程序登录配置
+  getAppletLogin = (params = {}) => {
+    return request({
+      url: '/pc/sysSetting/getWechat',
+      method: 'get',
+      params,
+    })
+  }
+  //修改小程序登录配置
+  updateAppletLogin = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/updateWechat',
+      method: 'post',
+      data,
+    })
+  }
+  //获取logo配置
+  getAppLogo = (params = {}) => {
+    return request({
+      url: '/pc/sysSetting/getLogo',
+      method: 'get',
+      params,
+    })
+  }
+  //修改logo配置
+  updateAppLogo = (data = {}) => {
+    return request({
+      url: '/pc/sysSetting/updateLogo',
+      method: 'post',
+      data,
+    })
+  }
 }
 
 const sysApi = new SysApi()

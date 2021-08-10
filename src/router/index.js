@@ -339,14 +339,14 @@ export const asyncRoutes = [
     path: '/OperatorManage',
     component: Layout,
     redirect: 'noRedirect',
-    meta: { title: '运营商管理', icon: 'box-open' },
+    meta: { title: '运营商任务管理', icon: 'box-open' },
     children: [
       {
         path: 'OperatorList',
         name: 'OperatorList',
         component: () => import('@/views/OperatorManage/children/list/index'),
         meta: {
-          title: '运营商列表',
+          title: '运营商任务列表',
           icon: 'tasks',
           // affix: true,
         },
@@ -356,7 +356,7 @@ export const asyncRoutes = [
         name: 'OperatorKinds',
         component: () => import('@/views/OperatorManage/children/kinds/index'),
         meta: {
-          title: '运营商分类',
+          title: '运营商任务分类',
           icon: 'tasks',
           // affix: true,
         },
@@ -451,6 +451,34 @@ export const asyncRoutes = [
         component: () => import('@/views/TaskManage/children/info/index'),
         meta: {
           title: '任务情况',
+          icon: 'tasks',
+          // affix: true,
+        },
+      },
+    ],
+  },
+  {
+    path: '/RotationManage',
+    component: Layout,
+    redirect: 'RotationManage',
+    meta: { title: '轮播图管理', icon: 'tasks' },
+    children: [
+      {
+        path: 'RotationKinds',
+        name: 'RotationKinds',
+        component: () => import('@/views/RotationManage/children/kinds/index'),
+        meta: {
+          title: '轮播图分类',
+          icon: 'tasks',
+          // affix: true,
+        },
+      },
+      {
+        path: 'RotationList',
+        name: 'RotationList',
+        component: () => import('@/views/RotationManage/children/list/index'),
+        meta: {
+          title: '轮播图管理',
           icon: 'tasks',
           // affix: true,
         },
