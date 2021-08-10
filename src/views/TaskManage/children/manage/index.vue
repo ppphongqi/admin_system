@@ -93,11 +93,13 @@
     </div>
 
     <el-dialog
+      ref="dialog"
       :title="add ? '添加任务' : '编辑任务'"
       :visible.sync="showModal"
       width="30%"
       top="15vh"
       :before-close="closeShowModal"
+      @opened="open()"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
         <el-form-item label="任务名称:" prop="name" required>
@@ -162,7 +164,6 @@
               ref="uploadFileList"
               class="avatar-uploader"
               action="http://localhost/api/pc/oss/uploadList"
-              :limit="5"
               :show-file-list="false"
               multiple
               :auto-upload="false"
@@ -175,7 +176,7 @@
               </div>
               <i class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload>
-            <div class="upload_tips">
+            <div v-if="imgUrlList.length === 0" class="upload_tips">
               （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
             </div>
           </div>
@@ -484,6 +485,9 @@
         this.add = true
         this.showModal = true
         this.Form.missionState = 0
+      },
+      open() {
+        this.$refs.uploadFileList.$children[0].$refs.input.webkitdirectory = true
       },
       async editTask(row) {
         this.add = false

@@ -22,6 +22,7 @@
   overflow: hidden;
   display: flex;
   align-items: center;
+  flex-wrap: wrap
 }
 .avatar-uploader .el-upload:hover {
   border-color: #409EFF;
