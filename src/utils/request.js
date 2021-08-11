@@ -37,8 +37,16 @@ const handleCode = (code, msg, message) => {
       }
       break
     case noPermissionCode:
-      router.push({ path: '/401' }).catch(() => {})
-      break
+      if (message == '未授权，请重新登录') {
+        Vue.prototype.$baseMessage(message, 'error')
+        store.dispatch('user/logout').catch(() => {})
+        router.push({ path: '/Login' }).catch(() => {})
+        break
+      } else {
+        router.push({ path: '/401' }).catch(() => {})
+        break
+      }
+
     default:
       Vue.prototype.$baseMessage(
         msg || message || `后端接口${code}异常`,
@@ -97,7 +105,7 @@ instance.interceptors.response.use(
       handleCode(code, msg, message)
       return Promise.reject(
         'vue-admin-beautiful请求异常拦截:' +
-          JSON.stringify({ url: config.url, code, msg }) || 'Error'
+          JSON.stringify({ url: config.url, code, message }) || 'Error'
       )
     }
   },
