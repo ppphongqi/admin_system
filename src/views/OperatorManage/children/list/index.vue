@@ -106,6 +106,14 @@
         align="center"
         width="150"
       ></el-table-column>
+      <el-table-column prop="icon_aid" label="图标" align="center" width="150">
+        <template slot-scope="scope">
+          <el-image
+            :src="scope.row.icon_aid"
+            :preview-src-list="[scope.row.icon_aid]"
+          ></el-image>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="qr_code_aid"
         label="二维码"
@@ -300,11 +308,39 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="图标aid:" prop="fileToIconAid" required>
-          <el-input v-model="Form.fileToIconAid"></el-input>
+        <el-form-item label="图标:" prop="fileToIconAid" required>
+          <el-upload
+            ref="operatorIconUpload"
+            class="operatorIcon-uploader"
+            action="http://localhost/api/pc/oss/upload"
+            :limit="1"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccessIcon"
+            :before-upload="beforeAvatarUpload"
+            :data="{ module: 'img' }"
+          >
+            <img
+              v-if="Form.fileToIconAid"
+              :src="Form.fileToIconAid"
+              class="avatar"
+            />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
-        <el-form-item label="二维码aid:" prop="QrCodeAid" required>
-          <el-input v-model="Form.QrCodeAid"></el-input>
+        <el-form-item label="二维码:" prop="qrCodeAid" required>
+          <el-upload
+            ref="operatorQrUpload"
+            class="operatorQr-uploader"
+            action="http://localhost/api/pc/oss/upload"
+            :limit="1"
+            :show-file-list="false"
+            :on-success="handleAvatarSuccessQr"
+            :before-upload="beforeAvatarUpload"
+            :data="{ module: 'img' }"
+          >
+            <img v-if="Form.qrCodeAid" :src="Form.qrCodeAid" class="avatar" />
+            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+          </el-upload>
         </el-form-item>
         <el-form-item label="任务链接:" prop="url" required>
           <el-input v-model="Form.url"></el-input>
@@ -325,7 +361,7 @@
             placeholder="选择日期"
             style="width: 100%"
             format="yyyy-MM-dd HH:mm:ss"
-            value-format="yyyyy-MM-dd HH:mm:ss"
+            value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
         <el-form-item label="结束时间:" prop="effectiveEndTime" required>
@@ -377,7 +413,7 @@
           operatorsAid: '',
           missionServiceClassAid: '',
           fileToIconAid: '',
-          QrCodeAid: '',
+          qrCodeAid: '',
           url: '',
           info: '',
           price: '',
@@ -419,10 +455,10 @@
       // 获取列表
       async getList() {
         if (
-          this.params.aid !== '' ||
-          this.params.name !== '' ||
-          this.params.operatorsAid !== '' ||
-          this.params.missionServiceClassAid !== '' ||
+          this.params.aid !== '' &&
+          this.params.name !== '' &&
+          this.params.operatorsAid !== '' &&
+          this.params.missionServiceClassAid !== '' &&
           this.params.isDisplay !== ''
         ) {
           this.params.isAllArgsSelect = -1
@@ -511,7 +547,7 @@
           operatorsAid: row.operators_aid,
           missionServiceClassAid: row.mission_service_class_aid,
           fileToIconAid: row.icon_aid,
-          QrCodeAid: row.qr_code_aid,
+          qrCodeAid: row.qr_code_aid,
           url: row.url,
           info: row.info,
           price: row.price,
@@ -536,7 +572,7 @@
           operatorsAid: '',
           missionServiceClassAid: '',
           fileToIconAid: '',
-          QrCodeAid: '',
+          qrCodeAid: '',
           url: '',
           info: '',
           price: '',
@@ -568,20 +604,19 @@
       },
       //删除
       async deleteRow(row) {
-        console.log(row)
-        // const res = await operatorApi.delOperatorList({ aid: row.aid })
-        // if (res) {
-        //   this.$message({
-        //     message: res.message,
-        //     type: 'success',
-        //   })
-        //   this.getList()
-        // } else {
-        //   this.$message({
-        //     message: '接口未返回数据',
-        //     type: 'warning',
-        //   })
-        // }
+        const res = await operatorApi.delOperatorList({ aid: row.aid })
+        if (res) {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.getList()
+        } else {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        }
       },
       //状态切换
       async changeStep(row) {
@@ -603,6 +638,36 @@
           })
         }
       },
+      //上传图标
+      handleAvatarSuccessIcon(response, file, fileList) {
+        this.Form.fileToIconAid = response.message
+        this.$refs.operatorIconUpload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      //上传二维码
+      handleAvatarSuccessQr(response, file, fileList) {
+        this.Form.qrCodeAid = response.message
+        this.$refs.operatorQrUpload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      beforeAvatarUpload(file) {
+        let isLt2M = true
+        isLt2M = file.size / 1024 / 1024 < 100
+        if (!isLt2M) {
+          this.loading = false
+          this.$message.error('上传文件大小不能超过 100MB!')
+        }
+        this.filename = file.name
+        return isLt2M
+      },
       handleSizeChange(val) {
         this.PageSize = val
         this.params.pageRow = val
@@ -618,3 +683,62 @@
     },
   }
 </script>
+
+<style lang="scss">
+  .operatorIcon-uploader {
+    .el-upload {
+      width: 40px;
+      height: 40px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+    }
+    .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 18px;
+      color: #8c939d;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+  }
+  .operatorQr-uploader {
+    .el-upload {
+      width: 40px;
+      height: 40px;
+      border: 1px dashed #d9d9d9;
+      border-radius: 6px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+    }
+    .el-upload:hover {
+      border-color: #409eff;
+    }
+    .avatar-uploader-icon {
+      font-size: 18px;
+      color: #8c939d;
+      width: 40px;
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      display: block;
+    }
+  }
+</style>

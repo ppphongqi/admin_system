@@ -25,10 +25,10 @@ class OperatorApi {
       data,
     })
   }
-  //删除运营商分类(暂留)
+  //删除运营商分类
   delOperatorClass = (data = {}) => {
     return request({
-      url: '',
+      url: '/pc/operatorMission/deleteServiceClass',
       method: 'post',
       data,
     })
@@ -61,17 +61,17 @@ class OperatorApi {
   //删除运营商任务
   delOperatorList = (data = {}) => {
     return request({
-      url: '',
+      url: '/pc/operatorMission/deleteOperatorMission',
       method: 'post',
       data,
     })
   }
-  //领取运营商任务
-  acceptOperator = (data = {}) => {
+  //获取运营商订单
+  getOperatorOrder = (params = {}) => {
     return request({
-      url: '/pc/operatorMission/acceptOperatorMission',
-      method: 'post',
-      data,
+      url: '/pc/operatorMission/getMissionOperatorOrder',
+      method: 'get',
+      params,
     })
   }
   //运营商任务审核
@@ -86,30 +86,6 @@ class OperatorApi {
   getOperatorOrderState = (params = {}) => {
     return request({
       url: '/pc/operatorMission/getOperatorMissionState',
-      method: 'get',
-      params,
-    })
-  }
-  //获取运营商订单
-  getOperatorOrder = (params = {}) => {
-    return request({
-      url: '/pc/operatorMission/getOperatorMissionOrder',
-      method: 'get',
-      params,
-    })
-  }
-  //编辑运营商订单
-  updateOperatorOrder = (data = {}) => {
-    return request({
-      url: '/pc/operatorMission/editOperatorMissionOrder',
-      method: 'post',
-      data,
-    })
-  }
-  //删除运营商订单
-  delOperatorOrder = (params = {}) => {
-    return request({
-      url: '/pc/operatorMission/deleteOperatorOrder',
       method: 'get',
       params,
     })

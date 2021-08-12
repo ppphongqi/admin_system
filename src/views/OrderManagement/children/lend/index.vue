@@ -24,11 +24,15 @@
         label="用户名称"
         align="center"
       ></el-table-column>
-      <el-table-column
-        prop="checkState"
-        label="审核状态"
-        align="center"
-      ></el-table-column>
+      <el-table-column prop="checkState" label="审核状态" align="center">
+        <template slot-scope="scope">
+          <div v-if="scope.row.checkState === '0'">待审核</div>
+          <div v-else-if="scope.row.checkState === '1'">通过</div>
+          <div v-else-if="scope.row.checkState === '2'">不通过</div>
+          <div v-else-if="scope.row.checkState === '3'">订单完成</div>
+          <div v-else>异常</div>
+        </template>
+      </el-table-column>
       <el-table-column prop="receiptImage" label="收获凭证" align="center">
         <template slot-scope="scope">
           <el-image
@@ -175,7 +179,7 @@
             message: res.message,
             type: 'success',
           })
-          this.getEntityList()
+          this.getList()
           this.closeAuditModal()
         } else {
           this.$message({
@@ -193,7 +197,7 @@
         }
       },
       deleteRow(item) {
-        cons.log(item)
+        console.log(item)
       },
       handleSizeChange(val) {
         this.PageSize = val

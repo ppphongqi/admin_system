@@ -194,6 +194,17 @@ export const asyncRoutes = [
         },
       },
       {
+        path: 'OperatorOrder',
+        name: 'OperatorOrder',
+        component: () =>
+          import('@/views/OrderManagement/children/operator/index.vue'),
+        meta: {
+          title: '运营商任务订单列表',
+          icon: 'cart-plus',
+          // affix: true,
+        },
+      },
+      {
         path: 'OrderRefund',
         name: 'OrderRefund',
         component: () =>

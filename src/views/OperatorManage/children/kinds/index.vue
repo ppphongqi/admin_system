@@ -213,22 +213,21 @@
           this.getList()
         }
       },
-      //删除轮播图
+      //删除运营商分类
       async deleteOperatorClass(row) {
-        console.log(row.aid)
-        // const res = await operatorApi.delOperatorClass({ aid: row.aid })
-        // if (!res) {
-        //   this.$message({
-        //     message: '接口未返回数据',
-        //     type: 'warning',
-        //   })
-        // } else {
-        //   this.$message({
-        //     message: res.message,
-        //     type: 'success',
-        //   })
-        //   this.getList()
-        // }
+        const res = await operatorApi.delOperatorClass({ aid: row.aid })
+        if (!res) {
+          this.$message({
+            message: '接口未返回数据',
+            type: 'warning',
+          })
+        } else {
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+          this.getList()
+        }
       },
       addOperatorClass() {
         this.add = true
