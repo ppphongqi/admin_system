@@ -487,7 +487,7 @@
         this.Form.missionState = 0
       },
       open() {
-        this.$refs.uploadFileList.$children[0].$refs.input.webkitdirectory = true
+        // this.$refs.uploadFileList.$children[0].$refs.input.webkitdirectory = true
       },
       async editTask(row) {
         this.add = false
