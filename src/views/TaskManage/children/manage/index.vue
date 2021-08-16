@@ -99,7 +99,6 @@
       width="30%"
       top="15vh"
       :before-close="closeShowModal"
-      @opened="open()"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
         <el-form-item label="任务名称:" prop="name" required>
@@ -160,7 +159,9 @@
           required
         >
           <div class="upload_wrapper">
-            <el-upload
+            <el-button type="primary" @click="showUpload">上传内容</el-button>
+            <el-button type="primary" @click="downloadFile">下载内容</el-button>
+            <!-- <el-upload
               ref="uploadFileList"
               class="avatar-uploader"
               action="http://localhost/api/pc/oss/uploadList"
@@ -178,7 +179,7 @@
             </el-upload>
             <div v-if="imgUrlList.length === 0" class="upload_tips">
               （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
-            </div>
+            </div> -->
           </div>
         </el-form-item>
         <el-form-item
@@ -260,6 +261,44 @@
         <el-button type="primary" @click="editorDetailConfirm">确 定</el-button>
       </span>
     </el-dialog>
+
+    //上传测试
+    <el-dialog
+      title="上传"
+      :visible.sync="showModalUpload"
+      style="margin-top: 20px"
+      :before-close="closeModalUpload"
+      top
+      @opened="open()"
+    >
+      <el-upload
+        ref="uploadFileList"
+        action="http://localhost/api/pc/oss/upload"
+        :file-list="fileList"
+        :auto-upload="false"
+        :before-upload="beforeAvatarUpload"
+        :on-success="handleAvatarSuccessThree"
+        multiple
+      >
+        <el-button slot="trigger" size="small" type="primary">
+          选取文件
+        </el-button>
+        <div slot="tip" class="el-upload__tip">
+          只能上传jpg/png文件,大小不能超过1M
+        </div>
+      </el-upload>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showModalUpload = false">关 闭</el-button>
+        <el-button
+          style="margin-left: 10px"
+          size="small"
+          type="primary"
+          @click="submitUpload"
+        >
+          上 传
+        </el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -308,6 +347,8 @@
         showModalEditDetail: false,
         content: '',
         isAddDetail: false,
+        fileList: [],
+        showModalUpload: false,
       }
     },
     mounted() {
@@ -316,6 +357,9 @@
       this.getKinds()
     },
     methods: {
+      submitUpload() {
+        this.$refs.uploadFileList.submit()
+      },
       // 获取任务列表
       async getList(page = 1, pageRows = 7) {
         const params = {
@@ -487,7 +531,7 @@
         this.Form.missionState = 0
       },
       open() {
-        // this.$refs.uploadFileList.$children[0].$refs.input.webkitdirectory = true
+        this.$refs.uploadFileList.$children[0].$refs.input.webkitdirectory = true
       },
       async editTask(row) {
         this.add = false
@@ -560,6 +604,12 @@
       closeDialog() {
         this.showModalEditDetail = false
       },
+      showUpload() {
+        this.showModalUpload = true
+      },
+      closeModalUpload() {
+        this.showModalUpload = false
+      },
       handleAvatarSuccessIcon(response, file, fileList) {
         this.iconUrl = response.message
         console.log(this.iconUrl)
@@ -620,6 +670,18 @@
           duration: 2500,
         })
       },
+      handleAvatarSuccessThree(response, file, fileList) {
+        this.imgUrlList.push({
+          imgUrl: response.message,
+        })
+        console.log(this.imgUrlList)
+        // this.$refs.uploadFileList.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
       beforeAvatarUpload(file) {
         let isLt2M = true
         isLt2M = file.size / 1024 / 1024 < 100
@@ -629,6 +691,29 @@
         }
         this.filename = file.name
         return isLt2M
+      },
+      downloadFile() {
+        const url =
+          'http://wanmouyun.oss-cn-shenzhen.aliyuncs.com/模板/2021-08-12/4de4d2e2-936a-4172-bbf2-66665ba812b4.xlsx'
+        axios({
+          method: 'get',
+          url: url,
+          responseType: 'blob',
+        })
+          .then((response) => {
+            if (response.message) {
+              this.$message.error(response.message)
+              return
+            }
+            let blob = new Blob([response.data])
+            let link = document.createElement('a')
+            let url = window.URL.createObjectURL(blob)
+            link.href = url
+            link.download = '测试下载.xlsx'
+            link.click()
+            URL.revokeObjectURL(url) //释放内存
+          })
+          .catch((e) => {})
       },
     },
   }
