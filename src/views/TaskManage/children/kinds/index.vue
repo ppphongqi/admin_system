@@ -3,7 +3,20 @@
     <div class="page_title">
       <div class="ck_title">
         <div class="ck_title">任务分类</div>
-        <div class="ck_buttons">
+        <div class="class_buttons">
+          <el-upload
+            ref="excelUpload"
+            action="http://localhost/api/pc/mission/excelImport"
+            accept=".xlsx,.xls"
+            :limit="1"
+            :show-file-list="false"
+            :on-success="handleSuccess"
+            :before-upload="beforeUpload"
+            style="margin-right: 10px"
+          >
+            <el-button type="primary">导入内容</el-button>
+          </el-upload>
+          <el-button type="primary" @click="downloadFile">下载内容</el-button>
           <el-button type="success" icon="el-icon-plus" @click="addTask">
             添加分类
           </el-button>
@@ -92,7 +105,7 @@
 <script>
   import './index.scss'
   import { taskApi } from '@/api/index'
-
+  import axios from 'axios'
   export default {
     name: 'TaskKinds',
     data() {
@@ -255,6 +268,49 @@
           number: '',
           status: 0,
         }
+      },
+      //导入
+      handleSuccess(response, file, fileList) {
+        this.$refs.excelUpload.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      beforeUpload(file) {
+        let isLt2M = true
+        isLt2M = file.size / 1024 / 1024 < 100
+        if (!isLt2M) {
+          this.loading = false
+          this.$message.error('上传文件大小不能超过 100MB!')
+        }
+        this.filename = file.name
+        return isLt2M
+      },
+      //下载
+      downloadFile() {
+        const url =
+          'http://wanmouyun.oss-cn-shenzhen.aliyuncs.com/模板/2021-08-12/4de4d2e2-936a-4172-bbf2-66665ba812b4.xlsx'
+        axios({
+          method: 'get',
+          url: url,
+          responseType: 'blob',
+        })
+          .then((response) => {
+            if (response.message) {
+              this.$message.error(response.message)
+              return
+            }
+            let blob = new Blob([response.data])
+            let link = document.createElement('a')
+            let url = window.URL.createObjectURL(blob)
+            link.href = url
+            link.download = '测试下载.xlsx'
+            link.click()
+            URL.revokeObjectURL(url) //释放内存
+          })
+          .catch((e) => {})
       },
     },
   }

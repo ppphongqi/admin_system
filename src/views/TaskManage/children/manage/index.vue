@@ -99,6 +99,7 @@
       width="30%"
       top="15vh"
       :before-close="closeShowModal"
+      @opened="open()"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
         <el-form-item label="任务名称:" prop="name" required>
@@ -159,9 +160,8 @@
           required
         >
           <div class="upload_wrapper">
-            <el-button type="primary" @click="showUpload">上传内容</el-button>
-            <el-button type="primary" @click="downloadFile">下载内容</el-button>
-            <!-- <el-upload
+            <!-- <el-button type="primary" @click="showUpload">上传内容</el-button> -->
+            <el-upload
               ref="uploadFileList"
               class="avatar-uploader"
               action="http://localhost/api/pc/oss/uploadList"
@@ -179,7 +179,7 @@
             </el-upload>
             <div v-if="imgUrlList.length === 0" class="upload_tips">
               （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
-            </div> -->
+            </div>
           </div>
         </el-form-item>
         <el-form-item
@@ -691,29 +691,6 @@
         }
         this.filename = file.name
         return isLt2M
-      },
-      downloadFile() {
-        const url =
-          'http://wanmouyun.oss-cn-shenzhen.aliyuncs.com/模板/2021-08-12/4de4d2e2-936a-4172-bbf2-66665ba812b4.xlsx'
-        axios({
-          method: 'get',
-          url: url,
-          responseType: 'blob',
-        })
-          .then((response) => {
-            if (response.message) {
-              this.$message.error(response.message)
-              return
-            }
-            let blob = new Blob([response.data])
-            let link = document.createElement('a')
-            let url = window.URL.createObjectURL(blob)
-            link.href = url
-            link.download = '测试下载.xlsx'
-            link.click()
-            URL.revokeObjectURL(url) //释放内存
-          })
-          .catch((e) => {})
       },
     },
   }
