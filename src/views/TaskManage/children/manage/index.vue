@@ -99,7 +99,6 @@
       width="30%"
       top="15vh"
       :before-close="closeShowModal"
-      @opened="open()"
     >
       <el-form :model="Form" label-width="100px" label-position="right">
         <el-form-item label="任务名称:" prop="name" required>
@@ -160,8 +159,26 @@
           required
         >
           <div class="upload_wrapper">
-            <!-- <el-button type="primary" @click="showUpload">上传内容</el-button> -->
             <el-upload
+              ref="uploadFileZIP"
+              action="http://localhost/api/pc/oss/uploadZip"
+              accept=".zip"
+              :auto-upload="false"
+              :show-file-list="false"
+              :on-change="changeUploadZip"
+              :before-upload="beforeUploadZip"
+              :on-success="handleSuccessZip"
+              :limit="1"
+            >
+              <el-button
+                v-loading.fullscreen.lock="fullscreenLoading"
+                type="primary"
+              >
+                上传文件
+              </el-button>
+            </el-upload>
+            <!-- <el-button type="primary" @click="showUpload">上传内容</el-button> -->
+            <!-- <el-upload
               ref="uploadFileList"
               class="avatar-uploader"
               action="http://localhost/api/pc/oss/uploadList"
@@ -179,7 +196,7 @@
             </el-upload>
             <div v-if="imgUrlList.length === 0" class="upload_tips">
               （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
-            </div>
+            </div> -->
           </div>
         </el-form-item>
         <el-form-item
@@ -349,6 +366,7 @@
         isAddDetail: false,
         fileList: [],
         showModalUpload: false,
+        fullscreenLoading: false,
       }
     },
     mounted() {
@@ -683,6 +701,57 @@
         })
       },
       beforeAvatarUpload(file) {
+        let isLt2M = true
+        isLt2M = file.size / 1024 / 1024 < 100
+        if (!isLt2M) {
+          this.loading = false
+          this.$message.error('上传文件大小不能超过 100MB!')
+        }
+        this.filename = file.name
+        return isLt2M
+      },
+      uploadFileZip(fileList) {
+        let formData = new FormData()
+        fileList.forEach((v) => {
+          formData.append('fileZip', v.raw)
+        })
+        formData.append('module', 'img')
+        this.fullscreenLoading = true
+        axios({
+          method: 'post',
+          url: 'http://localhost/api/pc/oss/uploadZip',
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 600000,
+          data: formData,
+        }).then((res) => {
+          console.log(res)
+          this.handleSuccessZip(res.data.data)
+          this.fullscreenLoading = false
+        })
+      },
+      changeUploadZip(file, fileList) {
+        console.log(file, fileList, '1')
+        let currLength = fileList.length
+        this.maxFileLen = Math.max(currLength, this.maxFileLen)
+        setTimeout(() => {
+          if (currLength != this.maxFileLen) return
+          console.log('start')
+          this.uploadFileZip(fileList)
+        }, 0)
+      },
+      handleSuccessZip(data) {
+        let resList = Object.values(data)
+        resList.forEach((v) => {
+          this.imgUrlList.push({ imgUrl: v })
+        })
+        this.$refs.uploadFileZIP.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      beforeUploadZip(file) {
         let isLt2M = true
         isLt2M = file.size / 1024 / 1024 < 100
         if (!isLt2M) {

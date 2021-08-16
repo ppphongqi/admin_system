@@ -7,16 +7,17 @@
           <el-upload
             ref="excelUpload"
             action="http://localhost/api/pc/mission/excelImport"
-            accept=".xlsx,.xls"
+            accept=".xlsx"
             :limit="1"
             :show-file-list="false"
             :on-success="handleSuccess"
             :before-upload="beforeUpload"
+            :http-request="handleUpload"
             style="margin-right: 10px"
           >
-            <el-button type="primary">导入内容</el-button>
+            <el-button type="primary">导入模板</el-button>
           </el-upload>
-          <el-button type="primary" @click="downloadFile">下载内容</el-button>
+          <el-button type="primary" @click="downloadFile">导出模板</el-button>
           <el-button type="success" icon="el-icon-plus" @click="addTask">
             添加分类
           </el-button>
@@ -270,13 +271,25 @@
         }
       },
       //导入
-      handleSuccess(response, file, fileList) {
-        this.$refs.excelUpload.clearFiles()
-        this.$notify({
-          title: '上传成功',
-          type: 'success',
-          duration: 2500,
+      handleUpload(param) {
+        let formData = new FormData()
+        formData.append('serviceFile', param.file)
+        axios({
+          method: 'post',
+          url: 'http://localhost/api/pc/mission/excelImport',
+          headers: { 'Content-Type': 'multipart/form-data' },
+          data: formData,
+        }).then((res) => {
+          this.handleSuccess(res.data.message)
         })
+      },
+      handleSuccess(msg) {
+        this.$refs.excelUpload.clearFiles()
+        this.$message({
+          message: msg,
+          type: 'success',
+        })
+        this.getList()
       },
       beforeUpload(file) {
         let isLt2M = true
