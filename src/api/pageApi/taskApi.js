@@ -178,6 +178,15 @@ class TaskApi {
       params,
     })
   }
+
+  //追加二维码(链接)
+  addCodeOrUrl = (data = {}) => {
+    return request({
+      url: '/pc/mission/AddMissionQRCodePursue',
+      method: 'post',
+      data,
+    })
+  }
 }
 
 const taskApi = new TaskApi()

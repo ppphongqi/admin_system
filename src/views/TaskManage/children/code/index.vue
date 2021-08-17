@@ -4,9 +4,9 @@
       <div class="ck_title">
         <div class="ck_title">二维码库</div>
         <div class="ck_buttons">
-          <el-button type="success" icon="el-icon-plus" @click="addCode">
+          <!-- <el-button type="success" icon="el-icon-plus" @click="addCode">
             添加二维码
-          </el-button>
+          </el-button> -->
         </div>
       </div>
     </div>

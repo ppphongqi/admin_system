@@ -67,6 +67,9 @@
       </el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="scope">
+          <el-button type="text" size="small" @click="addCode(scope.row)">
+            追加二维(链接)
+          </el-button>
           <el-button type="text" size="small" @click="editTask(scope.row)">
             编辑
           </el-button>
@@ -279,7 +282,7 @@
       </span>
     </el-dialog>
 
-    //上传测试
+    <!-- 上传测试 -->
     <el-dialog
       title="上传"
       :visible.sync="showModalUpload"
@@ -316,6 +319,72 @@
         </el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="追加二维(链接)"
+      :visible.sync="addCodeModal"
+      width="30%"
+      top="20vh"
+      :before-close="closeCodeModal"
+    >
+      <el-form :model="addCodeForm" label-width="100px" label-position="right">
+        <el-form-item label="二维码类型:" prop="missionTypeAid">
+          <el-select
+            v-model="addCodeForm.missionTypeAid"
+            disabled
+            size="medium"
+            @change="$forceUpdate()"
+          >
+            <el-option
+              v-for="item in typeOption"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-if="addCodeForm.missionTypeAid == '1'"
+          label="二维码图片:"
+          prop="imgUrl"
+          required
+        >
+          <div class="upload_wrapper">
+            <el-upload
+              ref="uploadAddCode"
+              class="addCode-uploader"
+              action="http://localhost/api/pc/oss/upload"
+              :limit="3"
+              :show-file-list="false"
+              :on-success="handleAddCodeSuccess"
+              :before-upload="beforeAvatarUpload"
+              :data="{ module: 'img' }"
+            >
+              <div v-for="url in imgUrlAddCodeList" :key="url.index">
+                <img :src="url.imgUrl" class="avatar" />
+              </div>
+              <i class="el-icon-plus avatar-uploader-icon"></i>
+            </el-upload>
+            <div class="upload_tips">
+              （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item
+          v-if="addCodeForm.missionTypeAid == '2'"
+          label="二维码地址:"
+          prop="url"
+          required
+        >
+          <el-input v-model="addCodeForm.url"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeCodeModal()">取 消</el-button>
+        <el-button type="primary" @click="addCodeSubmit()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -324,6 +393,7 @@
   import { taskApi } from '@/api/index'
   import vabQuill from '@/plugins/vabQuill'
   import axios from 'axios'
+  import moment from 'moment'
   export default {
     name: 'TaskManage',
     components: { vabQuill },
@@ -367,6 +437,14 @@
         fileList: [],
         showModalUpload: false,
         fullscreenLoading: false,
+        addCodeModal: false,
+        addCodeForm: {
+          url: '',
+          missionAid: 1,
+          missionTypeAid: 1,
+        },
+        imgUrlAddCodeList: [],
+        moment,
       }
     },
     mounted() {
@@ -438,6 +516,16 @@
       },
       //添加/修改任务
       async modalConfirm(flag) {
+        let isBefore = moment(this.Form.date1).isBefore(
+          moment().format('YYYY-MM-DD')
+        )
+        if (!isBefore) {
+          this.$message({
+            message: '开始日期只能为今日之前',
+            type: 'warning',
+          })
+          return
+        }
         // flag确定是新增还是修改
         if (flag) {
           let form = {
@@ -724,8 +812,15 @@
           timeout: 600000,
           data: formData,
         }).then((res) => {
-          console.log(res)
-          this.handleSuccessZip(res.data.data)
+          console.log(res, '123')
+          if (res.data.data) {
+            this.handleSuccessZip(res.data.data)
+          } else {
+            this.$message({
+              message: '上传失败',
+              type: 'warning',
+            })
+          }
           this.fullscreenLoading = false
         })
       },
@@ -760,6 +855,56 @@
         }
         this.filename = file.name
         return isLt2M
+      },
+      addCode(row) {
+        this.addCodeModal = true
+        if (row.missionClassifyName == '二维码模式') {
+          this.addCodeForm.missionTypeAid = 1
+        } else if (row.missionClassifyName == '链接模式') {
+          this.addCodeForm.missionTypeAid = 2
+        }
+        this.addCodeForm.missionAid = row.aid
+      },
+      handleAddCodeSuccess(response, file, fileList) {
+        this.imgUrlAddCodeList.push({ imgUrl: response.message })
+        console.log(this.imgUrlAddCodeList)
+        this.$refs.uploadAddCode.clearFiles()
+        this.$notify({
+          title: '上传成功',
+          type: 'success',
+          duration: 2500,
+        })
+      },
+      async addCodeSubmit() {
+        if (this.addCodeForm.missionTypeAid === 1) {
+          this.addCodeForm.url = ''
+        } else if (this.addCodeForm.missionTypeAid === 2) {
+          this.imgUrlAddCodeList = []
+        }
+        console.log(this.addCodeForm)
+        const res = await taskApi.addCodeOrUrl(this.addCodeForm)
+        if (res) {
+          this.getList()
+          this.closeCodeModal()
+          this.$message({
+            message: res.message,
+            type: 'success',
+          })
+        } else {
+          this.$message({
+            message: '失败',
+            type: 'warning',
+          })
+        }
+      },
+      closeCodeModal() {
+        this.addCodeModal = false
+        this.addCodeForm = {
+          url: '',
+          missionAid: 1,
+          missionTypeAid: 1,
+        }
+        this.imgUrlAddCodeList = []
       },
     },
   }
