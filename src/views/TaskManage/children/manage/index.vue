@@ -878,6 +878,7 @@
       async addCodeSubmit() {
         if (this.addCodeForm.missionTypeAid === 1) {
           this.addCodeForm.url = ''
+          this.addCodeForm.imgUrlList = this.imgUrlAddCodeList
         } else if (this.addCodeForm.missionTypeAid === 2) {
           this.imgUrlAddCodeList = []
         }
