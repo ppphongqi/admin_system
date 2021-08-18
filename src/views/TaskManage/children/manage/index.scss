@@ -51,8 +51,6 @@
 
 .addCode-uploader{
   .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
     cursor: pointer;
     position: relative;
     overflow: hidden;
@@ -60,21 +58,17 @@
     align-items: center;
     flex-wrap: wrap
   }
-  .el-upload:hover {
-    border-color: #409EFF;
-  }
-  .avatar-uploader-icon {
-    font-size: 10px;
-    color: #8c939d;
-    width: 30px;
-    height: 30px;
-    line-height: 30px;
-    text-align: center;
-  }
+}
+.avatarList{
+  width: 100%;
+  margin-top: 5px;
+  display: flex;
+  flex-wrap: wrap;
   .avatar {
-    width: 30px;
-    height: 30px;
+    width: 50px;
+    height: 50px;
     display: block;
   }
 }
+
 

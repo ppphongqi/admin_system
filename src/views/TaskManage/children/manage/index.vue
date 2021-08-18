@@ -170,7 +170,6 @@
               :show-file-list="false"
               :on-change="changeUploadZip"
               :before-upload="beforeUploadZip"
-              :on-success="handleSuccessZip"
               :limit="1"
             >
               <el-button
@@ -353,20 +352,25 @@
             <el-upload
               ref="uploadAddCode"
               class="addCode-uploader"
-              action="http://localhost/api/pc/oss/upload"
-              :limit="3"
+              action="http://localhost/api/pc/oss/uploadZip"
+              :limit="1"
               :show-file-list="false"
-              :on-success="handleAddCodeSuccess"
+              :auto-upload="false"
+              :on-change="changeUploadAddCode"
               :before-upload="beforeAvatarUpload"
-              :data="{ module: 'img' }"
+              accept=".zip"
             >
-              <div v-for="url in imgUrlAddCodeList" :key="url.index">
-                <img :src="url.imgUrl" class="avatar" />
-              </div>
-              <i class="el-icon-plus avatar-uploader-icon"></i>
+              <el-button
+                v-loading.fullscreen.lock="fullscreenLoading"
+                type="primary"
+              >
+                上传文件
+              </el-button>
             </el-upload>
-            <div class="upload_tips">
-              （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
+          </div>
+          <div class="avatarList">
+            <div v-for="url in imgUrlAddCodeList" :key="url.index">
+              <img :src="url.imgUrl" class="avatar" />
             </div>
           </div>
         </el-form-item>
@@ -865,8 +869,46 @@
         }
         this.addCodeForm.missionAid = row.aid
       },
+      uploadFileAddCode(fileList) {
+        let formData = new FormData()
+        fileList.forEach((v) => {
+          formData.append('fileZip', v.raw)
+        })
+        formData.append('module', 'img')
+        this.fullscreenLoading = true
+        axios({
+          method: 'post',
+          url: 'http://localhost/api/pc/oss/uploadZip',
+          headers: { 'Content-Type': 'multipart/form-data' },
+          timeout: 600000,
+          data: formData,
+        }).then((res) => {
+          console.log(res, '123')
+          if (res.data.data) {
+            this.handleAddCodeSuccess(res.data.data)
+          } else {
+            this.$message({
+              message: '上传失败',
+              type: 'warning',
+            })
+          }
+          this.fullscreenLoading = false
+        })
+      },
+      changeUploadAddCode(file, fileList) {
+        let currLength = fileList.length
+        this.maxFileLen = Math.max(currLength, this.maxFileLen)
+        setTimeout(() => {
+          if (currLength != this.maxFileLen) return
+          console.log('start')
+          this.uploadFileAddCode(fileList)
+        }, 0)
+      },
       handleAddCodeSuccess(response, file, fileList) {
-        this.imgUrlAddCodeList.push({ imgUrl: response.message })
+        let resList = Object.values(data)
+        resList.forEach((v) => {
+          this.imgUrlAddCodeList.push({ imgUrl: v })
+        })
         console.log(this.imgUrlAddCodeList)
         this.$refs.uploadAddCode.clearFiles()
         this.$notify({
