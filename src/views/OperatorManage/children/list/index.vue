@@ -280,11 +280,17 @@
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="任务名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="任务名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="运营商:" prop="operatorsAid" required>
+        <el-form-item label="运营商:" prop="operatorsAid">
           <el-select v-model="Form.operatorsAid" placeholder="请选择" clearable>
             <el-option
               v-for="item in operatorList"
@@ -294,7 +300,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="业务类型:" prop="missionServiceClassAid" required>
+        <el-form-item label="业务类型:" prop="missionServiceClassAid">
           <el-select
             v-model="Form.missionServiceClassAid"
             placeholder="请选择"
@@ -308,11 +314,11 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="图标:" prop="fileToIconAid" required>
+        <el-form-item label="图标:" prop="fileToIconAid">
           <el-upload
             ref="operatorIconUpload"
             class="operatorIcon-uploader"
-            action="http://localhost/api/pc/oss/upload"
+            :action="action"
             :limit="1"
             :show-file-list="false"
             :on-success="handleAvatarSuccessIcon"
@@ -327,11 +333,11 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="二维码:" prop="qrCodeAid" required>
+        <el-form-item label="二维码:" prop="qrCodeAid">
           <el-upload
             ref="operatorQrUpload"
             class="operatorQr-uploader"
-            action="http://localhost/api/pc/oss/upload"
+            :action="action"
             :limit="1"
             :show-file-list="false"
             :on-success="handleAvatarSuccessQr"
@@ -342,19 +348,19 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="任务链接:" prop="url" required>
+        <el-form-item label="任务链接:" prop="url">
           <el-input v-model="Form.url"></el-input>
         </el-form-item>
-        <el-form-item label="描述:" prop="info" required>
+        <el-form-item label="描述:" prop="info">
           <el-input v-model="Form.info"></el-input>
         </el-form-item>
-        <el-form-item label="佣金:" prop="price" required>
+        <el-form-item label="佣金:" prop="price">
           <el-input v-model="Form.price"></el-input>
         </el-form-item>
-        <el-form-item label="详情:" prop="details" required>
+        <el-form-item label="详情:" prop="details">
           <el-input v-model="Form.details"></el-input>
         </el-form-item>
-        <el-form-item label="开始时间:" prop="effectiveStartTime" required>
+        <el-form-item label="开始时间:" prop="effectiveStartTime">
           <el-date-picker
             v-model="Form.effectiveStartTime"
             type="datetime"
@@ -364,7 +370,7 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="结束时间:" prop="effectiveEndTime" required>
+        <el-form-item label="结束时间:" prop="effectiveEndTime">
           <el-date-picker
             v-model="Form.effectiveEndTime"
             type="datetime"
@@ -374,16 +380,16 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="任务时长:" prop="missionDuration" required>
+        <el-form-item label="任务时长:" prop="missionDuration">
           <el-input v-model="Form.missionDuration"></el-input>
         </el-form-item>
-        <el-form-item label="是否显示:" prop="isDisplay" required>
+        <el-form-item label="是否显示:" prop="isDisplay">
           <el-radio-group v-model="Form.isDisplay">
             <el-radio :label="0" value="0">显示</el-radio>
             <el-radio :label="1" value="1">隐藏</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="排序值:" prop="sort" required>
+        <el-form-item label="排序值:" prop="sort">
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
       </el-form>
@@ -404,6 +410,7 @@
     data() {
       return {
         moment,
+        action: 'http://localhost/api/pc/oss/upload',
         tableData: [],
         operatorList: [],
         operatorClass: [],
@@ -438,6 +445,46 @@
           page: 1,
           pageRow: 10,
           isAllArgsSelect: 1,
+        },
+        rules: {
+          name: [
+            { required: true, message: '请填写任务名称', trigger: 'blur' },
+          ],
+          operatorsAid: [
+            { required: true, message: '请选择运营商', trigger: 'change' },
+          ],
+          missionServiceClassAid: [
+            { required: true, message: '请选择业务类型', trigger: 'change' },
+          ],
+          fileToIconAid: [
+            { required: true, message: '请上传任务图标', trigger: 'change' },
+          ],
+          qrCodeAid: [
+            { required: true, message: '请上传二维码', trigger: 'change' },
+          ],
+          url: [{ required: true, message: '请填写任务链接', trigger: 'blur' }],
+          info: [
+            { required: true, message: '请填写任务描述', trigger: 'blur' },
+          ],
+          price: [
+            { required: true, message: '请填写任务佣金', trigger: 'blur' },
+          ],
+          details: [
+            { required: true, message: '请填写任务详情', trigger: 'blur' },
+          ],
+          effectiveStartTime: [
+            { required: true, message: '请选择开始时间', trigger: 'change' },
+          ],
+          effectiveEndTime: [
+            { required: true, message: '请选择结束时间', trigger: 'change' },
+          ],
+          missionDuration: [
+            { required: true, message: '请填写任务时长', trigger: 'blur' },
+          ],
+          isDisplay: [
+            { required: true, message: '请选择是否显示', trigger: 'change' },
+          ],
+          sort: [{ required: true, message: '请填写排序值', trigger: 'blur' }],
         },
       }
     },
@@ -565,6 +612,7 @@
       },
       //关闭弹出
       closeShowModal() {
+        this.$refs.Form.resetFields()
         this.showModal = false
         this.Form = {
           aid: -1,
@@ -585,22 +633,30 @@
         }
       },
       //添加编辑
-      async modalConfirm() {
-        this.Form.isDisplay = String(this.Form.isDisplay)
-        const res = await operatorApi.updateOperatorList(this.Form)
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.closeShowModal()
-          this.getList()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.Form.isDisplay = String(this.Form.isDisplay)
+            operatorApi.updateOperatorList(this.Form).then((res) => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.closeShowModal()
+                this.getList()
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       //删除
       async deleteRow(row) {

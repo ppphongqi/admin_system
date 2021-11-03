@@ -6,8 +6,14 @@
     style="margin-top: 50px"
     :before-close="closeShowModal"
   >
-    <el-form :model="specForm" label-width="150px" label-position="right">
-      <el-form-item label="规格模板名称:" prop="name" required>
+    <el-form
+      ref="specForm"
+      :model="specForm"
+      :rules="rules"
+      label-width="150px"
+      label-position="right"
+    >
+      <el-form-item label="规格模板名称:" prop="name">
         <el-input
           v-model="specForm.name"
           placeholder="输入规格模板名称"
@@ -83,6 +89,11 @@
         specForm: {
           name: '',
           spec: [],
+        },
+        rules: {
+          name: [
+            { required: true, message: '请填写规格名称', trigger: 'blur' },
+          ],
         },
       }
     },
@@ -401,6 +412,7 @@
             })
           }
         }
+        this.$refs.specForm.resetFields()
         this.showModal = false
         if (this.source) {
           this.$parent.getEntitySpecificationList()

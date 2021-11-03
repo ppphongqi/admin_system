@@ -70,9 +70,16 @@
       :visible.sync="showModalAdd"
       width="30%"
       top="25vh"
+      :before-close="closeShowModalAdd"
     >
-      <el-form :model="addForm" label-width="100px" label-position="right">
-        <el-form-item label="分类名称:" prop="name" required>
+      <el-form
+        ref="addForm"
+        :model="addForm"
+        :rules="addRules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="分类名称:" prop="name">
           <el-input v-model="addForm.name"></el-input>
         </el-form-item>
         <el-form-item label="序号:" prop="number" align="center">
@@ -81,7 +88,7 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showModalAdd = false">取 消</el-button>
+        <el-button @click="closeShowModalAdd">取 消</el-button>
         <el-button type="primary" @click="addKinds">确 定</el-button>
       </span>
     </el-dialog>
@@ -92,9 +99,16 @@
       :visible.sync="editorShow"
       width="30%"
       top="25vh"
+      :before-close="closeEditorShow"
     >
-      <el-form :model="chooseItem" label-width="100px" label-position="right">
-        <el-form-item label="分类名称:" prop="name" required>
+      <el-form
+        ref="chooseItem"
+        :model="chooseItem"
+        :rules="editRules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="分类名称:" prop="name">
           <el-input v-model="chooseItem.name"></el-input>
         </el-form-item>
         <el-form-item label="序号:" prop="number" align="center">
@@ -103,7 +117,7 @@
       </el-form>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="editorShow = false">取 消</el-button>
+        <el-button @click="closeEditorShow">取 消</el-button>
         <el-button type="primary" @click="editorItem">确 定</el-button>
       </span>
     </el-dialog>
@@ -142,6 +156,16 @@
         tableData: [],
         moment,
         editor: false,
+        addRules: {
+          name: [
+            { required: true, message: '请填写分类名称', trigger: 'blur' },
+          ],
+        },
+        editRules: {
+          name: [
+            { required: true, message: '请填写分类名称', trigger: 'blur' },
+          ],
+        },
       }
     },
     mounted() {
@@ -161,8 +185,18 @@
         const { data } = await physicalProductApi.getEntityClassList(params)
         this.tableData = data.records
       },
+      addKinds() {
+        this.$refs.addForm.validate((valid) => {
+          if (valid) {
+            this.addKindsSubmit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       // 添加分类
-      async addKinds() {
+      async addKindsSubmit() {
         if (!this.editor) {
           this.addForm.aid = '-1'
         }
@@ -177,8 +211,12 @@
           message: '新增成功',
           type: 'success',
         })
-        this.showModalAdd = false
+        this.closeShowModalAdd()
         this.getData(1, 7)
+      },
+      closeShowModalAdd() {
+        this.$refs.addForm.resetFields()
+        this.showModalAdd = false
       },
       // 删除分类
       async deleteItem() {
@@ -205,7 +243,17 @@
         this.editorShow = true
         console.log(this.chooseItem)
       },
-      async editorItem() {
+      editorItem() {
+        this.$refs.chooseItem.validate((valid) => {
+          if (valid) {
+            this.editorSubmit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async editorSubmit() {
         const { aid, name, sort } = this.chooseItem
         const params = { aid, name, sort }
         const { data, message } = await physicalProductApi.addEntityClass(
@@ -217,10 +265,14 @@
             type: 'success',
           })
           this.getData(1, 7)
-          this.editorShow = false
+          this.closeEditorShow()
         } else {
           this.$message.error('修改失败')
         }
+      },
+      closeEditorShow() {
+        this.$refs.chooseItem.resetFields()
+        this.editorShow = false
       },
       deleteRow(item) {
         this.chooseItem = item

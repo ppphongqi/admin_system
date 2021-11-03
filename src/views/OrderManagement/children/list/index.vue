@@ -273,12 +273,9 @@
           width="200"
         >
           <template slot-scope="scope">
-            <div>
-              {{
-                scope.row.area.replace(/,/g, '') +
-                scope.row.address.replace(/,/g, '')
-              }}
-            </div>
+            <span>
+              {{ getArea(scope.row.area, scope.row.address) }}
+            </span>
           </template>
         </el-table-column>
         <el-table-column
@@ -430,7 +427,7 @@
         </el-table-column>
       </el-table>
 
-      <div class="pagination">
+      <!-- <div class="pagination">
         <el-pagination
           :current-page="currentPage"
           :page-sizes="[100, 200, 300, 400]"
@@ -440,7 +437,7 @@
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         ></el-pagination>
-      </div>
+      </div> -->
     </div>
     <el-dialog
       title="订单发货"
@@ -449,19 +446,17 @@
       top="25vh"
       :before-close="closeSendFormModal"
     >
-      <el-form :model="sendForm" label-width="100px" label-position="right">
+      <el-form
+        ref="sendForm"
+        :model="sendForm"
+        :rules="sendFormRules"
+        label-width="100px"
+        label-position="right"
+      >
         <el-form-item label="快递单号:" prop="trackingNumber">
-          <el-input
-            v-model="sendForm.trackingNumber"
-            required
-            clearable
-          ></el-input>
+          <el-input v-model="sendForm.trackingNumber" clearable></el-input>
         </el-form-item>
-        <el-form-item
-          label="发货类型:"
-          prop="personalDeliveryClassAid"
-          required
-        >
+        <el-form-item label="发货类型:" prop="personalDeliveryClassAid">
           <el-select v-model="sendForm.personalDeliveryClassAid">
             <el-option label="1" value="1"></el-option>
             <el-option label="2" value="2"></el-option>
@@ -469,11 +464,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="快递公司:" prop="courierCompany">
-          <el-input
-            v-model="sendForm.courierCompany"
-            required
-            clearable
-          ></el-input>
+          <el-input v-model="sendForm.courierCompany" clearable></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -488,11 +479,17 @@
       top="25vh"
       :before-close="closeAuditModal"
     >
-      <el-form :model="auditForm" label-width="100px" label-position="right">
+      <el-form
+        ref="auditForm"
+        :model="auditForm"
+        :rules="auditFormRules"
+        label-width="100px"
+        label-position="right"
+      >
         <el-form-item label="订单编号:" prop="code">
-          <el-input v-model="auditForm.code" required clearable></el-input>
+          <el-input v-model="auditForm.code" clearable></el-input>
         </el-form-item>
-        <el-form-item label="审核状态:" prop="checkState" required>
+        <el-form-item label="审核状态:" prop="checkState">
           <el-select v-model="auditForm.checkState">
             <el-option label="待审核" value="0">待审核</el-option>
             <el-option label="通过" value="1">通过</el-option>
@@ -560,7 +557,6 @@
           code: '',
           checkState: '0',
         },
-
         currentPage: 5,
         tableData: tableData,
         activeIndex: '1',
@@ -597,6 +593,25 @@
             color: 'rgb(255,144,148)',
           },
         ],
+        sendFormRules: {
+          trackingNumber: [
+            { required: true, message: '请填写快递单号', trigger: 'blur' },
+          ],
+          personalDeliveryClassAid: [
+            { required: true, message: '请选择发货类型', trigger: 'change' },
+          ],
+          courierCompany: [
+            { required: true, message: '请填写快递公司', trigger: 'blur' },
+          ],
+        },
+        auditFormRules: {
+          code: [
+            { required: true, message: '请填写订单编号', trigger: 'blur' },
+          ],
+          checkState: [
+            { required: true, message: '请选择审核状态', trigger: 'change' },
+          ],
+        },
       }
     },
     computed: {
@@ -620,24 +635,33 @@
         this.sendForm.aid = item.aid
       },
       //确认发货
-      async sendProduct() {
-        const res = await orderApi.sendEntityOrder(this.sendForm)
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.getEntityList()
-          this.closeSendFormModal()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
+      sendProduct() {
+        this.$refs.sendForm.validate((valid) => {
+          if (valid) {
+            orderApi.sendEntityOrder(this.sendForm).then((res) => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.getEntityList()
+                this.closeSendFormModal()
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       //关闭发货编辑框
       closeSendFormModal() {
+        this.$refs.sendForm.resetFields()
         this.sendFormModal = false
         this.sendForm = {
           aid: -1,
@@ -651,25 +675,34 @@
         this.auditModal = true
         this.auditForm.code = item.code
       },
-      //确认发货
-      async auditOrder() {
-        const res = await orderApi.auditEntityLend(this.auditForm)
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.getEntityList()
-          this.closeAuditModal()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
+      //审核发货
+      auditOrder() {
+        this.$refs.auditForm.validate((valid) => {
+          if (valid) {
+            orderApi.auditEntityLend(this.auditForm).then((res) => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.getEntityList()
+                this.closeAuditModal()
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       //关闭借记单审核框
       closeAuditModal() {
+        this.$refs.auditForm.resetFields()
         this.auditModal = false
         this.auditForm = {
           code: '',
@@ -687,6 +720,18 @@
       },
       showDialog() {
         this.showModal = true
+      },
+      getArea(area1, area2) {
+        if (!area1 && !area2) {
+          return '无'
+        }
+        if (area1) {
+          area1 = area1.replace(/,/g, '')
+        }
+        if (area2) {
+          area2 = area2.replace(/,/g, '')
+        }
+        return area1 + area2
       },
       handleSelect(key, keyPath) {
         console.log(key, keyPath)

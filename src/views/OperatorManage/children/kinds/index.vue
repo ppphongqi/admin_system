@@ -109,14 +109,20 @@
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="分类名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="分类名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="排序值:" prop="sort" required>
+        <el-form-item label="排序值:" prop="sort">
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
+        <el-form-item label="状态:" prop="state">
           <el-radio-group v-model="Form.state">
             <el-radio :label="0" value="0">启用</el-radio>
             <el-radio :label="1" value="1">禁用</el-radio>
@@ -150,6 +156,13 @@
           sort: '',
           state: 0,
         },
+        rules: {
+          name: [
+            { required: true, message: '请填写分类名称', trigger: 'blur' },
+          ],
+          sort: [{ required: true, message: '请填写排序值', trigger: 'blur' }],
+          state: [{ required: true, message: '请选择状态', trigger: 'change' }],
+        },
       }
     },
     computed: {
@@ -176,22 +189,30 @@
         }
       },
       // 添加/编辑运营商分类
-      async modalConfirm() {
-        this.Form.state = String(this.Form.state)
-        const res = await operatorApi.updateOperatorClass(this.Form)
-        if (!res) {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        } else {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.closeShowModal()
-          this.getList()
-        }
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.Form.state = String(this.Form.state)
+            operatorApi.updateOperatorClass(this.Form).then((res) => {
+              if (!res) {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              } else {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.closeShowModal()
+                this.getList()
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       //修改运营商分类状态
       async changeState(row) {
@@ -239,6 +260,7 @@
         this.Form = item
       },
       closeShowModal() {
+        this.$refs.Form.resetFields()
         this.showModal = false
         this.Form = {
           aid: -1,

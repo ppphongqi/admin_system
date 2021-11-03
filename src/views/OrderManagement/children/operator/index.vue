@@ -185,11 +185,17 @@
       top="25vh"
       :before-close="closeAuditModal"
     >
-      <el-form :model="auditForm" label-width="100px" label-position="right">
+      <el-form
+        ref="auditForm"
+        :model="auditForm"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
         <el-form-item label="订单编号:" prop="code">
-          <el-input v-model="auditForm.code" required clearable></el-input>
+          <el-input v-model="auditForm.code" clearable></el-input>
         </el-form-item>
-        <el-form-item label="审核状态:" prop="stateAid" required>
+        <el-form-item label="审核状态:" prop="stateAid">
           <el-select v-model="auditForm.stateAid">
             <el-option
               v-for="item in operatorState"
@@ -201,7 +207,7 @@
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="auditModal = false">取 消</el-button>
+        <el-button @click="closeAuditModal">取 消</el-button>
         <el-button type="primary" @click="auditOrder">确 定</el-button>
       </span>
     </el-dialog>
@@ -236,6 +242,14 @@
         operatorState: [],
         operatorClass: [],
         operatorList: [],
+        rules: {
+          code: [
+            { required: true, message: '请填写订单编号', trigger: 'blur' },
+          ],
+          stateAid: [
+            { required: true, message: '请选择审核状态', trigger: 'change' },
+          ],
+        },
       }
     },
     computed: {
@@ -327,24 +341,33 @@
         this.auditForm.stateAid = item.stateAid
       },
       //确认审核
-      async auditOrder() {
-        const res = await operatorApi.auditOperator(this.auditForm)
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.getList()
-          this.closeAuditModal()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
+      auditOrder() {
+        this.$refs.auditForm.validate((valid) => {
+          if (valid) {
+            operatorApi.auditOperator(this.auditForm).then(() => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.getList()
+                this.closeAuditModal()
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       //关闭借记单审核框
       closeAuditModal() {
+        this.$refs.auditForm.resetFields()
         this.auditModal = false
         this.auditForm = {
           code: '',

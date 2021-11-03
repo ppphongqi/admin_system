@@ -76,11 +76,17 @@
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="120px" label-position="right">
-        <el-form-item label="身份名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="120px"
+        label-position="right"
+      >
+        <el-form-item label="身份名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="是否开启:" prop="state" required>
+        <el-form-item label="是否开启:" prop="state">
           <el-radio-group v-model="Form.state">
             <el-radio :label="0" value="0">开启</el-radio>
             <el-radio :label="1" value="1">关闭</el-radio>
@@ -143,6 +149,14 @@
           aid: '',
           name: '',
           state: 0,
+        },
+        rules: {
+          name: [
+            { required: true, message: '请填写身份名称', trigger: 'blur' },
+          ],
+          state: [
+            { required: true, message: '请选择是否启用', trigger: 'change' },
+          ],
         },
         data: [
           {
@@ -268,7 +282,17 @@
         return this.$refs.tree.getCheckedNodes()
         // console.log(this.$refs.tree.getCheckedNodes())
       },
-      async modalConfirm(flag) {
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async submit(flag) {
         const preList = this.getCheckedNodes()
         let tempList = []
         const list = []
@@ -406,6 +430,7 @@
           state: 0,
         }
         this.$refs.tree.setCheckedNodes([])
+        this.$refs.Form.resetFields()
       },
     },
   }

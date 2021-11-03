@@ -98,11 +98,17 @@
       top="25vh"
       :before-close="closeAuditModal"
     >
-      <el-form :model="auditForm" label-width="100px" label-position="right">
+      <el-form
+        ref="auditForm"
+        :model="auditForm"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
         <el-form-item label="订单编号:" prop="code">
-          <el-input v-model="auditForm.code" required clearable></el-input>
+          <el-input v-model="auditForm.code" clearable></el-input>
         </el-form-item>
-        <el-form-item label="审核状态:" prop="checkState" required>
+        <el-form-item label="审核状态:" prop="checkState">
           <el-select v-model="auditForm.checkState">
             <el-option label="待审核" value="0">待审核</el-option>
             <el-option label="通过" value="1">通过</el-option>
@@ -137,6 +143,14 @@
         total: 1,
         PageSize: 7,
         tableData: [],
+        rules: {
+          code: [
+            { required: true, message: '请填写订单编号', trigger: 'blur' },
+          ],
+          checkState: [
+            { required: true, message: '请选择订单状态', trigger: 'change' },
+          ],
+        },
       }
     },
     computed: {
@@ -172,21 +186,29 @@
         this.auditForm.checkState = item.checkState
       },
       //确认发货
-      async auditOrder() {
-        const res = await orderApi.auditEntityLend(this.auditForm)
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.getList()
-          this.closeAuditModal()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
+      auditOrder() {
+        this.$refs.auditForm.validate((valid) => {
+          if (valid) {
+            orderApi.auditEntityLend(this.auditForm).then((res) => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.getList()
+                this.closeAuditModal()
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       //关闭借记单审核框
       closeAuditModal() {
@@ -195,6 +217,7 @@
           code: '',
           checkState: '0',
         }
+        this.$refs.auditForm.resetFields()
       },
       deleteRow(item) {
         console.log(item)

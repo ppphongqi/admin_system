@@ -71,8 +71,14 @@
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="分类名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="分类名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
       </el-form>
@@ -100,6 +106,11 @@
           aid: -1,
           name: '',
         },
+        rules: {
+          name: [
+            { required: true, message: '请填写轮播图名称', trigger: 'blur' },
+          ],
+        },
       }
     },
     computed: {
@@ -123,8 +134,18 @@
           })
         }
       },
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       // 添加/编辑轮播图分类
-      async modalConfirm() {
+      async submit() {
         const res = await rotationApi.updateRotationClass(this.Form)
         if (!res) {
           this.$message({
@@ -171,6 +192,7 @@
           aid: -1,
           name: '',
         }
+        this.$refs.Form.resetFields()
       },
     },
   }

@@ -196,11 +196,17 @@
       top
       :before-close="hiddenEditChannelModel"
     >
-      <el-form :model="Form" label-width="120px" label-position="right">
-        <el-form-item label="企业名称:" prop="company_name" required>
+      <el-form
+        ref="ruleForm"
+        :model="Form"
+        :rules="rules"
+        label-width="120px"
+        label-position="right"
+      >
+        <el-form-item label="企业名称:" prop="company_name">
           <el-input v-model="Form.company_name"></el-input>
         </el-form-item>
-        <el-form-item label="运营商:" prop="operatorAid" required>
+        <el-form-item label="运营商:" prop="operatorAid">
           <el-select v-model="Form.operatorAid" multiple placeholder="请选择">
             <el-option
               v-for="item in operatorList"
@@ -210,7 +216,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="支持地区:" required>
+        <el-form-item label="支持地区:" prop="areaIds">
           <el-cascader
             v-model="tempIds"
             placeholder="请选择"
@@ -227,7 +233,7 @@
             @change="selectItem"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="支持类型:" prop="classAid" required>
+        <el-form-item label="支持类型:" prop="classAid">
           <el-select v-model="Form.classAid" multiple placeholder="请选择">
             <el-option
               v-for="item in classList"
@@ -237,35 +243,31 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="设置排序值:" prop="sort" required>
+        <el-form-item label="设置排序值:" prop="sort">
           <el-input v-model="Form.sort" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="设置优先级:" prop="priority" required>
+        <el-form-item label="设置优先级:" prop="priority">
           <el-input v-model="Form.priority" placeholder="请输入"></el-input>
         </el-form-item>
-        <el-form-item label="接口地址:" prop="api_address" required>
+        <el-form-item label="接口地址:" prop="api_address">
           <el-input v-model="Form.api_address"></el-input>
         </el-form-item>
-        <el-form-item label="接口账户:" prop="api_account" required>
+        <el-form-item label="接口账户:" prop="api_account">
           <el-input v-model="Form.api_account"></el-input>
         </el-form-item>
-        <el-form-item label="app密钥:" prop="appsecret" required>
+        <el-form-item label="app密钥:" prop="appsecret">
           <el-input v-model="Form.appsecret"></el-input>
         </el-form-item>
-        <el-form-item label="appId:" prop="app_id" required>
+        <el-form-item label="appId:" prop="app_id">
           <el-input v-model="Form.app_id"></el-input>
         </el-form-item>
-        <el-form-item label="access_token:" prop="access_token" required>
+        <el-form-item label="access_token:" prop="access_token">
           <el-input v-model="Form.access_token"></el-input>
         </el-form-item>
-        <el-form-item
-          label="主动查询地址:"
-          prop="active_query_address"
-          required
-        >
+        <el-form-item label="主动查询地址:" prop="active_query_address">
           <el-input v-model="Form.active_query_address"></el-input>
         </el-form-item>
-        <el-form-item label="回调支持:" prop="is_backing_callback" required>
+        <el-form-item label="回调支持:" prop="is_backing_callback">
           <el-radio-group v-model="Form.is_backing_callback">
             <el-radio :label="0">支持</el-radio>
             <el-radio :label="1">不支持</el-radio>
@@ -280,7 +282,9 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="hiddenEditChannelModel">取 消</el-button>
-        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
+        <el-button type="primary" @click="modalConfirm(add, 'ruleForm')">
+          确 定
+        </el-button>
       </span>
     </el-dialog>
 
@@ -292,8 +296,14 @@
       top
       :before-close="hiddenDiscountModel"
     >
-      <el-form :model="setForm" label-width="100px" label-position="right">
-        <el-form-item label="选择地区:" required>
+      <el-form
+        ref="setRuleForm"
+        :model="setForm"
+        :rules="setRules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="选择地区:" prop="areaIds">
           <el-cascader
             v-model="tempIds"
             placeholder="请选择"
@@ -310,7 +320,7 @@
             @change="selectItem"
           ></el-cascader>
         </el-form-item>
-        <el-form-item label="设置折扣:" prop="rebate" required>
+        <el-form-item label="设置折扣:" prop="rebate">
           <el-input v-model="setForm.rebate"></el-input>
         </el-form-item>
       </el-form>
@@ -361,6 +371,54 @@
         showAddressDetail: false,
         addressNmaes: [],
         tempIds: [],
+        rules: {
+          company_name: [
+            { required: true, message: '请输入企业名称', trigger: 'blur' },
+          ],
+          operatorAid: [
+            { required: true, message: '请选择运营商', trigger: 'trigger' },
+          ],
+          // areaIds: [
+          //   { required: true, message: '请选择支持地区', trigger: 'trigger' },
+          // ],
+          classAid: [
+            { required: true, message: '请选择支持类型', trigger: 'trigger' },
+          ],
+          sort: [{ required: true, message: '请设置排序值', trigger: 'blur' }],
+          priority: [
+            { required: true, message: '请设置优先级', trigger: 'blur' },
+          ],
+          api_address: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+          api_account: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+          appsecret: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+          app_id: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+          access_token: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+          active_query_address: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+          is_backing_callback: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+          state: [
+            { required: false, message: '请选择运营商', trigger: 'blur' },
+          ],
+        },
+        setRules: {
+          // areaIds: [{ required: true, message: '请选择地区', trigger: 'blur' }],
+          rebate: [
+            { required: true, message: '请设置活动折扣', trigger: 'blur' },
+          ],
+        },
       }
     },
     created() {
@@ -527,56 +585,64 @@
         }
       },
       // 添加/编辑通道
-      async modalConfirm(flag) {
-        let ids = []
-        this.tempIds.forEach((v) => {
-          ids.push(v[1])
+      modalConfirm(flag, formName) {
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            let ids = []
+            this.tempIds.forEach((v) => {
+              ids.push(v[1])
+            })
+            this.Form.districtAid = ids
+            if (this.Form.state) {
+              this.Form.state = '1'
+            } else {
+              this.Form.state = '0'
+            }
+            if (this.Form.is_backing_callback) {
+              this.Form.is_backing_callback = '1'
+            } else {
+              this.Form.is_backing_callback = '0'
+            }
+            let form = {
+              appId: this.Form.app_id,
+              accessToken: this.Form.access_token,
+              aid: this.Form.aid,
+              sort: this.Form.sort,
+              companyName: this.Form.company_name,
+              apiAddress: this.Form.api_address,
+              apiAccount: this.Form.api_account,
+              isBackingCallback: this.Form.is_backing_callback,
+              appsecret: this.Form.appsecret,
+              activeQueryAddress: this.Form.active_query_address,
+              priority: this.Form.priority,
+              state: this.Form.state,
+              districtAid: this.Form.districtAid,
+              operatorAid: this.Form.operatorAid,
+              classAid: this.Form.classAid,
+            }
+            if (flag) {
+              form.aid = -1
+            }
+            channelApi.editChannel(form).then((res) => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.hiddenEditChannelModel()
+                this.getChannelList()
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
         })
-        this.Form.districtAid = ids
-        if (this.Form.state) {
-          this.Form.state = '1'
-        } else {
-          this.Form.state = '0'
-        }
-        if (this.Form.is_backing_callback) {
-          this.Form.is_backing_callback = '1'
-        } else {
-          this.Form.is_backing_callback = '0'
-        }
-        let form = {
-          appId: this.Form.app_id,
-          accessToken: this.Form.access_token,
-          aid: this.Form.aid,
-          sort: this.Form.sort,
-          companyName: this.Form.company_name,
-          apiAddress: this.Form.api_address,
-          apiAccount: this.Form.api_account,
-          isBackingCallback: this.Form.is_backing_callback,
-          appsecret: this.Form.appsecret,
-          activeQueryAddress: this.Form.active_query_address,
-          priority: this.Form.priority,
-          state: this.Form.state,
-          districtAid: this.Form.districtAid,
-          operatorAid: this.Form.operatorAid,
-          classAid: this.Form.classAid,
-        }
-        if (flag) {
-          form.aid = -1
-        }
-        const res = await channelApi.editChannel(form)
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.hiddenEditChannelModel()
-          this.getChannelList()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
       },
       //改变通道状态
       async changeChannelState(row) {
@@ -593,26 +659,34 @@
           this.getChannelList()
         }
       },
-      async discountModalConfirm() {
-        let ids = []
-        this.tempIds.forEach((v) => {
-          ids.push(v[1])
+      discountModalConfirm() {
+        this.$refs.setRuleForm.validate((valid) => {
+          if (valid) {
+            let ids = []
+            this.tempIds.forEach((v) => {
+              ids.push(v[1])
+            })
+            this.setForm.districtAid = ids
+            channelApi.setChannelDiscount(this.setForm).then((res) => {
+              if (res) {
+                this.$message({
+                  message: res.message,
+                  type: 'success',
+                })
+                this.hiddenDiscountModel()
+                this.getChannelList()
+              } else {
+                this.$message({
+                  message: '接口未返回数据',
+                  type: 'warning',
+                })
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
         })
-        this.setForm.districtAid = ids
-        const res = await channelApi.setChannelDiscount(this.setForm)
-        if (res) {
-          this.$message({
-            message: res.message,
-            type: 'success',
-          })
-          this.hiddenDiscountModel()
-          this.getChannelList()
-        } else {
-          this.$message({
-            message: '接口未返回数据',
-            type: 'warning',
-          })
-        }
       },
       handleSizeChange(val) {
         this.pageSize = val
@@ -671,6 +745,7 @@
         this.tempIds = tempIds
       },
       hiddenEditChannelModel() {
+        this.$refs.ruleForm.resetFields()
         this.editChannelModel = false
         this.tempIds = []
         this.selectItem()
@@ -681,6 +756,7 @@
         this.setForm = {}
       },
       hiddenDiscountModel() {
+        this.$refs.setRuleForm.resetFields()
         this.discountModel = false
         this.tempIds = []
         this.selectItem()

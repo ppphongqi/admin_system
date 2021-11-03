@@ -115,7 +115,7 @@
             <el-upload
               ref="uploadIcon"
               class="avatar-uploader"
-              action="http://localhost/api/pc/oss/upload"
+              action="https://gonghuo.wanmou.cn/api/pc/oss/upload"
               :limit="1"
               :show-file-list="false"
               :on-success="handleAvatarSuccessIcon"
@@ -164,7 +164,7 @@
           <div class="upload_wrapper">
             <el-upload
               ref="uploadFileZIP"
-              action="http://localhost/api/pc/oss/uploadZip"
+              action="https://gonghuo.wanmou.cn/api/pc/oss/uploadZip"
               accept=".zip"
               :auto-upload="false"
               :show-file-list="false"
@@ -209,16 +209,16 @@
         >
           <el-input v-model="Form.url"></el-input>
         </el-form-item>
-        <el-form-item label="添加富文本:" prop="html" required>
+        <el-form-item label="详情:" prop="html" required>
           <el-button
             v-if="content.length === 0"
             type="primary"
             @click="showDialogAddDetail"
           >
-            添加内容
+            添加详情
           </el-button>
           <el-button v-else type="primary" @click="showDialogEditDetail">
-            修改内容
+            修改详情
           </el-button>
         </el-form-item>
         <el-form-item label="任务佣金:" prop="missionReward" required>
@@ -292,7 +292,7 @@
     >
       <el-upload
         ref="uploadFileList"
-        action="http://localhost/api/pc/oss/upload"
+        action="https://gonghuo.wanmou.cn/api/pc/oss/upload"
         :file-list="fileList"
         :auto-upload="false"
         :before-upload="beforeAvatarUpload"
@@ -352,7 +352,7 @@
             <el-upload
               ref="uploadAddCode"
               class="addCode-uploader"
-              action="http://localhost/api/pc/oss/uploadZip"
+              action="https://gonghuo.wanmou.cn/api/pc/oss/uploadZip"
               :limit="1"
               :show-file-list="false"
               :auto-upload="false"
@@ -748,7 +748,7 @@
         formData.append('module', 'img')
         axios({
           method: 'post',
-          url: 'http://localhost/api/pc/oss/uploadList',
+          url: 'https://gonghuo.wanmou.cn/api/pc/oss/uploadList',
           headers: { 'Content-Type': 'multipart/form-data' },
           data: formData,
         }).then((res) => {
@@ -811,7 +811,7 @@
         this.fullscreenLoading = true
         axios({
           method: 'post',
-          url: 'http://localhost/api/pc/oss/uploadZip',
+          url: 'https://gonghuo.wanmou.cn/api/pc/oss/uploadZip',
           headers: { 'Content-Type': 'multipart/form-data' },
           timeout: 600000,
           data: formData,
@@ -819,13 +819,14 @@
           console.log(res, '123')
           if (res.data.data) {
             this.handleSuccessZip(res.data.data)
+            this.fullscreenLoading = false
           } else {
             this.$message({
               message: '上传失败',
               type: 'warning',
             })
+            this.fullscreenLoading = false
           }
-          this.fullscreenLoading = false
         })
       },
       changeUploadZip(file, fileList) {
@@ -878,7 +879,7 @@
         this.fullscreenLoading = true
         axios({
           method: 'post',
-          url: 'http://localhost/api/pc/oss/uploadZip',
+          url: 'https://gonghuo.wanmou.cn/api/pc/oss/uploadZip',
           headers: { 'Content-Type': 'multipart/form-data' },
           timeout: 600000,
           data: formData,

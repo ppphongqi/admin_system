@@ -78,11 +78,17 @@
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="120px" label-position="right">
-        <el-form-item label="权限名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="120px"
+        label-position="right"
+      >
+        <el-form-item label="权限名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="权限分类:" prop="permissionClassifyAid" required>
+        <el-form-item label="权限分类:" prop="permissionClassifyAid">
           <el-select v-model="Form.permissionClassifyAid" placeholder="请选择">
             <el-option
               v-for="item in preList"
@@ -92,7 +98,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="权限别名:" prop="anotherName" required>
+        <el-form-item label="权限别名:" prop="anotherName">
           <el-input v-model="Form.anotherName"></el-input>
         </el-form-item>
       </el-form>
@@ -125,6 +131,17 @@
           permissionClassifyAid: '',
           anotherName: '',
         },
+        rules: {
+          name: [
+            { required: true, message: '请填写权限名称', trigger: 'blur' },
+          ],
+          permissionClassifyAid: [
+            { required: true, message: '请选择权限分类', trigger: 'change' },
+          ],
+          anotherName: [
+            { required: true, message: '请填写权限别名', trigger: 'blur' },
+          ],
+        },
       }
     },
     mounted() {
@@ -132,7 +149,17 @@
       this.getPermissionClass()
     },
     methods: {
-      async modalConfirm() {
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async submit() {
         console.log(this.Form)
         const res = await powerApi.addPermission(this.Form)
         this.getTableData()
@@ -210,13 +237,14 @@
         this.Form = row
       },
       closeShowModal() {
-        this.showModal = false
         this.Form = {
           aid: -1,
           name: '',
           anotherName: '',
           permissionClassifyAid: '',
         }
+        this.showModal = false
+        this.$refs.Form.resetFields()
       },
     },
   }

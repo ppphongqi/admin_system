@@ -72,8 +72,14 @@
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="120px" label-position="right">
-        <el-form-item label="权限名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="120px"
+        label-position="right"
+      >
+        <el-form-item label="权限名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
       </el-form>
@@ -104,6 +110,11 @@
           aid: -1,
           name: '',
         },
+        rules: {
+          name: [
+            { required: true, message: '请填写分类名称', trigger: 'blur' },
+          ],
+        },
       }
     },
     computed: {
@@ -115,7 +126,17 @@
       this.getTableData()
     },
     methods: {
-      async modalConfirm() {
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async submit() {
         console.log(this.Form)
         const res = await powerApi.addPerType(this.Form)
         if (!res) {
@@ -173,6 +194,10 @@
       showDialog() {
         this.add = true
         this.showModal = true
+        this.Form = {
+          aid: -1,
+          name: '',
+        }
       },
       // 编辑
       compail(row) {
@@ -181,11 +206,8 @@
         this.Form = row
       },
       closeShowModal() {
+        this.$refs.Form.resetFields()
         this.showModal = false
-        this.Form = {
-          aid: -1,
-          name: '',
-        }
       },
     },
   }

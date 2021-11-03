@@ -82,12 +82,18 @@
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="轮播图设置:" prop="url" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="轮播图设置:" prop="url">
           <el-upload
             ref="rotationUpload"
             class="rotation-uploader"
-            action="http://localhost/api/pc/oss/upload"
+            :action="action"
             :limit="1"
             :show-file-list="false"
             :on-success="handleAvatarSuccessRotation"
@@ -98,13 +104,13 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
+        <el-form-item label="状态:" prop="state">
           <el-radio-group v-model="Form.state">
             <el-radio label="0" value="0">启用</el-radio>
             <el-radio label="1" value="1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="分类:" prop="classifyAid" required>
+        <el-form-item label="分类:" prop="classifyAid">
           <el-select v-model="Form.classifyAid" placeholder="请选择">
             <el-option
               v-for="item in rotationClass"
@@ -114,7 +120,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="跳转链接:" prop="link" required>
+        <el-form-item label="跳转链接:" prop="link">
           <el-input v-model="Form.link"></el-input>
         </el-form-item>
       </el-form>
@@ -139,6 +145,7 @@
         rotationClass: [],
         showModal: false,
         add: false,
+        action: 'http://localhost/api/pc/oss/upload',
         Form: {
           aid: -1,
           name: '',
@@ -148,6 +155,16 @@
           classifyAid: '',
           timeAdd: '',
           timeLastUpdate: '',
+        },
+        rules: {
+          url: [{ required: true, message: '请设置轮播图', trigger: 'change' }],
+          state: [{ required: true, message: '请选择状态', trigger: 'change' }],
+          classifyAid: [
+            { required: true, message: '请选择轮播分类', trigger: 'change' },
+          ],
+          link: [
+            { required: true, message: '请填写跳转地址', trigger: 'blur' },
+          ],
         },
       }
     },
@@ -193,8 +210,18 @@
         }
         return name.toString()
       },
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       // 添加/编辑轮播图
-      async modalConfirm() {
+      async submit() {
         this.Form.state = String(this.Form.state)
         const res = await rotationApi.updateRotation(this.Form)
         if (!res) {
@@ -267,6 +294,7 @@
           timeAdd: '',
           timeLastUpdate: '',
         }
+        this.$refs.Form.resetFields()
       },
     },
   }
