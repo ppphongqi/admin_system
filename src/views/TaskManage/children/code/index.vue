@@ -69,6 +69,7 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       :title="detail ? '二维码详情' : '添加二维码'"
       :visible.sync="showModal"
       width="30%"
@@ -108,7 +109,7 @@
             <el-upload
               ref="upload"
               class="avatar-uploader"
-              action="http://localhost/api/pc/oss/upload"
+              :action="action"
               :limit="3"
               :show-file-list="false"
               :on-success="handleAvatarSuccess"
@@ -182,6 +183,7 @@
         showModal: false,
         detail: false,
         disabled: false,
+        action: 'http://localhost/api/pc/oss/upload',
         Form: {
           aid: '',
           missionClassifyName: 2,

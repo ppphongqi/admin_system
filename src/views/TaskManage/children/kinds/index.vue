@@ -74,14 +74,21 @@
     </el-table>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加任务分类' : '编辑任务分类'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="分类名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="分类名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
         <el-form-item label="序号:" prop="number" align="center">
@@ -97,7 +104,7 @@
 
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeShowModal()">取 消</el-button>
-        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
+        <el-button type="primary" @click="submit(add)">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -122,6 +129,11 @@
           name: '',
           number: '',
           status: 0,
+        },
+        rules: {
+          name: [
+            { required: true, message: '请填写分类名称', trigger: 'blur' },
+          ],
         },
       }
     },
@@ -168,6 +180,16 @@
           console.log(res, 'res')
           this.getList()
         }
+      },
+      submit(flag) {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.modalConfirm(flag)
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       // 添加/编辑任务分类
       async modalConfirm(flag) {
@@ -269,6 +291,7 @@
           number: '',
           status: 0,
         }
+        this.$refs.Form.resetFields()
       },
       //导入
       handleUpload(param) {

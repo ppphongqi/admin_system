@@ -130,7 +130,7 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item label="任务分类:" required>
+        <el-form-item label="任务分类:" prop="missionClassifyName" required>
           <el-select v-model="Form.missionClassifyName" size="medium">
             <el-option
               v-for="(item, index) in kindsOption"
@@ -140,7 +140,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="任务类型:" required>
+        <el-form-item label="任务类型:" prop="missionTypeName" required>
           <el-select
             v-model="Form.missionTypeName"
             :disabled="!add"
@@ -179,26 +179,6 @@
                 上传文件
               </el-button>
             </el-upload>
-            <!-- <el-button type="primary" @click="showUpload">上传内容</el-button> -->
-            <!-- <el-upload
-              ref="uploadFileList"
-              class="avatar-uploader"
-              action="http://localhost/api/pc/oss/uploadList"
-              :show-file-list="false"
-              multiple
-              :auto-upload="false"
-              :on-change="changeUpload"
-              :on-success="handleAvatarSuccessOne"
-              :before-upload="beforeAvatarUpload"
-            >
-              <div v-for="url in imgUrlList" :key="url.index">
-                <img :src="url.imgUrl" class="avatar" />
-              </div>
-              <i class="el-icon-plus avatar-uploader-icon"></i>
-            </el-upload>
-            <div v-if="imgUrlList.length === 0" class="upload_tips">
-              （图片大小为 80 * 80px最佳, 支持png、jpg、jpeg)
-            </div> -->
           </div>
         </el-form-item>
         <el-form-item

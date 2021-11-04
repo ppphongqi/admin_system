@@ -65,6 +65,7 @@
     </el-table>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加轮播图分类' : '编辑轮播图分类'"
       :visible.sync="showModal"
       width="30%"

@@ -61,17 +61,24 @@
     </el-table>
     <!-- 添加/编辑-->
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加模板' : '编辑模板'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="账号:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="账号:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="模板ID:" prop="templateCode" required>
+        <el-form-item label="模板ID:" prop="templateCode">
           <el-input v-model="Form.templateCode"></el-input>
         </el-form-item>
       </el-form>
@@ -102,6 +109,12 @@
         moment,
         showModal: false,
         add: false,
+        rules: {
+          name: [{ required: true, message: '请填写账户', trigger: 'blur' }],
+          templateCode: [
+            { required: true, message: '请填写模板ID', trigger: 'blur' },
+          ],
+        },
       }
     },
     computed: {
@@ -137,8 +150,17 @@
         this.Form = item
       },
       //添加编辑
-      async modalConfirm() {
-        console.log(this.Form)
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async submit() {
         const res = await sysApi.updateSms(this.Form)
         if (res) {
           this.$message({
@@ -164,6 +186,7 @@
           timeAdd: '',
           timeLastUpdate: '',
         }
+        this.$refs.Form.resetFields()
       },
       //删除
       async deleteRow(row) {

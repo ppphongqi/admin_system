@@ -61,17 +61,24 @@
     </el-table>
     <!-- 添加/编辑-->
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加域名' : '编辑域名'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="域名:" prop="domainName" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="域名:" prop="domainName">
           <el-input v-model="Form.domainName"></el-input>
         </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
+        <el-form-item label="状态:" prop="state">
           <el-radio-group v-model="Form.state">
             <el-radio :label="0" value="0">开启</el-radio>
             <el-radio :label="1" value="1">关闭</el-radio>
@@ -101,6 +108,12 @@
         },
         showModal: false,
         add: false,
+        rules: {
+          domainName: [
+            { required: true, message: '请填写域名', trigger: 'blur' },
+          ],
+          state: [{ required: true, message: '请选择状态', trigger: 'change' }],
+        },
       }
     },
     mounted() {
@@ -133,7 +146,17 @@
         }
       },
       //添加编辑
-      async modalConfirm(flag) {
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async submit() {
         if (this.Form.state === 1) {
           this.Form.state = '1'
         } else {
@@ -162,6 +185,7 @@
           domainName: '',
           state: 1,
         }
+        this.$refs.Form.resetFields()
       },
       //删除
       async deleteRow(row) {

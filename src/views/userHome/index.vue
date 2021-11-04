@@ -7,7 +7,9 @@
       </div>
     </div>
     <el-form
+      ref="Form"
       :model="Form"
+      :rules="rules"
       label-width="120px"
       label-position="right"
       style="width: 70%; margin: 0 auto"
@@ -15,16 +17,16 @@
       <el-form-item label="账号:" prop="nickName">
         <el-input v-model="Form.nickName" disabled></el-input>
       </el-form-item>
-      <el-form-item label="姓名:" prop="userName" required>
+      <el-form-item label="姓名:" prop="userName">
         <el-input v-model="Form.userName"></el-input>
       </el-form-item>
-      <el-form-item label="原始密码:" prop="originalPwd" required>
+      <el-form-item label="原始密码:" prop="originalPwd">
         <el-input v-model="Form.originalPwd"></el-input>
       </el-form-item>
-      <el-form-item label="新密码:" prop="newPassword" required>
+      <el-form-item label="新密码:" prop="newPassword">
         <el-input v-model="Form.newPassword"></el-input>
       </el-form-item>
-      <el-form-item label="确认新密码:" prop="confirmPwd" required>
+      <el-form-item label="确认新密码:" prop="confirmPwd">
         <el-input v-model="Form.confirmPwd"></el-input>
       </el-form-item>
       <el-form-item>
@@ -50,11 +52,35 @@
           newPassword: '',
           confirmPwd: '',
         },
+        rules: {
+          userName: [
+            { required: true, message: '请填写姓名', trigger: 'blur' },
+          ],
+          originalPwd: [
+            { required: true, message: '请填写原始密码', trigger: 'blur' },
+          ],
+          newPassword: [
+            { required: true, message: '请填写新密码', trigger: 'blur' },
+          ],
+          confirmPwd: [
+            { required: true, message: '请再次填写新密码', trigger: 'blur' },
+          ],
+        },
       }
     },
     mounted() {},
     methods: {
-      async submit() {
+      submit() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submitUpdatePwd()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async submitUpdatePwd() {
         const res = await sysApi.updatePwd(this.Form)
         if (res) {
           this.$message({
