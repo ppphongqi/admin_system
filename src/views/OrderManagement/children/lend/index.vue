@@ -92,6 +92,7 @@
       ></el-pagination>
     </div>
     <el-dialog
+      v-if="auditModal"
       title="审核"
       :visible.sync="auditModal"
       width="30%"

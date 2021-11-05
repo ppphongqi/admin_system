@@ -440,6 +440,7 @@
       </div> -->
     </div>
     <el-dialog
+      v-if="sendFormModal"
       title="订单发货"
       :visible.sync="sendFormModal"
       width="30%"
@@ -661,7 +662,6 @@
       },
       //关闭发货编辑框
       closeSendFormModal() {
-        this.$refs.sendForm.resetFields()
         this.sendFormModal = false
         this.sendForm = {
           aid: -1,
@@ -669,6 +669,7 @@
           personalDeliveryClassAid: 1,
           courierCompany: '',
         }
+        this.$refs.sendForm.resetFields()
       },
       //借记单审核
       audit(item) {

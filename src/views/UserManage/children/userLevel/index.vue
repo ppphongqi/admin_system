@@ -63,26 +63,33 @@
     </el-table>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加等级' : '编辑等级'"
       :visible.sync="showModal"
       width="30%"
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="120px" label-position="right">
-        <el-form-item label="等级名称:" prop="levelName" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="120px"
+        label-position="right"
+      >
+        <el-form-item label="等级名称:" prop="levelName">
           <el-input v-model="Form.levelName"></el-input>
         </el-form-item>
-        <el-form-item label="等级:" prop="level" required>
+        <el-form-item label="等级:" prop="level">
           <el-input v-model="Form.level"></el-input>
         </el-form-item>
-        <el-form-item label="折扣:" prop="discount" required>
+        <el-form-item label="折扣:" prop="discount">
           <el-input v-model="Form.discount"></el-input>
         </el-form-item>
-        <el-form-item label="解锁经验:" prop="experience" required>
+        <el-form-item label="解锁经验:" prop="experience">
           <el-input v-model="Form.experience"></el-input>
         </el-form-item>
-        <el-form-item label="图标:" prop="levelIcon" required>
+        <el-form-item label="图标:" prop="levelIcon">
           <el-upload
             class="avatar-uploader-level"
             action="https://jsonplaceholder.typicode.com/posts/"
@@ -94,7 +101,7 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="背景:" prop="bgimg" required>
+        <el-form-item label="背景:" prop="bgimg">
           <el-upload
             class="avatar-uploader-level"
             action="https://jsonplaceholder.typicode.com/posts/"
@@ -106,13 +113,13 @@
             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
           </el-upload>
         </el-form-item>
-        <el-form-item label="是否显示:" prop="isUsed" required>
+        <el-form-item label="是否显示:" prop="isUsed">
           <el-radio-group v-model="Form.isUsed">
             <el-radio :label="0" value="0">开启</el-radio>
             <el-radio :label="1" value="1">关闭</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="等级说明:" prop="levelInfo">
+        <el-form-item label="等级权限:" prop="levelInfo">
           <el-select v-model="Form.levelInfo" placeholder="请选择">
             <el-option
               v-for="item in roleList"
@@ -166,6 +173,27 @@
           isUsed: 0,
           levelInfo: '',
         },
+        rules: {
+          levelName: [
+            { required: true, message: '请填写等级名称', trigger: 'blur' },
+          ],
+          level: [{ required: true, message: '请填写等级', trigger: 'blur' }],
+          discount: [
+            { required: true, message: '请填写等级折扣', trigger: 'blur' },
+          ],
+          experience: [
+            { required: true, message: '请再次填写解锁经验', trigger: 'blur' },
+          ],
+          levelIcon: [
+            { required: true, message: '请上传等级图标', trigger: 'change' },
+          ],
+          bgimg: [
+            { required: true, message: '请上传背景图', trigger: 'change' },
+          ],
+          isUsed: [
+            { required: true, message: '请选择是否显示', trigger: 'change' },
+          ],
+        },
       }
     },
     mounted() {
@@ -173,8 +201,18 @@
       this.getRole()
     },
     methods: {
+      modalConfirm(flag) {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit(flag)
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       //添加/修改等级
-      async modalConfirm(flag) {
+      async submit(flag) {
         // const res = await roleApi.updateAdmin(this.Form)
         if (!res) {
           this.$message({
@@ -263,6 +301,7 @@
       closeShowModal() {
         this.showModal = false
         this.Form = {}
+        this.$refs.Form.resetFields()
       },
     },
   }

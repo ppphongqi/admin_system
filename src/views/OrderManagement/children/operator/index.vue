@@ -179,6 +179,7 @@
       ></el-pagination>
     </div>
     <el-dialog
+      v-if="auditModal"
       title="审核"
       :visible.sync="auditModal"
       width="30%"
@@ -367,12 +368,12 @@
       },
       //关闭借记单审核框
       closeAuditModal() {
-        this.$refs.auditForm.resetFields()
         this.auditModal = false
         this.auditForm = {
           code: '',
           stateAid: '0',
         }
+        this.$refs.auditForm.resetFields()
       },
       deleteRow(item) {
         console.log(item)

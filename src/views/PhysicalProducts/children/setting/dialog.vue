@@ -1,5 +1,6 @@
 <template>
   <el-dialog
+    v-if="showModal"
     title="添加/编辑商品规格"
     :visible.sync="showModal"
     top

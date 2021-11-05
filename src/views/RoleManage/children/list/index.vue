@@ -70,6 +70,7 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加角色' : '编辑角色'"
       :visible.sync="showModal"
       width="30%"

@@ -274,6 +274,7 @@
     </div>
     <!-- 添加/编辑-->
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加运营商任务' : '编辑运营商任务'"
       :visible.sync="showModal"
       width="30%"
@@ -358,7 +359,16 @@
           <el-input v-model="Form.price"></el-input>
         </el-form-item>
         <el-form-item label="详情:" prop="details">
-          <el-input v-model="Form.details"></el-input>
+          <el-button
+            v-if="content.length === 0"
+            type="primary"
+            @click="showDialogAddDetail"
+          >
+            添加详情
+          </el-button>
+          <el-button v-else type="primary" @click="showDialogEditDetail">
+            修改详情
+          </el-button>
         </el-form-item>
         <el-form-item label="开始时间:" prop="effectiveStartTime">
           <el-date-picker
@@ -398,22 +408,50 @@
         <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 详情查看编辑 -->
+    <el-dialog
+      title="编辑任务详情"
+      :visible.sync="showModalEditDetail"
+      style="margin-top: 20px"
+      :before-close="closeDialog"
+      top
+    >
+      <vab-quill v-model="content" :min-height="400"></vab-quill>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showModalEditDetail = false">取 消</el-button>
+        <el-button type="primary" @click="editorDetailConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
   import { operatorApi, virtualProductApi } from '@/api/index'
+  import { baseURL } from '@/config'
+  import vabQuill from '@/plugins/vabQuill'
   import moment from 'moment'
   import './index.scss'
   export default {
     name: 'DomainName',
+    components: { vabQuill },
     data() {
+      // var validetails = (rule, value, callback) => {
+      //   let detailsValue = this.$refs
+      //   console.log(detailsValue, '123')
+      //   if (!detailsValue) {
+      //     return callback(new Error('请填写详情内容'))
+      //   } else {
+      //     callback()
+      //   }
+      // }
       return {
         moment,
-        action: 'http://localhost/api/pc/oss/upload',
+        action: '',
         tableData: [],
         operatorList: [],
         operatorClass: [],
+        showModalEditDetail: false,
+        content: '',
         Form: {
           aid: -1,
           name: '',
@@ -469,9 +507,9 @@
           price: [
             { required: true, message: '请填写任务佣金', trigger: 'blur' },
           ],
-          details: [
-            { required: true, message: '请填写任务详情', trigger: 'blur' },
-          ],
+          // details: [
+          //   { required: true, validator: validetails, trigger: 'blur' },
+          // ],
           effectiveStartTime: [
             { required: true, message: '请选择开始时间', trigger: 'change' },
           ],
@@ -493,12 +531,30 @@
         return moment(date).format('YYYY-MM-DD HH:mm:ss')
       },
     },
+    created() {
+      this.action = baseURL + '/pc/oss/upload'
+    },
     mounted() {
       this.getList()
       this.getOperatorList()
       this.getOperatorClass()
     },
     methods: {
+      showDialogAddDetail() {
+        this.showModalEditDetail = true
+      },
+      showDialogEditDetail(item) {
+        this.showModalEditDetail = true
+      },
+      editorDetailConfirm() {
+        this.showModalEditDetail = false
+        if (this.content === '<p><br></p>') {
+          this.content = ''
+        }
+      },
+      closeDialog() {
+        this.showModalEditDetail = false
+      },
       // 获取列表
       async getList() {
         if (
@@ -581,6 +637,9 @@
       },
       //添加弹出
       showDialog() {
+        if (this.content === '<p><br></p>') {
+          this.content = ''
+        }
         this.showModal = true
         this.add = true
       },
@@ -609,10 +668,12 @@
           isDisplay: row.is_display,
           sort: row.sort,
         }
+        if (this.Form.details) {
+          this.content = this.Form.details
+        }
       },
       //关闭弹出
       closeShowModal() {
-        this.$refs.Form.resetFields()
         this.showModal = false
         this.Form = {
           aid: -1,
@@ -631,12 +692,15 @@
           isDisplay: '',
           sort: '',
         }
+        this.content = ''
+        this.$refs.Form.resetFields()
       },
       //添加编辑
       modalConfirm() {
         this.$refs.Form.validate((valid) => {
           if (valid) {
             this.Form.isDisplay = String(this.Form.isDisplay)
+            this.Form.details = this.content
             operatorApi.updateOperatorList(this.Form).then((res) => {
               if (res) {
                 this.$message({

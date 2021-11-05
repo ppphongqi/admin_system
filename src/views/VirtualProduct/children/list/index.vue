@@ -37,7 +37,7 @@
         width="180"
       ></el-table-column>
       <el-table-column
-        prop="source_aid"
+        prop="sourceAid"
         label="来源"
         align="center"
         width="150"
@@ -73,19 +73,19 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="activity_start_time"
+        prop="activityStartTime"
         label="活动开始时间"
         align="center"
         width="200"
       ></el-table-column>
       <el-table-column
-        prop="activity_end_time"
+        prop="activityEndTime"
         label="活动结束时间"
         align="center"
         width="200"
       ></el-table-column>
       <el-table-column
-        prop="off_shelf_time"
+        prop="offShelfTime"
         label="下架时间"
         align="center"
         width="200"
@@ -120,35 +120,42 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加产品' : '编辑产品'"
       :visible.sync="showModal"
       width="40%"
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="优先级:" prop="priority" required>
+        <el-form-item label="优先级:" prop="priority">
           <el-input v-model="Form.priority"></el-input>
         </el-form-item>
-        <el-form-item label="排序:" prop="sort" required>
+        <el-form-item label="排序:" prop="sort">
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
-        <el-form-item label="来源:" prop="source_aid" required>
+        <el-form-item label="来源:" prop="sourceAid">
           <el-input v-model="Form.sourceAid"></el-input>
         </el-form-item>
-        <el-form-item label="库存:" prop="stock" required>
+        <el-form-item label="库存:" prop="stock">
           <el-input v-model="Form.stock"></el-input>
         </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
+        <el-form-item label="状态:" prop="state">
           <el-radio-group v-model="Form.state">
             <el-radio :label="0" value="0">开启</el-radio>
             <el-radio :label="1" value="1">关闭</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="开始时间:" prop="activity_start_time">
+        <el-form-item label="开始时间:" prop="activityStartTime">
           <el-date-picker
             v-model="Form.activityStartTime"
             type="datetime"
@@ -158,7 +165,7 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="结束时间:" prop="activity_end_time">
+        <el-form-item label="结束时间:" prop="activityEndTime">
           <el-date-picker
             v-model="Form.activityEndTime"
             type="datetime"
@@ -168,7 +175,7 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="下架时间:" prop="off_shelf_time" required>
+        <el-form-item label="下架时间:" prop="offShelfTime">
           <el-date-picker
             v-model="Form.offShelfTime"
             type="datetime"
@@ -178,7 +185,7 @@
             value-format="yyyy-MM-dd HH:mm:ss"
           ></el-date-picker>
         </el-form-item>
-        <el-form-item label="套餐:" prop="packageAid" required>
+        <el-form-item label="套餐:" prop="packageAid">
           <el-select v-model="Form.packageAid" placeholder="请选择">
             <el-option
               v-for="item in packages"
@@ -188,7 +195,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="支持的通道:" prop="channelList" required>
+        <el-form-item label="支持的通道:" prop="channelList">
           <el-select v-model="Form.channelList" multiple placeholder="请选择">
             <el-option
               v-for="item in channel"
@@ -198,7 +205,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="运营商:" prop="operatorList" required>
+        <el-form-item label="运营商:" prop="operatorList">
           <el-select v-model="Form.operatorList" multiple placeholder="请选择">
             <el-option
               v-for="item in operator"
@@ -257,7 +264,36 @@
           channelList: [],
           operatorList: [],
         },
-        setForm: {},
+        rules: {
+          name: [{ required: true, message: '请填写名称', trigger: 'blur' }],
+          priority: [
+            { required: true, message: '请填写优先级', trigger: 'blur' },
+          ],
+          sort: [{ required: true, message: '请填写排序值', trigger: 'blur' }],
+          sourceAid: [
+            { required: true, message: '请填写来源', trigger: 'blur' },
+          ],
+          stock: [{ required: true, message: '请填写库存', trigger: 'blur' }],
+          state: [{ required: true, message: '请选择状态', trigger: 'change' }],
+          activityStartTime: [
+            { required: true, message: '请选择开始时间', trigger: 'change' },
+          ],
+          activityEndTime: [
+            { required: true, message: '请选择结束时间', trigger: 'change' },
+          ],
+          offShelfTime: [
+            { required: true, message: '请选择下架时间', trigger: 'change' },
+          ],
+          packageAid: [
+            { required: true, message: '请选择套餐', trigger: 'change' },
+          ],
+          channelList: [
+            { required: true, message: '请选择支持通道', trigger: 'blur' },
+          ],
+          operatorList: [
+            { required: true, message: '请选择运营商', trigger: 'blur' },
+          ],
+        },
       }
     },
     mounted() {
@@ -321,6 +357,7 @@
           channelList: [],
           operatorList: [],
         }
+        this.$refs.Form.resetFields()
       },
       showDialog2() {
         this.showModal2 = true
@@ -459,9 +496,18 @@
           this.getData({ page: 1, pageRow: 10 })
         }
       },
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       //添加/修改虚拟产品
-      async modalConfirm() {
-        console.log(this.Form, 'form')
+      async submit() {
         if (this.Form.state === 0) {
           this.Form.state = '0'
         }

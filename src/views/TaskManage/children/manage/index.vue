@@ -96,6 +96,7 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       ref="dialog"
       :title="add ? '添加任务' : '编辑任务'"
       :visible.sync="showModal"
@@ -103,19 +104,25 @@
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="任务名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="任务名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="排序:" prop="sort" required>
+        <el-form-item label="排序:" prop="sort">
           <el-input v-model="Form.sort"></el-input>
         </el-form-item>
-        <el-form-item label="任务图标:" prop="missionIcon" required>
+        <el-form-item label="任务图标:" prop="missionIcon">
           <div class="upload_wrapper">
             <el-upload
               ref="uploadIcon"
               class="avatar-uploader"
-              action="https://gonghuo.wanmou.cn/api/pc/oss/upload"
+              :action="action"
               :limit="1"
               :show-file-list="false"
               :on-success="handleAvatarSuccessIcon"
@@ -130,7 +137,7 @@
             </div>
           </div>
         </el-form-item>
-        <el-form-item label="任务分类:" prop="missionClassifyName" required>
+        <el-form-item label="任务分类:" prop="missionClassifyName">
           <el-select v-model="Form.missionClassifyName" size="medium">
             <el-option
               v-for="(item, index) in kindsOption"
@@ -140,7 +147,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="任务类型:" prop="missionTypeName" required>
+        <el-form-item label="任务类型:" prop="missionTypeName">
           <el-select
             v-model="Form.missionTypeName"
             :disabled="!add"
@@ -159,15 +166,16 @@
           v-if="add && Form.missionTypeName == '1'"
           label="二维码图片:"
           prop="missionCode"
-          required
         >
           <div class="upload_wrapper">
             <el-upload
               ref="uploadFileZIP"
-              action="https://gonghuo.wanmou.cn/api/pc/oss/uploadZip"
+              action="#"
               accept=".zip"
               :auto-upload="false"
-              :show-file-list="false"
+              :show-file-list="true"
+              :file-list="zipList"
+              :disabled="zipList.length === 0 ? false : true"
               :on-change="changeUploadZip"
               :before-upload="beforeUploadZip"
               :limit="1"
@@ -185,11 +193,10 @@
           v-if="add && Form.missionTypeName == '2'"
           label="二维码地址:"
           prop="url"
-          required
         >
           <el-input v-model="Form.url"></el-input>
         </el-form-item>
-        <el-form-item label="详情:" prop="html" required>
+        <el-form-item label="详情:" prop="html">
           <el-button
             v-if="content.length === 0"
             type="primary"
@@ -201,13 +208,13 @@
             修改详情
           </el-button>
         </el-form-item>
-        <el-form-item label="任务佣金:" prop="missionReward" required>
+        <el-form-item label="任务佣金:" prop="missionReward">
           <el-input v-model="Form.missionReward"></el-input>
         </el-form-item>
-        <el-form-item label="可领取次数:" prop="getNumber" required>
+        <el-form-item label="可领取次数:" prop="getNumber">
           <el-input v-model="Form.getNumber"></el-input>
         </el-form-item>
-        <el-form-item label="任务时间:" required>
+        <el-form-item label="任务时间:" prop="date1">
           <el-col :span="11">
             <el-date-picker
               v-model="Form.date1"
@@ -221,6 +228,7 @@
           <el-col class="line" :span="2">-</el-col>
           <el-col :span="11">
             <el-date-picker
+              ref="date2"
               v-model="Form.date2"
               type="date"
               placeholder="选择日期"
@@ -230,7 +238,7 @@
             ></el-date-picker>
           </el-col>
         </el-form-item>
-        <el-form-item label="任务描述:" prop="missionDescribe" required>
+        <el-form-item label="任务描述:" prop="missionDescribe">
           <el-input v-model="Form.missionDescribe" type="textarea"></el-input>
         </el-form-item>
         <el-form-item label="状态:" prop="missionState">
@@ -272,7 +280,7 @@
     >
       <el-upload
         ref="uploadFileList"
-        action="https://gonghuo.wanmou.cn/api/pc/oss/upload"
+        action="#"
         :file-list="fileList"
         :auto-upload="false"
         :before-upload="beforeAvatarUpload"
@@ -326,16 +334,17 @@
           v-if="addCodeForm.missionTypeAid == '1'"
           label="二维码图片:"
           prop="imgUrl"
-          required
         >
           <div class="upload_wrapper">
             <el-upload
               ref="uploadAddCode"
               class="addCode-uploader"
-              action="https://gonghuo.wanmou.cn/api/pc/oss/uploadZip"
+              action="#"
               :limit="1"
-              :show-file-list="false"
+              :show-file-list="true"
               :auto-upload="false"
+              :file-list="zipList"
+              :disabled="zipList.length === 0 ? false : true"
               :on-change="changeUploadAddCode"
               :before-upload="beforeAvatarUpload"
               accept=".zip"
@@ -348,17 +357,11 @@
               </el-button>
             </el-upload>
           </div>
-          <div class="avatarList">
-            <div v-for="url in imgUrlAddCodeList" :key="url.index">
-              <img :src="url.imgUrl" class="avatar" />
-            </div>
-          </div>
         </el-form-item>
         <el-form-item
           v-if="addCodeForm.missionTypeAid == '2'"
           label="二维码地址:"
           prop="url"
-          required
         >
           <el-input v-model="addCodeForm.url"></el-input>
         </el-form-item>
@@ -376,13 +379,29 @@
   import './index.scss'
   import { taskApi } from '@/api/index'
   import vabQuill from '@/plugins/vabQuill'
+  import { baseURL } from '@/config'
   import axios from 'axios'
   import moment from 'moment'
   export default {
     name: 'TaskManage',
     components: { vabQuill },
     data() {
+      var validate2 = (rule, value, callback) => {
+        let date2 = this.$refs.date2.value
+        if (value && date2) {
+          callback()
+        } else {
+          if (!value) {
+            callback(new Error('请填写开始时间'))
+          }
+          if (!date2) {
+            callback(new Error('请填写结束时间'))
+          }
+        }
+      }
       return {
+        action: '',
+        actionZip: '',
         dialogImageUrl: '',
         dialogVisible: false,
         disabled: false,
@@ -429,7 +448,51 @@
         },
         imgUrlAddCodeList: [],
         moment,
+        zipList: [],
+        rules: {
+          name: [
+            { required: true, message: '请填写任务名称', trigger: 'blur' },
+          ],
+          sort: [{ required: true, message: '请填写排序值', trigger: 'blur' }],
+          missionIcon: [
+            { required: true, message: '请上传任务图标', trigger: 'change' },
+          ],
+          missionClassifyName: [
+            { required: true, message: '请选择任务分类', trigger: 'change' },
+          ],
+          missionTypeName: [
+            { required: true, message: '请填写任务类型', trigger: 'change' },
+          ],
+          // missionCode: [
+          //   { required: true, message: '请上传任务二维码', trigger: 'change' },
+          // ],
+          url: [{ required: true, message: '请填二维码地址', trigger: 'blur' }],
+          // html: [
+          //   { required: true, message: '请填写任务详情', trigger: 'change' },
+          // ],
+          missionReward: [
+            { required: true, message: '请填写任务佣金', trigger: 'blur' },
+          ],
+          getNumber: [
+            {
+              required: true,
+              message: '请填写任务可领取次数',
+              trigger: 'blur',
+            },
+          ],
+          date1: [{ required: true, validator: validate2, trigger: 'blur' }],
+          missionDescribe: [
+            { required: true, message: '请填写任务描述', trigger: 'blur' },
+          ],
+          missionState: [
+            { required: true, message: '请选择任务状态', trigger: 'change' },
+          ],
+        },
       }
+    },
+    created() {
+      this.action = baseURL + '/pc/oss/upload'
+      this.actionZip = '/pc/oss/uploadZip'
     },
     mounted() {
       this.getList()
@@ -498,18 +561,28 @@
           this.getList()
         }
       },
+      modalConfirm(flag) {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submitModalConfirm(flag)
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       //添加/修改任务
-      async modalConfirm(flag) {
-        let isBefore = moment(this.Form.date1).isBefore(
-          moment().format('YYYY-MM-DD')
-        )
-        if (!isBefore) {
-          this.$message({
-            message: '开始日期只能为今日之前',
-            type: 'warning',
-          })
-          return
-        }
+      async submitModalConfirm(flag) {
+        // let isBefore = moment(this.Form.date1).isBefore(
+        //   moment().format('YYYY-MM-DD')
+        // )
+        // if (!isBefore) {
+        //   this.$message({
+        //     message: '开始日期只能为今日之前',
+        //     type: 'warning',
+        //   })
+        //   return
+        // }
         // flag确定是新增还是修改
         if (flag) {
           let form = {
@@ -619,6 +692,9 @@
         this.add = true
         this.showModal = true
         this.Form.missionState = 0
+        if (this.content === '<p><br></p>') {
+          this.content = ''
+        }
       },
       open() {
         this.$refs.uploadFileList.$children[0].$refs.input.webkitdirectory = true
@@ -678,6 +754,8 @@
         this.iconUrl = ''
         this.imgUrlList = []
         this.content = ''
+        this.zipList = []
+        this.$refs.Form.resetFields()
       },
       showDialogAddDetail() {
         this.showModalEditDetail = true
@@ -716,7 +794,6 @@
         this.maxFileLen = Math.max(currLength, this.maxFileLen)
         setTimeout(() => {
           if (currLength != this.maxFileLen) return
-          console.log('start')
           this.uploadFileList(fileList)
         }, 0)
       },
@@ -728,7 +805,7 @@
         formData.append('module', 'img')
         axios({
           method: 'post',
-          url: 'https://gonghuo.wanmou.cn/api/pc/oss/uploadList',
+          url: '/pc/oss/uploadList',
           headers: { 'Content-Type': 'multipart/form-data' },
           data: formData,
         }).then((res) => {
@@ -791,14 +868,13 @@
         this.fullscreenLoading = true
         axios({
           method: 'post',
-          url: 'https://gonghuo.wanmou.cn/api/pc/oss/uploadZip',
+          url: this.actionZip,
           headers: { 'Content-Type': 'multipart/form-data' },
           timeout: 600000,
           data: formData,
         }).then((res) => {
-          console.log(res, '123')
           if (res.data.data) {
-            this.handleSuccessZip(res.data.data)
+            this.handleSuccessZip(res.data.data, fileList)
             this.fullscreenLoading = false
           } else {
             this.$message({
@@ -810,20 +886,19 @@
         })
       },
       changeUploadZip(file, fileList) {
-        console.log(file, fileList, '1')
         let currLength = fileList.length
         this.maxFileLen = Math.max(currLength, this.maxFileLen)
         setTimeout(() => {
           if (currLength != this.maxFileLen) return
-          console.log('start')
           this.uploadFileZip(fileList)
         }, 0)
       },
-      handleSuccessZip(data) {
+      handleSuccessZip(data, fileList) {
         let resList = Object.values(data)
         resList.forEach((v) => {
           this.imgUrlList.push({ imgUrl: v })
         })
+        this.zipList = fileList
         this.$refs.uploadFileZIP.clearFiles()
         this.$notify({
           title: '上传成功',
@@ -859,14 +934,14 @@
         this.fullscreenLoading = true
         axios({
           method: 'post',
-          url: 'https://gonghuo.wanmou.cn/api/pc/oss/uploadZip',
+          url: this.actionZip,
           headers: { 'Content-Type': 'multipart/form-data' },
           timeout: 600000,
           data: formData,
         }).then((res) => {
-          console.log(res, '123')
           if (res.data.data) {
-            this.handleAddCodeSuccess(res.data.data)
+            this.handleAddCodeSuccess(res.data.data, fileList)
+            this.fullscreenLoading = false
           } else {
             this.$message({
               message: '上传失败',
@@ -881,16 +956,15 @@
         this.maxFileLen = Math.max(currLength, this.maxFileLen)
         setTimeout(() => {
           if (currLength != this.maxFileLen) return
-          console.log('start')
           this.uploadFileAddCode(fileList)
         }, 0)
       },
-      handleAddCodeSuccess(response, file, fileList) {
+      handleAddCodeSuccess(data, fileList) {
         let resList = Object.values(data)
         resList.forEach((v) => {
           this.imgUrlAddCodeList.push({ imgUrl: v })
         })
-        console.log(this.imgUrlAddCodeList)
+        this.zipList = fileList
         this.$refs.uploadAddCode.clearFiles()
         this.$notify({
           title: '上传成功',
@@ -929,6 +1003,7 @@
           missionTypeAid: 1,
         }
         this.imgUrlAddCodeList = []
+        this.zipList = []
       },
     },
   }

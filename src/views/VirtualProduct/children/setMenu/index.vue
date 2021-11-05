@@ -31,34 +31,34 @@
         width="150"
       ></el-table-column>
       <el-table-column
-        prop="numerical_value"
+        prop="numericalValue"
         label="套餐值"
         align="center"
         width="180"
       ></el-table-column>
-      <el-table-column prop="class_aid" label="父类" align="center" width="150">
+      <el-table-column prop="classAid" label="父类" align="center" width="150">
         <template slot-scope="scope">
-          <span>{{ getClassName(scope.row.class_aid) }}</span>
+          <span>{{ getClassName(scope.row.classAid) }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="class_child_aid"
+        prop="classChildAid"
         label="子类"
         align="center"
         width="150"
       >
         <template slot-scope="scope">
-          <span>{{ getChildClassName(scope.row.class_child_aid) }}</span>
+          <span>{{ getChildClassName(scope.row.classChildAid) }}</span>
         </template>
       </el-table-column>
       <el-table-column
-        prop="operator_aid"
+        prop="operatorAid"
         label="运营商"
         align="center"
         width="150"
       >
         <template slot-scope="scope">
-          <span>{{ getOperatorName(scope.row.operator_aid) }}</span>
+          <span>{{ getOperatorName(scope.row.operatorAid) }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="state" label="状态" align="center" width="150">
@@ -74,19 +74,19 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="base_price"
+        prop="basePrice"
         label="基础价格"
         align="center"
         width="200"
       ></el-table-column>
       <el-table-column
-        prop="discount_price"
+        prop="discountPrice"
         label="折扣价格"
         align="center"
         width="200"
       ></el-table-column>
       <el-table-column
-        prop="time_add"
+        prop="timeAdd"
         label="新增时间"
         align="center"
         width="200"
@@ -98,7 +98,7 @@
         </template>
       </el-table-column>
       <el-table-column
-        prop="time_last_update"
+        prop="timeLastUpdate"
         label="更新时间"
         align="center"
         width="200"
@@ -149,32 +149,39 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加套餐' : '编辑套餐'"
       :visible.sync="showModal"
       width="40%"
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="套餐名称:" prop="name" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="套餐名称:" prop="name">
           <el-input v-model="Form.name"></el-input>
         </el-form-item>
-        <el-form-item label="套餐值:" prop="numericalValue" required>
+        <el-form-item label="套餐值:" prop="numericalValue">
           <el-input v-model="Form.numericalValue"></el-input>
         </el-form-item>
-        <el-form-item label="基础价:" prop="basePrice" required>
+        <el-form-item label="基础价:" prop="basePrice">
           <el-input v-model="Form.basePrice"></el-input>
         </el-form-item>
-        <el-form-item label="折扣价:" prop="discountPrice" required>
+        <el-form-item label="折扣价:" prop="discountPrice">
           <el-input v-model="Form.discountPrice"></el-input>
         </el-form-item>
-        <el-form-item label="状态:" prop="state" required>
+        <el-form-item label="状态:" prop="state">
           <el-radio-group v-model="Form.state">
             <el-radio :label="0" value="0">开启</el-radio>
             <el-radio :label="1" value="1">关闭</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="父类:" prop="classAid" required>
+        <el-form-item label="父类:" prop="classAid">
           <el-select v-model="Form.classAid" placeholder="请选择">
             <el-option
               v-for="item in virtualClass"
@@ -184,7 +191,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="子类:" prop="classChildAid" required>
+        <el-form-item label="子类:" prop="classChildAid">
           <el-select v-model="Form.classChildAid" placeholder="请选择">
             <el-option
               v-for="item in virtualchildClass"
@@ -194,7 +201,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="运营商:" prop="operatorAid" required>
+        <el-form-item label="运营商:" prop="operatorAid">
           <el-select v-model="Form.operatorAid" placeholder="请选择">
             <el-option
               v-for="item in operator"
@@ -291,6 +298,30 @@
           expiration: 1,
         },
         setForm: {},
+        rules: {
+          name: [
+            { required: true, message: '请填写套餐名称', trigger: 'blur' },
+          ],
+          numericalValue: [
+            { required: true, message: '请填写套餐值', trigger: 'blur' },
+          ],
+          basePrice: [
+            { required: true, message: '请填写基础价', trigger: 'blur' },
+          ],
+          discountPrice: [
+            { required: true, message: '请填写折扣价', trigger: 'blur' },
+          ],
+          state: [{ required: true, message: '请选择状态', trigger: 'change' }],
+          classAid: [
+            { required: true, message: '请选择套餐父类', trigger: 'change' },
+          ],
+          classChildAid: [
+            { required: true, message: '请选择套餐子类', trigger: 'change' },
+          ],
+          operatorAid: [
+            { required: true, message: '请选择运营商', trigger: 'change' },
+          ],
+        },
       }
     },
     computed: {
@@ -349,6 +380,7 @@
           classChildAid: 1,
           expiration: 1,
         }
+        this.$refs.Form.resetFields()
       },
       showDialog2() {
         this.showModal2 = true
@@ -466,8 +498,18 @@
           this.getPackages()
         }
       },
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       //添加/修改虚拟产品
-      async modalConfirm() {
+      async submit() {
         console.log(this.Form, 'form')
         if (this.Form.state === 0) {
           this.Form.state = '0'

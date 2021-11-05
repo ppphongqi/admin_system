@@ -79,29 +79,36 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加管理员' : '编辑管理员'"
       :visible.sync="showModal"
       width="30%"
       top="15vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="120px" label-position="right">
-        <el-form-item label="管理员账号:" prop="userName" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="120px"
+        label-position="right"
+      >
+        <el-form-item label="管理员账号:" prop="userName">
           <el-input v-model="Form.userName"></el-input>
         </el-form-item>
-        <el-form-item label="手机号:" prop="reloginKey" required>
+        <el-form-item label="手机号:" prop="phone">
           <el-input v-model="Form.phone"></el-input>
         </el-form-item>
-        <el-form-item label="管理员密码:" prop="loginKey" required>
+        <el-form-item label="管理员密码:" prop="loginKey">
           <el-input v-model="Form.loginKey"></el-input>
         </el-form-item>
-        <el-form-item label="确认密码:" prop="reloginKey" required>
+        <el-form-item label="确认密码:" prop="reloginKey">
           <el-input v-model="Form.reloginKey"></el-input>
         </el-form-item>
-        <el-form-item label="管理员姓名:" prop="nickName" required>
+        <el-form-item label="管理员姓名:" prop="nickName">
           <el-input v-model="Form.nickName"></el-input>
         </el-form-item>
-        <el-form-item label="状态:" prop="isUsed" required>
+        <el-form-item label="状态:" prop="isUsed">
           <el-radio-group v-model="Form.isUsed">
             <el-radio label="0" value="0">开启</el-radio>
             <el-radio label="1" value="1">关闭</el-radio>
@@ -120,7 +127,7 @@
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeShowModal">取 消</el-button>
-        <el-button type="primary" @click="modalConfirm(add)">确 定</el-button>
+        <el-button type="primary" @click="modalConfirm()">确 定</el-button>
       </span>
     </el-dialog>
   </div>
@@ -151,6 +158,28 @@
           roleAid: '',
           isUsed: '0',
         },
+        rules: {
+          userName: [
+            { required: true, message: '请填写管理员账号', trigger: 'blur' },
+          ],
+          phone: [{ required: true, message: '请填写手机号', trigger: 'blur' }],
+          loginKey: [
+            { required: true, message: '请填写管理员密码', trigger: 'blur' },
+          ],
+          reloginKey: [
+            {
+              required: true,
+              message: '请再次填写管理员密码',
+              trigger: 'blur',
+            },
+          ],
+          nickName: [
+            { required: true, message: '请填写管理员姓名', trigger: 'blur' },
+          ],
+          isUsed: [
+            { required: true, message: '请选择账户状态', trigger: 'change' },
+          ],
+        },
       }
     },
     mounted() {
@@ -172,8 +201,18 @@
           })
         })
       },
+      modalConfirm() {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       //添加/修改管理员
-      async modalConfirm(flag) {
+      async submit() {
         if (this.Form.loginKey != this.Form.reloginKey) {
           this.$message({
             message: '密码输入不一致',
@@ -279,7 +318,7 @@
       closeShowModal() {
         this.showModal = false
         this.Form = {
-          aid: '',
+          aid: -1,
           userName: '',
           phone: '',
           nickName: '',
@@ -287,6 +326,7 @@
           roleAid: '',
           isUsed: '0',
         }
+        this.$refs.Form.resetFields()
       },
     },
   }

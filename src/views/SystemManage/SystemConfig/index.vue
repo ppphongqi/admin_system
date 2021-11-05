@@ -341,6 +341,7 @@
 
 <script>
   import { sysApi } from '@/api/index'
+  import { baseURL } from '@/config'
   import './index.scss'
   import moment from 'moment'
   export default {
@@ -359,7 +360,7 @@
           aid: '',
           logo: '',
         },
-        action: 'http://localhost/api/pc/oss/upload',
+        action: '',
         ossForm: {
           aid: '',
           bucket: '',
@@ -557,7 +558,9 @@
         return moment(date).format('YYYY-MM-DD HH:mm:ss')
       },
     },
-    created() {},
+    created() {
+      this.action = baseURL + '/pc/oss/upload'
+    },
     mounted() {
       this.getLogoConfig()
       this.getOssConfig()

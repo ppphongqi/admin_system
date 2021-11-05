@@ -136,6 +136,7 @@
 <script>
   import './index.scss'
   import { rotationApi } from '@/api/index'
+  import { baseURL } from '@/config'
   import moment from 'moment'
   export default {
     name: 'RotationList',
@@ -146,7 +147,7 @@
         rotationClass: [],
         showModal: false,
         add: false,
-        action: 'http://localhost/api/pc/oss/upload',
+        action: '',
         Form: {
           aid: -1,
           name: '',
@@ -173,6 +174,9 @@
       getTime(date) {
         return moment(date).format('YYYY-MM-DD HH:mm:ss')
       },
+    },
+    created() {
+      this.action = baseURL + '/pc/oss/upload'
     },
     mounted() {
       this.getList()

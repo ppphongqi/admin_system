@@ -7,6 +7,7 @@
           label-width="100px"
           label-position="right"
         ></el-form>
+        <div class="ck_title">产品分类</div>
         <div class="ck_buttons">
           <el-button type="success" icon="el-icon-plus" @click="showAdd">
             添加分类
@@ -66,6 +67,7 @@
 
     <!-- 增加实物产品-->
     <el-dialog
+      v-if="showModalAdd"
       title="增加实物产品分类"
       :visible.sync="showModalAdd"
       width="30%"
@@ -95,6 +97,7 @@
 
     <!-- 编辑实物产品-->
     <el-dialog
+      v-if="editorShow"
       title="编辑实物产品分类"
       :visible.sync="editorShow"
       width="30%"
@@ -215,8 +218,8 @@
         this.getData(1, 7)
       },
       closeShowModalAdd() {
-        this.$refs.addForm.resetFields()
         this.showModalAdd = false
+        this.$refs.addForm.resetFields()
       },
       // 删除分类
       async deleteItem() {
@@ -271,8 +274,8 @@
         }
       },
       closeEditorShow() {
-        this.$refs.chooseItem.resetFields()
         this.editorShow = false
+        this.$refs.chooseItem.resetFields()
       },
       deleteRow(item) {
         this.chooseItem = item

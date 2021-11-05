@@ -37,7 +37,7 @@ const handleCode = (code, msg, message) => {
       }
       break
     case noPermissionCode:
-      if (message == '未授权，请重新登录') {
+      if (message === '未授权，请重新登录') {
         Vue.prototype.$baseMessage(message, 'error')
         store.dispatch('user/logout').catch(() => {})
         router.push({ path: '/Login' }).catch(() => {})

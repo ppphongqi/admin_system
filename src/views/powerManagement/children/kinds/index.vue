@@ -66,6 +66,7 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加分类' : '修改分类'"
       :visible.sync="showModal"
       width="30%"
@@ -194,10 +195,6 @@
       showDialog() {
         this.add = true
         this.showModal = true
-        this.Form = {
-          aid: -1,
-          name: '',
-        }
       },
       // 编辑
       compail(row) {
@@ -206,8 +203,12 @@
         this.Form = row
       },
       closeShowModal() {
-        this.$refs.Form.resetFields()
         this.showModal = false
+        this.Form = {
+          aid: -1,
+          name: '',
+        }
+        this.$refs.Form.resetFields()
       },
     },
   }

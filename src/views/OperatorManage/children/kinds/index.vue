@@ -103,6 +103,7 @@
     </el-table>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加分类' : '编辑分类'"
       :visible.sync="showModal"
       width="30%"
@@ -260,12 +261,12 @@
         this.Form = item
       },
       closeShowModal() {
-        this.$refs.Form.resetFields()
         this.showModal = false
         this.Form = {
           aid: -1,
           name: '',
         }
+        this.$refs.Form.resetFields()
       },
     },
   }

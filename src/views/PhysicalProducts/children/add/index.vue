@@ -80,7 +80,7 @@
             <el-upload
               ref="coverUpload"
               class="cover-uploader"
-              action="http://localhost/api/pc/oss/upload"
+              :action="action"
               :limit="1"
               :show-file-list="false"
               :on-success="handleAvatarSuccesscover"
@@ -250,7 +250,7 @@
                 <el-upload
                   ref="tableUpload"
                   class="table-uploader"
-                  action="http://localhost/api/pc/oss/upload"
+                  :action="action"
                   :limit="1"
                   :show-file-list="false"
                   :on-success="handleAvatarSuccessImage"
@@ -375,7 +375,7 @@
                   <el-upload
                     ref="tableUpload"
                     class="table-uploader"
-                    action="http://localhost/api/pc/oss/upload"
+                    :action="action"
                     :limit="1"
                     :show-file-list="false"
                     :on-success="
@@ -561,12 +561,14 @@
   import { physicalProductApi } from '@/api/index'
   import SpecDialog from '../setting/dialog'
   import vabQuill from '@/plugins/vabQuill'
+  import { baseURL } from '@/config'
   export default {
     name: 'PhySicalProductsAdd',
     components: { vabQuill, SpecDialog },
     data() {
       return {
         content: '',
+        action: '',
         isDisabled: false,
         fullscreenLoading: false,
         ruleValidate: {
@@ -695,6 +697,7 @@
         this.edit = this.$store.state.temp.editValue[0].edit
         console.log(this.formValidate.specificationAid, this.edit)
       }
+      this.action = baseURL + '/pc/oss/upload'
     },
     methods: {
       // 获取分类列表

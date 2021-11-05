@@ -170,6 +170,7 @@
 <script>
   import './index.scss'
   import { taskApi } from '@/api/index'
+  import { baseURL } from '@/config'
   export default {
     name: 'TaskCode',
     data() {
@@ -183,7 +184,7 @@
         showModal: false,
         detail: false,
         disabled: false,
-        action: 'http://localhost/api/pc/oss/upload',
+        action: '',
         Form: {
           aid: '',
           missionClassifyName: 2,
@@ -193,6 +194,9 @@
         },
         imgUrlList: [],
       }
+    },
+    created() {
+      this.action = baseURL + '/pc/oss/upload'
     },
     mounted() {
       this.getList()

@@ -189,6 +189,7 @@
     </div>
 
     <el-dialog
+      v-if="editChannelModel"
       :title="add ? '添加通道' : '编辑通道'"
       :visible.sync="editChannelModel"
       width="70%"
@@ -289,6 +290,7 @@
     </el-dialog>
 
     <el-dialog
+      v-if="discountModel"
       title="设置折扣"
       :visible.sync="discountModel"
       width="500"
@@ -745,8 +747,8 @@
         this.tempIds = tempIds
       },
       hiddenEditChannelModel() {
-        this.$refs.ruleForm.resetFields()
         this.editChannelModel = false
+        this.$refs.ruleForm.resetFields()
         this.tempIds = []
         this.selectItem()
       },
@@ -756,8 +758,8 @@
         this.setForm = {}
       },
       hiddenDiscountModel() {
-        this.$refs.setRuleForm.resetFields()
         this.discountModel = false
+        this.$refs.setRuleForm.resetFields()
         this.tempIds = []
         this.selectItem()
       },

@@ -72,6 +72,7 @@
     </div>
 
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加权限' : '修改权限'"
       :visible.sync="showModal"
       width="30%"

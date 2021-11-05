@@ -606,38 +606,45 @@
 
     <!-- 编辑用户 -->
     <el-dialog
+      v-if="showModal"
       :title="add ? '添加用户' : '编辑用户'"
       :visible.sync="showModal"
       width="30%"
       top="25vh"
       :before-close="closeShowModal"
     >
-      <el-form :model="Form" label-width="100px" label-position="right">
-        <el-form-item label="用户名称:" required>
+      <el-form
+        ref="Form"
+        :model="Form"
+        :rules="rules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="用户名称:" prop="userName">
           <el-input v-model="Form.userName"></el-input>
         </el-form-item>
-        <el-form-item label="用户手机号:" required>
+        <el-form-item label="用户手机号:" prop="phone">
           <el-input v-model="Form.phone"></el-input>
         </el-form-item>
-        <el-form-item label="用户昵称:" required>
+        <el-form-item label="用户昵称:" prop="nickName">
           <el-input v-model="Form.nickName"></el-input>
         </el-form-item>
-        <el-form-item label="用户头像:" required>
+        <el-form-item label="用户头像:" prop="images">
           <el-input v-model="Form.images"></el-input>
         </el-form-item>
-        <el-form-item label="用户邮箱:" required>
+        <el-form-item label="用户邮箱:" prop="email">
           <el-input v-model="Form.email"></el-input>
         </el-form-item>
-        <el-form-item label="用户QQ:">
+        <el-form-item label="用户QQ:" prop="qq">
           <el-input v-model="Form.qq"></el-input>
         </el-form-item>
-        <el-form-item label="账户状态:" required>
+        <el-form-item label="账户状态:" prop="isUsed">
           <el-radio-group v-model="Form.isUsed">
             <el-radio label="0" value="0">启用</el-radio>
             <el-radio label="1" value="1">禁用</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="用户权限:" required>
+        <el-form-item label="用户权限:" prop="roleAid">
           <el-select v-model="Form.roleAid" placeholder="请选择">
             <el-option
               v-for="item in roleOption"
@@ -647,7 +654,7 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="用户类型:" required>
+        <el-form-item label="用户类型:" prop="typeAid">
           <el-select v-model="Form.typeAid" placeholder="请选择">
             <el-option
               v-for="item in typeOption"
@@ -713,7 +720,7 @@
           </template>
         </el-table-column>
       </el-table>
-      <span slot="footer" class="dialog-footer" required>
+      <span slot="footer" class="dialog-footer">
         <el-button @click="showDiscount = false">取 消</el-button>
         <el-button type="primary" @click="showDiscount = false">
           确 定
@@ -721,14 +728,24 @@
       </span>
     </el-dialog>
     <el-dialog
+      v-if="showSetDiscount"
       title="设置折扣"
       :visible.sync="showSetDiscount"
       width="30%"
       top="15vh"
       :before-close="closeSetDiscount"
     >
-      <el-form :model="setDiscountForm" label-width="80px">
-        <el-form-item v-if="showSetDiscountAdd" label="商品列表" required>
+      <el-form
+        ref="setDiscountForm"
+        :model="setDiscountForm"
+        :rules="setDiscountFormRules"
+        label-width="80px"
+      >
+        <el-form-item
+          v-if="showSetDiscountAdd"
+          label="商品列表"
+          prop="goodsAid"
+        >
           <el-select v-model="setDiscountForm.goodsAid" placeholder="请选择">
             <el-option
               v-for="item in goodsOptions"
@@ -738,13 +755,15 @@
             ></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="折扣" required>
+        <el-form-item label="折扣" prop="discount">
           <el-input v-model="setDiscountForm.discount"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button @click="closeSetDiscount">取 消</el-button>
-        <el-button type="primary" @click="setDiscountSubmit">确 定</el-button>
+        <el-button type="primary" @click="modalConfirmDiscount">
+          确 定
+        </el-button>
       </span>
     </el-dialog>
     <!-- 用户详情 -->
@@ -763,20 +782,26 @@
     </el-dialog>
     <!-- 充值 -->
     <el-dialog
+      v-if="showCharge"
       title="充值"
       :visible.sync="showCharge"
       width="30%"
       top="15vh"
       :before-close="closeShowCharge"
     >
-      <el-form :model="ChargeForm" label-width="80px">
-        <el-form-item label="充值" required>
+      <el-form
+        ref="ChargeForm"
+        :model="ChargeForm"
+        :rules="ChargeFormRules"
+        label-width="80px"
+      >
+        <el-form-item label="充值" prop="state">
           <el-radio-group v-model="ChargeForm.state">
             <el-radio :label="0" value="0">增加</el-radio>
             <el-radio :label="1" value="1">减少</el-radio>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="金额" required>
+        <el-form-item label="金额" prop="balance">
           <el-input v-model="ChargeForm.balance"></el-input>
         </el-form-item>
       </el-form>
@@ -863,6 +888,51 @@
         value: '',
         tempUserAid: 0,
         showMore: false,
+        rules: {
+          userName: [
+            { required: true, message: '请填写用户名称', trigger: 'blur' },
+          ],
+          phone: [{ required: true, message: '请填写手机号', trigger: 'blur' }],
+          nickName: [
+            { required: true, message: '请填写用户昵称', trigger: 'blur' },
+          ],
+          images: [
+            {
+              required: true,
+              message: '请上传用户头像',
+              trigger: 'change',
+            },
+          ],
+          email: [
+            { required: true, message: '请填写用户邮箱', trigger: 'blur' },
+          ],
+          qq: [{ required: true, message: '请填写用户QQ', trigger: 'blur' }],
+          roleAid: [
+            { required: true, message: '请选择用户权限', trigger: 'change' },
+          ],
+          typeAid: [
+            { required: true, message: '请选择用户类型', trigger: 'change' },
+          ],
+          isUsed: [
+            { required: true, message: '请选择账户状态', trigger: 'change' },
+          ],
+        },
+        setDiscountFormRules: {
+          goodsAid: [
+            { required: true, message: '请选择商品', trigger: 'change' },
+          ],
+          discount: [
+            { required: true, message: '请填写折扣', trigger: 'blur' },
+          ],
+        },
+        ChargeFormRules: {
+          state: [
+            { required: true, message: '请选择充值状态', trigger: 'change' },
+          ],
+          balance: [
+            { required: true, message: '请填写充值金额', trigger: 'blur' },
+          ],
+        },
       }
     },
     computed: {
@@ -973,8 +1043,18 @@
           this.getList()
         }
       },
+      modalConfirm(flag) {
+        this.$refs.Form.validate((valid) => {
+          if (valid) {
+            this.submit(flag)
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       //添加/修改用户信息
-      async modalConfirm(flag) {
+      async submit(flag) {
         this.Form.typeAid = String(this.Form.typeAid)
         this.Form.roleAid = String(this.Form.roleAid)
         if (flag) {
@@ -1038,6 +1118,7 @@
           isUsed: '0',
           typeAid: '',
         }
+        this.$refs.Form.resetFields()
       },
       open() {
         this.showModal = true
@@ -1063,7 +1144,17 @@
       showChargeModal(row) {
         this.ChargeForm.aid = row.aid
       },
-      async setCharge() {
+      setCharge() {
+        this.$refs.ChargeForm.validate((valid) => {
+          if (valid) {
+            this.submitCharge()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
+      async submitCharge() {
         this.ChargeForm.state = String(this.ChargeForm.state)
         const res = await userApi.changeBalance(this.ChargeForm)
         if (res) {
@@ -1087,6 +1178,7 @@
           state: 0,
           balance: '',
         }
+        this.$refs.ChargeForm.resetFields()
       },
       //获取用户折扣
       async getDiscountAid(row) {
@@ -1131,6 +1223,16 @@
           })
         })
       },
+      modalConfirmDiscount() {
+        this.$refs.setDiscountForm.validate((valid) => {
+          if (valid) {
+            this.setDiscountSubmit()
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
+      },
       async setDiscountSubmit() {
         const res = await userApi.setUserDiscount(this.setDiscountForm)
         if (res) {
@@ -1156,6 +1258,7 @@
           discount: '',
         }
         this.tempUserAid = 0
+        this.$refs.setDiscountForm.resetFields()
       },
       //删除用户折扣
       async delDiscount(row) {
